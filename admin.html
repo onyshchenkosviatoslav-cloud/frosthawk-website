@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frost Hawk — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06070d; --bg2: #0c0f1a; --card: #0f1220;
+      --border: rgba(255,255,255,0.08); --orange: #f7820a;
+      --blue: #1a6fd8; --txt: #f0f2f8; --muted: #7a8099;
+      --green: #22c55e; --red: #ef4444;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 30% 30%, rgba(26,111,216,0.15), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(247,130,10,0.1), transparent 60%);
+    }
+    .login-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px 36px;
+      width: 100%; max-width: 380px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    }
+    .login-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem; letter-spacing: 0.08em;
+      text-align: center; margin-bottom: 4px;
+    }
+    .login-sub { text-align: center; color: var(--muted); font-size: 0.82rem; margin-bottom: 28px; }
+    .login-box label { display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; color: var(--muted); }
+    .login-box input {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px;
+      color: var(--txt); font-family: 'DM Sans', sans-serif; font-size: 1rem;
+      outline: none; transition: border-color 0.15s;
+    }
+    .login-box input:focus { border-color: var(--blue); }
+    .login-box button {
+      margin-top: 16px; width: 100%; padding: 14px;
+      background: var(--orange); color: #111;
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .login-box button:hover { background: #ffaa44; }
+    .login-error { color: var(--red); font-size: 0.82rem; text-align: center; margin-top: 10px; min-height: 20px; }
+
+    /* ── ADMIN PANEL ── */
+    #adminPanel { display: none; }
+
+    .adm-header {
+      background: rgba(6,7,13,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex; align-items: center; gap: 16px; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .adm-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.08em; }
+    .adm-logo span { color: var(--orange); }
+    .adm-nav { display: flex; gap: 4px; }
+    .adm-nav button {
+      padding: 7px 16px; border: 1px solid var(--border); border-radius: 999px;
+      background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; cursor: pointer; transition: all 0.15s;
+    }
+    .adm-nav button.active { background: var(--orange); color: #111; border-color: var(--orange); font-weight: 700; }
+    .adm-nav button:hover:not(.active) { color: var(--txt); border-color: rgba(255,255,255,0.2); }
+    .adm-logout { font-size: 0.78rem; color: var(--muted); cursor: pointer; background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+    .adm-logout:hover { color: var(--red); }
+
+    .adm-body { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── TAB: GALLERY ── */
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+    .section-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 28px; }
+
+    /* GitHub config banner */
+    .gh-banner {
+      background: rgba(26,111,216,0.1); border: 1px solid rgba(26,111,216,0.25);
+      border-radius: 14px; padding: 16px 20px; margin-bottom: 24px;
+      display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap;
+    }
+    .gh-banner-text { flex: 1; min-width: 200px; }
+    .gh-banner-text strong { display: block; font-size: 0.88rem; margin-bottom: 4px; }
+    .gh-banner-text p { font-size: 0.78rem; color: var(--muted); }
+    .gh-config-form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .gh-config-form input {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px; color: var(--txt);
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+      outline: none; flex: 1; min-width: 160px;
+    }
+    .gh-config-form input:focus { border-color: var(--blue); }
+    .btn-sm {
+      padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-sm--orange { background: var(--orange); color: #111; }
+    .btn-sm--orange:hover { background: #ffaa44; }
+    .btn-sm--ghost { background: rgba(255,255,255,0.07); color: var(--txt); border: 1px solid var(--border); }
+    .btn-sm--ghost:hover { background: rgba(255,255,255,0.12); }
+    .btn-sm--red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+    .btn-sm--red:hover { background: rgba(239,68,68,0.25); }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.12);
+      border-radius: 16px; padding: 40px 24px;
+      text-align: center; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 28px;
+    }
+    .upload-zone.drag-over { border-color: var(--orange); background: rgba(247,130,10,0.06); }
+    .upload-zone input[type=file] { display: none; }
+    .upload-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .upload-zone p { font-size: 0.9rem; color: var(--muted); }
+    .upload-zone strong { color: var(--txt); }
+
+    /* Upload queue */
+    .upload-queue { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .uq-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .uq-thumb {
+      width: 60px; height: 50px; border-radius: 8px;
+      background-size: cover; background-position: center;
+      border: 1px solid var(--border); flex-shrink: 0;
+    }
+    .uq-info { flex: 1; min-width: 0; }
+    .uq-name { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .uq-size { font-size: 0.72rem; color: var(--muted); }
+    .uq-label input {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 10px; color: var(--txt);
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem; width: 100%;
+      outline: none; margin-top: 4px;
+    }
+    .uq-label input:focus { border-color: var(--blue); }
+    .uq-status { font-size: 0.78rem; font-weight: 600; flex-shrink: 0; }
+    .uq-status.pending { color: var(--muted); }
+    .uq-status.uploading { color: var(--orange); }
+    .uq-status.done { color: var(--green); }
+    .uq-status.error { color: var(--red); }
+    .uq-remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 4px; }
+    .uq-remove:hover { color: var(--red); }
+
+    .upload-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .upload-log { font-size: 0.78rem; color: var(--muted); margin-left: auto; }
+
+    /* Gallery current */
+    .gallery-current-title { font-size: 0.85rem; font-weight: 600; margin: 28px 0 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .gallery-mgmt-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .gm-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden; position: relative;
+    }
+    .gm-thumb {
+      height: 110px; background-size: cover; background-position: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .gm-body { padding: 8px 10px; }
+    .gm-label { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+    .gm-actions { display: flex; gap: 6px; }
+    .gm-del {
+      width: 100%; padding: 5px; border-radius: 6px;
+      background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25);
+      color: var(--red); font-size: 0.72rem; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+    }
+    .gm-del:hover { background: rgba(239,68,68,0.22); }
+    .gm-drag-handle { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.6); border-radius: 6px; padding: 3px 6px; font-size: 0.7rem; color: rgba(255,255,255,0.5); cursor: grab; }
+
+    /* Alerts */
+    .alert {
+      padding: 12px 16px; border-radius: 10px; font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+    .alert--green { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+    .alert--red { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+    .alert--orange { background: rgba(247,130,10,0.1); border: 1px solid rgba(247,130,10,0.3); color: var(--orange); }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 0.9rem; }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+    /* Loading spinner */
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.15); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">FROST <span style="color:var(--orange)">HAWK</span></div>
+    <div class="login-sub">Admin Panel</div>
+    <label>
+      Password
+      <input type="password" id="pwdInput" placeholder="Enter password" autocomplete="current-password">
+    </label>
+    <button id="loginBtn">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN PANEL ══════════════ -->
+<div id="adminPanel">
+  <header class="adm-header">
+    <div class="adm-logo">FROST <span>HAWK</span> <span style="color:var(--muted);font-size:0.8rem;font-family:'DM Sans',sans-serif;font-weight:400">Admin</span></div>
+    <nav class="adm-nav">
+      <button class="active" data-tab="gallery">Gallery</button>
+    </nav>
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="index.html" target="_blank" style="font-size:0.78rem;color:var(--muted)">← View Site</a>
+      <button class="adm-logout" id="logoutBtn">Log out</button>
+    </div>
+  </header>
+
+  <div class="adm-body">
+
+    <!-- GITHUB CONFIG -->
+    <div class="gh-banner">
+      <div style="font-size:1.5rem">⚙️</div>
+      <div class="gh-banner-text">
+        <strong>GitHub API Config (one-time setup)</strong>
+        <p>Enter your GitHub token and repo to enable photo uploads directly from this panel. Token needs <em>repo</em> scope.</p>
+        <div class="gh-config-form">
+          <input type="password" id="ghToken" placeholder="GitHub Personal Access Token" autocomplete="off">
+          <input type="text" id="ghRepo" placeholder="onyshchenkosviatoslav-cloud/frosthawk-website">
+          <button class="btn-sm btn-sm--orange" id="saveGhConfig">Save</button>
+          <button class="btn-sm btn-sm--ghost" id="testGhConfig">Test</button>
+        </div>
+        <div id="ghStatus" style="font-size:0.75rem;margin-top:8px;color:var(--muted)"></div>
+      </div>
+    </div>
+
+    <!-- GALLERY TAB -->
+    <div id="tab-gallery">
+      <div class="section-title">Gallery Management</div>
+      <div class="section-sub">Upload new photos. They'll appear on the site automatically after upload.</div>
+
+      <!-- Upload zone -->
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <div class="upload-icon">📸</div>
+        <p><strong>Click to choose photos</strong> or drag & drop here</p>
+        <p style="margin-top:6px;font-size:0.75rem">JPG, PNG, WebP — multiple files supported</p>
+      </div>
+
+      <!-- Queue -->
+      <div class="upload-queue" id="uploadQueue"></div>
+
+      <!-- Actions -->
+      <div class="upload-actions" id="uploadActions" style="display:none">
+        <button class="btn-sm btn-sm--orange" id="uploadAllBtn">⬆ Upload All</button>
+        <button class="btn-sm btn-sm--ghost" id="clearQueueBtn">Clear queue</button>
+        <div class="upload-log" id="uploadLog"></div>
+      </div>
+
+      <div id="alertBox"></div>
+
+      <!-- Current gallery -->
+      <div class="gallery-current-title">Current Photos (<span id="photoCount">0</span>)</div>
+      <div class="gallery-mgmt-grid" id="galleryMgmt"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────
+const PASSWORD = "So97100812172";
+const DEFAULT_REPO = "onyshchenkosviatoslav-cloud/frosthawk-website";
+const DATA_FILE = "gallery-data.json";
+
+const GALLERY_FALLBACK = [
+  {src:"gallery1.jpg",label:"Ductwork + Mechanical Room"},
+  {src:"gallery2.jpg",label:"Dual Trane AC Units Install"},
+  {src:"gallery3.jpg",label:"Furnace + PVC Venting Install"},
+  {src:"gallery4.jpg",label:"AC Condenser Installation"},
+  {src:"gallery5.jpg",label:"Furnace with Aprilaire humidifier"},
+  {src:"gallery6.jpg",label:"Rooftop condensers – Chicago skyline"},
+  {src:"gallery7.jpg",label:"Rooftop condensers – Chicago skyline"},
+  {src:"gallery8.jpg",label:"Mitsubishi rooftop mini-split install"},
+  {src:"gallery9.jpg",label:"Furnace & coil in mechanical closet"},
+  {src:"gallery10.jpg",label:"Radiant floor heating – commercial"},
+  {src:"gallery10_1.jpg",label:"Hydronic radiant heating layout"},
+  {src:"gallery10_2.jpg",label:"Radiant heating system with insulation"},
+];
+
+// State
+let ghToken = localStorage.getItem("gh_token") || "";
+let ghRepo  = localStorage.getItem("gh_repo")  || DEFAULT_REPO;
+let galleryData = [];
+let uploadQueue = []; // {file, label, status, objectUrl}
+
+// ── LOGIN ──────────────────────────────────────
+document.getElementById("loginBtn").addEventListener("click", tryLogin);
+document.getElementById("pwdInput").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+
+function tryLogin() {
+  const val = document.getElementById("pwdInput").value;
+  if (val === PASSWORD) {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    initAdmin();
+  } else {
+    document.getElementById("loginError").textContent = "Wrong password. Try again.";
+    document.getElementById("pwdInput").value = "";
+  }
+}
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("adminPanel").style.display = "none";
+  document.getElementById("pwdInput").value = "";
+});
+
+// ── GITHUB CONFIG ──────────────────────────────
+function initAdmin() {
+  // Restore saved config
+  if (ghToken) document.getElementById("ghToken").value = ghToken;
+  document.getElementById("ghRepo").value = ghRepo;
+
+  document.getElementById("saveGhConfig").addEventListener("click", () => {
+    ghToken = document.getElementById("ghToken").value.trim();
+    ghRepo  = document.getElementById("ghRepo").value.trim() || DEFAULT_REPO;
+    localStorage.setItem("gh_token", ghToken);
+    localStorage.setItem("gh_repo",  ghRepo);
+    setGhStatus("✓ Saved!", "color:var(--green)");
+  });
+
+  document.getElementById("testGhConfig").addEventListener("click", async () => {
+    ghToken = document.getElementById("ghToken").value.trim();
+    ghRepo  = document.getElementById("ghRepo").value.trim() || DEFAULT_REPO;
+    setGhStatus("Testing...", "color:var(--muted)");
+    try {
+      const r = await ghGet(`repos/${ghRepo}`);
+      setGhStatus(`✓ Connected to ${r.full_name}`, "color:var(--green)");
+    } catch(e) {
+      setGhStatus("✗ " + e.message, "color:var(--red)");
+    }
+  });
+
+  // Upload zone
+  const zone = document.getElementById("uploadZone");
+  const fileInput = document.getElementById("fileInput");
+
+  zone.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", () => addFilesToQueue(Array.from(fileInput.files)));
+
+  zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("drag-over"); });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", e => {
+    e.preventDefault(); zone.classList.remove("drag-over");
+    addFilesToQueue(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/")));
+  });
+
+  document.getElementById("uploadAllBtn").addEventListener("click", uploadAll);
+  document.getElementById("clearQueueBtn").addEventListener("click", () => {
+    uploadQueue = [];
+    renderQueue();
+  });
+
+  // Load gallery
+  loadGalleryData();
+}
+
+function setGhStatus(msg, style) {
+  const el = document.getElementById("ghStatus");
+  el.textContent = msg; el.style.cssText = style;
+}
+
+// ── GITHUB API ─────────────────────────────────
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/${path}`, {
+    headers: { Authorization: `Bearer ${ghToken}`, Accept: "application/vnd.github+json" }
+  });
+  if (!r.ok) throw new Error(`GitHub ${r.status}: ${r.statusText}`);
+  return r.json();
+}
+
+async function ghGetFile(path) {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${ghRepo}/contents/${path}`, {
+      headers: { Authorization: `Bearer ${ghToken}`, Accept: "application/vnd.github+json" }
+    });
+    if (r.status === 404) return null;
+    if (!r.ok) throw new Error(`GitHub ${r.status}`);
+    return r.json();
+  } catch(_) { return null; }
+}
+
+async function ghPutFile(path, content_b64, message, sha) {
+  const body = { message, content: content_b64, branch: "main" };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${ghRepo}/contents/${path}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${ghToken}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error(`GitHub ${r.status}: ${txt}`);
+  }
+  return r.json();
+}
+
+async function ghDeleteFile(path, sha, message) {
+  const r = await fetch(`https://api.github.com/repos/${ghRepo}/contents/${path}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${ghToken}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+    body: JSON.stringify({ message, sha, branch: "main" })
+  });
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
+  return r.json();
+}
+
+// Convert file to base64
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(",")[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ── GALLERY DATA ───────────────────────────────
+async function loadGalleryData() {
+  try {
+    const res = await fetch("gallery-data.json?t=" + Date.now());
+    if (res.ok) galleryData = await res.json();
+    else galleryData = [...GALLERY_FALLBACK];
+  } catch(_) {
+    galleryData = [...GALLERY_FALLBACK];
+  }
+  renderGalleryMgmt();
+}
+
+async function saveGalleryData() {
+  const json = JSON.stringify(galleryData, null, 2);
+  const b64 = btoa(unescape(encodeURIComponent(json)));
+  const existing = await ghGetFile(DATA_FILE);
+  await ghPutFile(DATA_FILE, b64, "Update gallery-data.json", existing?.sha);
+}
+
+// ── UPLOAD QUEUE ───────────────────────────────
+function addFilesToQueue(files) {
+  files.forEach(file => {
+    if (!file.type.startsWith("image/")) return;
+    const objectUrl = URL.createObjectURL(file);
+    uploadQueue.push({ file, label: file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " "), status: "pending", objectUrl });
+  });
+  renderQueue();
+}
+
+function renderQueue() {
+  const qEl = document.getElementById("uploadQueue");
+  const actEl = document.getElementById("uploadActions");
+  qEl.innerHTML = "";
+
+  if (!uploadQueue.length) { actEl.style.display = "none"; return; }
+  actEl.style.display = "flex";
+
+  uploadQueue.forEach((item, i) => {
+    const div = document.createElement("div");
+    div.className = "uq-item";
+    div.innerHTML = `
+      <div class="uq-thumb" style="background-image:url(${item.objectUrl})"></div>
+      <div class="uq-info">
+        <div class="uq-name">${item.file.name}</div>
+        <div class="uq-size">${(item.file.size/1024).toFixed(0)} KB</div>
+        <div class="uq-label"><input type="text" value="${item.label}" placeholder="Photo caption (optional)"></div>
+      </div>
+      <div class="uq-status ${item.status}">${{pending:"Pending",uploading:"Uploading…",done:"✓ Done",error:"✗ Error"}[item.status]}</div>
+      <button class="uq-remove" title="Remove">✕</button>
+    `;
+    div.querySelector("input").addEventListener("input", e => { uploadQueue[i].label = e.target.value; });
+    div.querySelector(".uq-remove").addEventListener("click", () => { uploadQueue.splice(i, 1); renderQueue(); });
+    qEl.appendChild(div);
+  });
+}
+
+async function uploadAll() {
+  if (!ghToken) { showAlert("Please save your GitHub token first!", "orange"); return; }
+
+  const btn = document.getElementById("uploadAllBtn");
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Uploading…';
+
+  let successCount = 0;
+  let errorCount = 0;
+
+  for (let i = 0; i < uploadQueue.length; i++) {
+    const item = uploadQueue[i];
+    if (item.status === "done") continue;
+
+    item.status = "uploading";
+    renderQueue();
+
+    try {
+      // Generate filename
+      const ext = item.file.name.split(".").pop().toLowerCase();
+      const slug = item.file.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9]/gi, "_").toLowerCase();
+      const filename = `${slug}_${Date.now()}.${ext}`;
+
+      // Upload image
+      const b64 = await toBase64(item.file);
+      await ghPutFile(filename, b64, `Add gallery image: ${filename}`);
+
+      // Add to gallery data
+      galleryData.push({ src: filename, label: item.label });
+
+      item.status = "done";
+      successCount++;
+    } catch(e) {
+      item.status = "error";
+      errorCount++;
+      console.error(e);
+    }
+    renderQueue();
+  }
+
+  // Save updated gallery-data.json
+  if (successCount > 0) {
+    try {
+      await saveGalleryData();
+      showAlert(`✓ ${successCount} photo${successCount > 1 ? "s" : ""} uploaded! Site will update in ~30 seconds.`, "green");
+      renderGalleryMgmt();
+    } catch(e) {
+      showAlert("Photos uploaded but failed to update gallery-data.json: " + e.message, "red");
+    }
+  }
+  if (errorCount > 0) {
+    showAlert(`${errorCount} upload${errorCount > 1 ? "s" : ""} failed. Check your GitHub token.`, "red");
+  }
+
+  btn.disabled = false; btn.innerHTML = "⬆ Upload All";
+
+  // Clear done items
+  setTimeout(() => {
+    uploadQueue = uploadQueue.filter(i => i.status !== "done");
+    renderQueue();
+  }, 2000);
+}
+
+// ── GALLERY MANAGEMENT ─────────────────────────
+function renderGalleryMgmt() {
+  const grid = document.getElementById("galleryMgmt");
+  const count = document.getElementById("photoCount");
+  grid.innerHTML = "";
+  count.textContent = galleryData.length;
+
+  if (!galleryData.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🖼</div>No photos yet. Upload some!</div>';
+    return;
+  }
+
+  galleryData.forEach((photo, i) => {
+    const div = document.createElement("div");
+    div.className = "gm-item";
+    div.innerHTML = `
+      <div class="gm-drag-handle">☰</div>
+      <div class="gm-thumb" style="background-image:url(${photo.src})"></div>
+      <div class="gm-body">
+        <div class="gm-label">${photo.label || photo.src}</div>
+        <button class="gm-del" data-i="${i}">🗑 Remove</button>
+      </div>
+    `;
+    div.querySelector(".gm-del").addEventListener("click", () => removePhoto(i));
+    grid.appendChild(div);
+  });
+}
+
+async function removePhoto(index) {
+  if (!confirm("Remove this photo from the gallery?")) return;
+  if (!ghToken) { showAlert("Please save your GitHub token first!", "orange"); return; }
+
+  const photo = galleryData[index];
+  galleryData.splice(index, 1);
+
+  try {
+    await saveGalleryData();
+    // optionally delete the image file too
+    try {
+      const f = await ghGetFile(photo.src);
+      if (f) await ghDeleteFile(photo.src, f.sha, `Remove gallery image: ${photo.src}`);
+    } catch(_) { /* image might not exist separately */ }
+
+    showAlert("Photo removed. Site will update in ~30 seconds.", "green");
+  } catch(e) {
+    showAlert("Error saving: " + e.message, "red");
+    galleryData.splice(index, 0, photo); // rollback
+  }
+
+  renderGalleryMgmt();
+}
+
+// ── ALERTS ─────────────────────────────────────
+function showAlert(msg, type = "green") {
+  const box = document.getElementById("alertBox");
+  const types = { green: "alert--green", red: "alert--red", orange: "alert--orange" };
+  box.innerHTML = `<div class="alert ${types[type]}">${msg}</div>`;
+  setTimeout(() => { box.innerHTML = ""; }, 6000);
+}
+</script>
+</body>
+</html>
