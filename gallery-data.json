@@ -1,14 +1,54 @@
 [
-  {"src": "gallery1.jpg",   "label": "Ductwork + Mechanical Room"},
-  {"src": "gallery2.jpg",   "label": "Dual Trane AC Units Install"},
-  {"src": "gallery3.jpg",   "label": "Furnace + PVC Venting Install"},
-  {"src": "gallery4.jpg",   "label": "AC Condenser Installation"},
-  {"src": "gallery5.jpg",   "label": "Furnace with Aprilaire humidifier"},
-  {"src": "gallery6.jpg",   "label": "Rooftop condensers – Chicago skyline"},
-  {"src": "gallery7.jpg",   "label": "Rooftop condensers – Chicago skyline"},
-  {"src": "gallery8.jpg",   "label": "Mitsubishi rooftop mini-split install"},
-  {"src": "gallery9.jpg",   "label": "Furnace & coil in mechanical closet"},
-  {"src": "gallery10.jpg",  "label": "Radiant floor heating – commercial building"},
-  {"src": "gallery10_1.jpg","label": "Hydronic radiant heating layout"},
-  {"src": "gallery10_2.jpg","label": "Radiant heating system with insulation"}
+  {
+    "src": "gallery1.jpg",
+    "label": "Ductwork + Mechanical Room"
+  },
+  {
+    "src": "gallery2.jpg",
+    "label": "Dual Trane AC Units Install"
+  },
+  {
+    "src": "gallery3.jpg",
+    "label": "Furnace + PVC Venting Install"
+  },
+  {
+    "src": "gallery4.jpg",
+    "label": "AC Condenser Installation"
+  },
+  {
+    "src": "gallery5.jpg",
+    "label": "Furnace with Aprilaire humidifier"
+  },
+  {
+    "src": "gallery6.jpg",
+    "label": "Rooftop condensers – Chicago skyline"
+  },
+  {
+    "src": "gallery7.jpg",
+    "label": "Rooftop condensers – Chicago skyline"
+  },
+  {
+    "src": "gallery8.jpg",
+    "label": "Mitsubishi rooftop mini-split install"
+  },
+  {
+    "src": "gallery9.jpg",
+    "label": "Furnace & coil in mechanical closet"
+  },
+  {
+    "src": "gallery10.jpg",
+    "label": "Radiant floor heating – commercial building"
+  },
+  {
+    "src": "gallery10_1.jpg",
+    "label": "Hydronic radiant heating layout"
+  },
+  {
+    "src": "gallery10_2.jpg",
+    "label": "Radiant heating system with insulation"
+  },
+  {
+    "src": "img_0422_1779044331727.heic",
+    "label": "lol"
+  }
 ]
