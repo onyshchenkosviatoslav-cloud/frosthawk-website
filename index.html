@@ -1,301 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Frost Hawk – Professional Heating & Cooling. HVAC installation, repair and maintenance in Chicago area." />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Frost Hawk – Professional Heating & Cooling. HVAC installation, repair and maintenance in Chicago area."/>
   <title>FROST HAWK – Professional Heating & Cooling</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
-     MOBILE FIXED NAV BAR
-══════════════════════════════════════════ -->
+<!-- ══ MOBILE BAR ══ -->
 <div class="mob-bar" id="mobBar">
   <nav class="mob-nav">
-    <a href="#services" data-i18n="nav_services">Services</a>
-    <a href="#gallery" data-i18n="nav_gallery">Gallery</a>
-    <a href="#why" data-i18n="nav_why">Why Us</a>
-    <a href="#contact" data-i18n="nav_contact">Contact</a>
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#why">Why Us</a>
+    <a href="#contact">Contact</a>
   </nav>
-  <a href="tel:+17736470598" class="mob-call" id="mobCall" data-i18n="btn_call_short">☎ (773) 647-0598</a>
+  <a href="tel:+17736470598" class="mob-cta" id="mobCta">☎ (773) 647-0598</a>
 </div>
 
-<!-- ══════════════════════════════════════════
-     HEADER
-══════════════════════════════════════════ -->
-<header class="site-header">
-  <div class="wrap">
-    <div class="hdr">
-      <a href="#" class="logo-link">
-        <div class="logo-ring">
-          <img src="logo-frost-hawk.png" alt="Frost Hawk" onerror="this.style.display='none'">
-        </div>
-        <div class="logo-text">
-          <span class="logo-name" data-i18n="brand_name">FROST HAWK</span>
-          <span class="logo-sub" data-i18n="brand_sub">Heating & Cooling</span>
-        </div>
-      </a>
-
-      <nav class="desk-nav">
-        <a href="#services" data-i18n="nav_services">Services</a>
-        <a href="#gallery" data-i18n="nav_gallery">Gallery</a>
-        <a href="#why" data-i18n="nav_why">Why Frost Hawk</a>
-        <a href="#contact" data-i18n="nav_contact">Contact</a>
-      </nav>
-
-      <div class="hdr-right">
-        <div class="badge-247"><span data-i18n="nav_247">24/7</span> <span data-i18n="nav_service">Service</span></div>
-        <a href="tel:+17736470598" class="hdr-phone" data-i18n="btn_call_short">(773) 647-0598</a>
-        <div class="lang-switch">
-          <button class="lang-btn active" data-lang="en">EN</button>
-          <button class="lang-btn" data-lang="uk">UA</button>
-          <button class="lang-btn" data-lang="pl">PL</button>
-        </div>
+<!-- ══ HEADER ══ -->
+<header class="hdr">
+  <div class="wrap hdr-inner">
+    <a href="#" class="logo">
+      <div class="logo-ring">
+        <img src="logo-frost-hawk.png" alt="Frost Hawk" onerror="this.style.display='none'">
       </div>
+      <div>
+        <span class="logo-name">FROST HAWK</span>
+        <span class="logo-tag">Heating & Cooling</span>
+      </div>
+    </a>
+    <nav class="desk-nav">
+      <a href="#services">Services</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#why">Why Us</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="hdr-r">
+      <div class="badge-247">24/7 <span>Service</span></div>
+      <a href="tel:+17736470598" class="hdr-phone">(773) 647-0598</a>
+      <a href="#contact" class="hdr-cta">Get a Quote</a>
     </div>
   </div>
 </header>
 
-<!-- ══════════════════════════════════════════
-     HERO
-══════════════════════════════════════════ -->
+<!-- ══ HERO ══ -->
 <section class="hero">
-  <div class="hero-bg-grid"></div>
-  <div class="hero-glow hero-glow--blue"></div>
-  <div class="hero-glow hero-glow--orange"></div>
+  <div class="hero-bg-text" aria-hidden="true">HVAC</div>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb--blue" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb--orange" aria-hidden="true"></div>
+  <div class="hero-line" aria-hidden="true"></div>
+  <div class="hero-dot" aria-hidden="true"></div>
 
   <div class="wrap hero-wrap">
-    <div class="hero-content">
+    <div class="hero-content anim-fade-up">
       <div class="hero-eyebrow">
-        <span class="pulse-dot"></span>
-        <span data-i18n="hero_tag">Same-day HVAC service · Chicago area</span>
+        <span class="eyebrow-line"></span>
+        <span>Same-day HVAC service · Chicago area</span>
       </div>
-
-      <h1 class="hero-h1" data-i18n="hero_title">Professional<br><em>HVAC Services</em><br>You Can Trust</h1>
-
-      <p class="hero-lead" data-i18n="hero_subtitle">Expert installation, repair, and maintenance for homes and small businesses. Clean work, honest pricing, fast response.</p>
-
-      <div class="hero-chips">
-        <span class="chip" data-i18n="badge_hvac">HVAC Install & Repair</span>
-        <span class="chip" data-i18n="badge_residential">Residential & Commercial</span>
-        <span class="chip" data-i18n="badge_area">Chicago, IL & suburbs</span>
+      <h1 class="hero-h1">
+        <em>Chicago's</em>
+        <strong>Premier</strong>
+        HVAC PROS
+      </h1>
+      <p class="hero-desc">Expert installation, repair & maintenance — done right the first time. Available 24/7 for homes and businesses across the Chicago area.</p>
+      <div class="hero-actions">
+        <a href="tel:+17736470598" class="btn-cta">☎ Call or Text: (773) 647-0598</a>
+        <a href="#contact" class="btn-ghost">Get a Free Quote</a>
       </div>
-
-      <div class="hero-ctas">
-        <a href="tel:+17736470598" class="btn-primary" data-i18n="btn_call">☎ Call or Text: (773) 647-0598</a>
-        <a href="#contact" class="btn-ghost" data-i18n="btn_quote">Get a Free Quote</a>
+      <div class="hero-badges">
+        <span>Licensed & Insured</span>
+        <span>HVAC Install & Repair</span>
+        <span>Residential & Commercial</span>
+        <span>Chicago, IL & suburbs</span>
       </div>
     </div>
 
-    <div class="hero-card-wrap">
-      <div class="hero-card">
-        <div class="hc-top">
-          <div class="hc-label" data-i18n="card_title">Frost Hawk | HVAC</div>
-          <div class="hc-badge" data-i18n="card_chip">Licensed technician</div>
+    <div class="hero-card anim-fade-up anim-delay-1">
+      <div class="hc-top">
+        <span class="hc-label">Frost Hawk | HVAC</span>
+        <span class="hc-live"><span class="hc-live-dot"></span>Available now</span>
+      </div>
+      <div class="hc-visual">
+        <div class="hawk-shape"></div>
+        <div class="hc-stats">
+          <div class="hcs"><span class="hcs-n" data-count="24" data-suffix="/7">24/7</span><span class="hcs-l">Available</span></div>
+          <div class="hcs"><span class="hcs-n" data-count="10" data-suffix="+">10+</span><span class="hcs-l">Years exp.</span></div>
+          <div class="hcs"><span class="hcs-n">★ 5.0</span><span class="hcs-l">Rated</span></div>
         </div>
-        <div class="hc-visual">
-          <div class="hawk-shape"></div>
-          <div class="hc-stats">
-            <div class="hc-stat"><span class="hc-num">24/7</span><span class="hc-cap" data-i18n="stat_availability">Availability</span></div>
-            <div class="hc-stat"><span class="hc-num">10+</span><span class="hc-cap" data-i18n="stat_years">Years exp.</span></div>
-            <div class="hc-stat"><span class="hc-num">★ 5.0</span><span class="hc-cap" data-i18n="stat_rating">Rating</span></div>
+      </div>
+      <div class="hc-footer">
+        <div>
+          <div class="hc-title">Professional Heating & Cooling</div>
+          <div class="hc-chips">
+            <span>Furnace</span><span>AC</span><span>Ductwork</span><span>Diagnostics</span>
           </div>
         </div>
-        <div class="hc-footer">
-          <div>
-            <strong data-i18n="card_footer_title">Professional Heating & Cooling</strong>
-            <div class="hc-tags">
-              <span data-i18n="chip_furnace">Furnace</span>
-              <span data-i18n="chip_ac">AC</span>
-              <span data-i18n="chip_duct">Ductwork</span>
-              <span data-i18n="chip_trouble">Diagnostics</span>
-            </div>
-          </div>
-          <div class="hc-loc">
-            <div data-i18n="card_city">Chicago, IL</div>
-            <div class="hc-note" data-i18n="card_note">Same-day when available</div>
-          </div>
+        <div class="hc-loc">
+          <strong>Chicago, IL</strong>
+          <span>Same-day avail.</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     SERVICES
-══════════════════════════════════════════ -->
+<!-- ══ STRIP ══ -->
+<div class="strip">
+  <div class="strip-item anim-fade-up">
+    <span class="strip-n" data-count="24" data-suffix="/7">24/7</span>
+    <span class="strip-l">Emergency availability</span>
+  </div>
+  <div class="strip-item anim-fade-up anim-delay-1">
+    <span class="strip-n" data-count="500" data-suffix="+">500+</span>
+    <span class="strip-l">Projects completed</span>
+  </div>
+  <div class="strip-item anim-fade-up anim-delay-2">
+    <span class="strip-n">★ 5.0</span>
+    <span class="strip-l">Average customer rating</span>
+  </div>
+</div>
+
+<!-- ══ SERVICES ══ -->
 <section id="services" class="section">
   <div class="wrap">
-    <div class="section-head">
-      <div class="section-label" data-i18n="services_title">Services</div>
-      <h2 class="section-h2" data-i18n="services_h2">What We Do</h2>
+    <div class="s-top">
+      <div>
+        <div class="s-eyebrow">Services</div>
+        <h2 class="s-h2">What We Do</h2>
+      </div>
+      <p class="s-note">Professional HVAC services for homes and businesses across Chicago and suburbs.</p>
     </div>
-
-    <div class="services-grid">
-      <article class="svc-card">
-        <div class="svc-icon">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="8" y="6" width="24" height="28" rx="3" stroke="currentColor" stroke-width="2"/><rect x="12" y="10" width="16" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="22" x2="28" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="26" x2="22" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <div class="svc-list">
+      <div class="svc-row anim-slide-right">
+        <div class="svc-num">01</div>
+        <div class="svc-main">
+          <div class="svc-name">HVAC Installation</div>
+          <div class="svc-desc">Properly sized systems, installed right the first time.</div>
         </div>
-        <h3 data-i18n="svc_install_title">HVAC Installation</h3>
-        <p data-i18n="svc_install_text">Properly sized and professionally installed systems that run efficiently and keep your home comfortable all year.</p>
-        <ul>
-          <li data-i18n="svc_install_li1">New furnace and AC installation</li>
-          <li data-i18n="svc_install_li2">System replacement and upgrades</li>
-          <li data-i18n="svc_install_li3">Thermostat & control wiring</li>
-          <li data-i18n="svc_install_li4">Ductwork modifications</li>
+        <ul class="svc-items">
+          <li>New furnace and AC installation</li>
+          <li>System replacement and upgrades</li>
+          <li>Thermostat & control wiring</li>
+          <li>Ductwork modifications</li>
         </ul>
-      </article>
-
-      <article class="svc-card svc-card--accent">
-        <div class="svc-icon">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="10" stroke="currentColor" stroke-width="2"/><path d="M20 14v6l4 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 20H5M35 20h-3M20 8V5M20 35v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="svc-icon">🔧</div>
+      </div>
+      <div class="svc-row anim-slide-right anim-delay-1">
+        <div class="svc-num">02</div>
+        <div class="svc-main">
+          <div class="svc-name">Repair & Diagnostics</div>
+          <div class="svc-desc">We find the cause and fix it right — fast.</div>
         </div>
-        <h3 data-i18n="svc_repair_title">Repair & Diagnostics</h3>
-        <p data-i18n="svc_repair_text">System stopped working, blowing cold air, or making strange noises? We find the cause and fix it right.</p>
-        <ul>
-          <li data-i18n="svc_repair_li1">No-heat / no-cool calls</li>
-          <li data-i18n="svc_repair_li2">Electrical & control issues</li>
-          <li data-i18n="svc_repair_li3">Airflow and duct problems</li>
-          <li data-i18n="svc_repair_li4">Emergency troubleshooting</li>
+        <ul class="svc-items">
+          <li>No-heat / no-cool calls</li>
+          <li>Electrical & control issues</li>
+          <li>Airflow and duct problems</li>
+          <li>Emergency troubleshooting</li>
         </ul>
-      </article>
-
-      <article class="svc-card">
-        <div class="svc-icon">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M20 6c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M28 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" stroke="currentColor" stroke-width="2"/></svg>
+        <div class="svc-icon">⚡</div>
+      </div>
+      <div class="svc-row anim-slide-right anim-delay-2">
+        <div class="svc-num">03</div>
+        <div class="svc-main">
+          <div class="svc-name">Comfort Upgrades</div>
+          <div class="svc-desc">Improve efficiency, air quality and comfort.</div>
         </div>
-        <h3 data-i18n="svc_upgrades_title">Comfort Upgrades</h3>
-        <p data-i18n="svc_upgrades_text">Improve comfort, air quality, and energy efficiency with professional add-ons and fine-tuning.</p>
-        <ul>
-          <li data-i18n="svc_upgrades_li1">Humidifiers & air cleaners</li>
-          <li data-i18n="svc_upgrades_li2">Zoning & smart thermostats</li>
-          <li data-i18n="svc_upgrades_li3">System balancing & air sealing</li>
-          <li data-i18n="svc_upgrades_li4">Maintenance & seasonal checkups</li>
+        <ul class="svc-items">
+          <li>Humidifiers & air cleaners</li>
+          <li>Zoning & smart thermostats</li>
+          <li>System balancing & air sealing</li>
+          <li>Maintenance & seasonal checkups</li>
         </ul>
-      </article>
+        <div class="svc-icon">✨</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     GALLERY
-══════════════════════════════════════════ -->
-<section id="gallery" class="section section--dark">
+<!-- ══ GALLERY ══ -->
+<section id="gallery" class="section section--b">
   <div class="wrap">
-    <div class="section-head">
-      <div class="section-label" data-i18n="gallery_title">Gallery</div>
-      <h2 class="section-h2" data-i18n="gallery_h2">Our Work</h2>
+    <div class="s-top">
+      <div>
+        <div class="s-eyebrow">Gallery</div>
+        <h2 class="s-h2">Our Work</h2>
+      </div>
     </div>
-
-    <div class="gallery-grid" id="galleryGrid">
-      <!-- populated by JS from gallery-data.json or fallback array -->
-    </div>
-
+    <div class="gallery-grid" id="galleryGrid"></div>
     <div class="gallery-more-wrap">
-      <button class="btn-ghost" id="galleryMoreBtn" style="display:none" data-i18n="gallery_show_more">Show all photos</button>
+      <button class="btn-ghost" id="galleryMoreBtn" style="display:none">Show all photos</button>
     </div>
   </div>
 </section>
 
-<!-- Gallery Lightbox -->
+<!-- Lightbox -->
 <div class="lightbox" id="lightbox">
-  <button class="lb-close" id="lbClose">&#10005;</button>
+  <button class="lb-close" id="lbClose">✕</button>
   <button class="lb-arrow lb-prev" id="lbPrev">&#10094;</button>
   <button class="lb-arrow lb-next" id="lbNext">&#10095;</button>
   <img class="lb-img" id="lbImg" src="" alt="">
   <div class="lb-caption" id="lbCaption"></div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     WHY US
-══════════════════════════════════════════ -->
+<!-- ══ WHY ══ -->
 <section id="why" class="section">
   <div class="wrap">
-    <div class="section-head">
-      <div class="section-label" data-i18n="why_title">Why Choose Us</div>
-      <h2 class="section-h2" data-i18n="why_h2">The Frost Hawk Difference</h2>
+    <div class="s-top">
+      <div>
+        <div class="s-eyebrow">Why Choose Us</div>
+        <h2 class="s-h2">The Difference</h2>
+      </div>
     </div>
-
-    <div class="why-grid">
-      <div class="why-card">
-        <div class="why-num">01</div>
-        <h3 data-i18n="why_prof_title">Professional Work</h3>
-        <p data-i18n="why_prof_text">Clean installs, tight ductwork, correct wiring, and respect for your home. We treat every project as if it is our own house.</p>
+    <div class="why-layout">
+      <div class="why-quote-card anim-fade-up">
+        <blockquote class="why-quote">"We treat every project as if it's our own home. Clean work, correct wiring, tight ductwork — and we leave the place cleaner than we found it."</blockquote>
+        <div class="why-sig">— Frost Hawk team, Chicago IL</div>
       </div>
-      <div class="why-card">
-        <div class="why-num">02</div>
-        <h3 data-i18n="why_comm_title">Clear Communication</h3>
-        <p data-i18n="why_comm_text">You always know what is being done, why, and how much it costs. No hidden fees, no surprise extras.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-num">03</div>
-        <h3 data-i18n="why_fast_title">Fast Response</h3>
-        <p data-i18n="why_fast_text">When there is no heat or cooling, every hour matters. We do our best to provide same-day or next-day service whenever possible.</p>
+      <div class="why-items">
+        <div class="why-item anim-slide-right">
+          <div class="why-n">01</div>
+          <div>
+            <div class="why-h">Professional Work</div>
+            <div class="why-p">Clean installs, tight ductwork, correct wiring and respect for your home — every single time.</div>
+          </div>
+        </div>
+        <div class="why-item anim-slide-right anim-delay-1">
+          <div class="why-n">02</div>
+          <div>
+            <div class="why-h">Clear Communication</div>
+            <div class="why-p">You always know what's being done, why, and how much it costs. No hidden fees, ever.</div>
+          </div>
+        </div>
+        <div class="why-item anim-slide-right anim-delay-2">
+          <div class="why-n">03</div>
+          <div>
+            <div class="why-h">Fast Response</div>
+            <div class="why-p">No heat or cooling? Every hour matters. We do our best to get there same-day.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     CONTACT
-══════════════════════════════════════════ -->
-<section id="contact" class="section section--dark">
+<!-- ══ CONTACT ══ -->
+<section id="contact" class="section section--b">
   <div class="wrap">
-    <div class="section-head">
-      <div class="section-label" data-i18n="contact_title">Contact</div>
-      <h2 class="section-h2" data-i18n="contact_h2">Get In Touch</h2>
-    </div>
-
-    <div class="contact-grid">
-      <div class="contact-info">
-        <a href="tel:+17736470598" class="contact-item contact-item--big">
-          <div class="ci-icon">☎</div>
-          <div>
-            <div class="ci-label" data-i18n="contact_call_label">Call / Text</div>
-            <div class="ci-val">(773) 647-0598</div>
-          </div>
-        </a>
-        <a href="mailto:contact@frosthawkhvac.com" class="contact-item">
-          <div class="ci-icon">✉</div>
-          <div>
-            <div class="ci-label" data-i18n="contact_email_label">Email</div>
-            <div class="ci-val">contact@frosthawkhvac.com</div>
-          </div>
-        </a>
-        <div class="contact-item">
-          <div class="ci-icon">📍</div>
-          <div>
-            <div class="ci-label" data-i18n="contact_area_label">Service Area</div>
-            <div class="ci-val" data-i18n="contact_area_text">Chicago, IL & nearby suburbs</div>
-          </div>
-        </div>
-        <p class="contact-note" data-i18n="contact_note">For fastest response, include photos of your equipment, model numbers, and a short description of the problem.</p>
+    <div class="s-top">
+      <div>
+        <div class="s-eyebrow">Contact</div>
+        <h2 class="s-h2">Get In Touch</h2>
       </div>
-
-      <div class="contact-form-wrap">
-        <h3 data-i18n="form_title">Quick Request</h3>
-        <form id="contactForm" class="contact-form">
-          <div class="form-row">
-            <label>
-              <span data-i18n="form_name_label">Name</span>
-              <input type="text" name="name" required data-i18n-placeholder="form_name_ph" placeholder="Your name">
-            </label>
-            <label>
-              <span data-i18n="form_phone_label">Phone</span>
-              <input type="tel" name="phone" required data-i18n-placeholder="form_phone_ph" placeholder="Your phone">
-            </label>
+    </div>
+    <div class="contact-layout">
+      <div class="contact-left anim-fade-up">
+        <div class="contact-big">
+          <div class="cb-label">Call or Text — 24/7</div>
+          <a href="tel:+17736470598" class="cb-num">(773) 647-0598</a>
+          <div class="cb-sub">Fastest way to reach us. Same-day when available.</div>
+        </div>
+        <a href="mailto:contact@frosthawkhvac.com" class="ci">
+          <div class="ci-icon">✉</div>
+          <div><div class="ci-l">Email</div><div class="ci-v">contact@frosthawkhvac.com</div></div>
+        </a>
+        <div class="ci">
+          <div class="ci-icon">📍</div>
+          <div><div class="ci-l">Service Area</div><div class="ci-v">Chicago, IL & nearby suburbs</div></div>
+        </div>
+        <p class="contact-note">For fastest response, include photos of your equipment, model numbers, and a short description of the problem.</p>
+      </div>
+      <div class="form-wrap anim-fade-up anim-delay-1">
+        <h3 class="form-h">Quick Request</h3>
+        <p class="form-sub">We'll get back to you as soon as possible.</p>
+        <form id="contactForm">
+          <div class="f2">
+            <label><span>Name</span><input class="finput" type="text" name="name" required placeholder="Your name"></label>
+            <label><span>Phone</span><input class="finput" type="tel" name="phone" required placeholder="Your phone"></label>
           </div>
-          <label>
-            <span data-i18n="form_msg_label">Message</span>
-            <textarea name="message" required data-i18n-placeholder="form_msg_ph" placeholder="Installation, no-heat issue, maintenance..."></textarea>
-          </label>
-          <button type="submit" class="btn-primary" data-i18n="form_btn">Send Request</button>
+          <label><span>Message</span><textarea class="finput" name="message" required placeholder="Installation, no-heat issue, maintenance..."></textarea></label>
+          <button type="submit" class="btn-cta form-btn">Send Request →</button>
           <div class="form-status" id="formStatus"></div>
         </form>
       </div>
@@ -303,19 +294,17 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════ -->
-<footer class="site-footer">
-  <div class="wrap footer-wrap">
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+  <div class="wrap footer-inner">
     <div class="footer-logo">
       <div class="logo-ring logo-ring--sm">
         <img src="logo-frost-hawk.png" alt="" onerror="this.style.display='none'">
       </div>
-      <span class="logo-name" data-i18n="brand_name">FROST HAWK</span>
+      <span class="logo-name">FROST HAWK</span>
     </div>
-    <p class="footer-copy"><span data-i18n="footer_text">© <span id="year"></span> Frost Hawk Heating & Cooling. All rights reserved.</span></p>
-    <a href="/admin.html" class="footer-admin-link" data-i18n="admin_link">Admin</a>
+    <p class="footer-copy">© <span id="year"></span> Frost Hawk Heating & Cooling. All rights reserved.</p>
+    <a href="/admin.html" class="footer-admin">Admin</a>
   </div>
 </footer>
 
