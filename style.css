@@ -217,6 +217,12 @@ textarea.finput { min-height: 88px; border-radius: 7px; resize: vertical; displa
 
 /* ── MOBILE ── */
 .mob-bar { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba(7,8,15,0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 8px 14px; flex-direction: column; gap: 7px; }
+.mob-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mob-top .logo { gap: 8px; }
+.mob-top .logo-name { font-size: 0.95rem; }
+.mob-top .logo-tag { font-size: 0.52rem; }
+.mob-phone-btn { background: var(--orange); color: #0a0500; font-weight: 700; font-size: 0.75rem; padding: 7px 12px; border-radius: 7px; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
+.mob-phone-btn:hover { background: var(--orange2); }
 .mob-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
 .mob-nav a { padding: 8px 6px; border-radius: 7px; border: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); background: rgba(255,255,255,0.03); white-space: nowrap; text-align: center; transition: color 0.15s; }
 .mob-nav a:hover { color: var(--txt); }
