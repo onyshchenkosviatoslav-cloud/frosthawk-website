@@ -233,3 +233,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
   }
 });
+
+/* ── SITE CONTENT LOADER ── */
+async function loadSiteContent() {
+  try {
+    const r = await fetch('site-content.json?t=' + Date.now());
+    if (!r.ok) return;
+    const c = await r.json();
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.textContent = val; };
+    set('sc-hero-eyebrow', c.hero_eyebrow);
+    set('sc-hero-line1', c.hero_line1);
+    set('sc-hero-line2', c.hero_line2);
+    set('sc-hero-line3', c.hero_line3);
+    set('sc-hero-desc', c.hero_desc);
+    document.querySelectorAll('.sc-btn-call').forEach(el => { if (c.hero_btn_call) el.textContent = c.hero_btn_call; });
+    document.querySelectorAll('.sc-btn-quote').forEach(el => { if (c.hero_btn_quote) el.textContent = c.hero_btn_quote; });
+    set('sc-strip1-num', c.strip_stat1_num);
+    set('sc-strip1-label', c.strip_stat1_label);
+    set('sc-strip2-num', c.strip_stat2_num);
+    set('sc-strip2-label', c.strip_stat2_label);
+    set('sc-strip3-num', c.strip_stat3_num);
+    set('sc-strip3-label', c.strip_stat3_label);
+    document.querySelectorAll('.sc-phone').forEach(el => { if (c.contact_phone) el.textContent = c.contact_phone; });
+    document.querySelectorAll('.sc-phone-link').forEach(el => { if (c.contact_phone_href) el.href = c.contact_phone_href; });
+    set('sc-email', c.contact_email);
+    document.querySelectorAll('.sc-email-link').forEach(el => { if (c.contact_email) el.href = 'mailto:' + c.contact_email; });
+    set('sc-area', c.contact_area);
+    set('sc-contact-note', c.contact_note);
+    set('sc-why-quote', c.why_quote);
+    set('sc-why-sig', c.why_sig);
+    set('sc-footer-copy', c.footer_copy);
+  } catch(_) {}
+}
+document.addEventListener('DOMContentLoaded', () => { loadSiteContent(); });
