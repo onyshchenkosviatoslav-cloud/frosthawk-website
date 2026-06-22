@@ -3,1976 +3,1726 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Конструктор схем — Frost Hawk HVAC</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Схеми — Frost Hawk HVAC</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  :root{
-    --bg:#0a0e13;
-    --panel:#11161d;
-    --panel2:#161d27;
-    --panel3:#1c2530;
-    --line:#222b36;
-    --ice:#4fd1ff;
-    --ice-dim:#1f5d72;
-    --ember:#ff8a4c;
-    --text:#e9eef3;
-    --text-dim:#8fa0ad;
-    --danger:#ff5d5d;
-    --good:#4fdc8f;
-    --canvas-bg:#0c1219;
-    --radius:10px;
-    --safe-b: env(safe-area-inset-bottom, 0px);
-  }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:'DM Sans',sans-serif;
-    overflow:hidden; position:fixed; inset:0;
-    display:flex; flex-direction:column;
-  }
-  h1,h2,h3,.disp{font-family:'Bebas Neue',sans-serif; letter-spacing:.04em;}
-  button{font-family:inherit; cursor:pointer;}
-  input,select{font-family:inherit;}
+:root{
+  --bg:#09111a; --panel:#0f1922; --panel2:#16232f; --panel3:#1c2e3e;
+  --line:#1e2f40; --ice:#4fd1ff; --ice2:#1a4d62; --ember:#ff8a4c;
+  --text:#dde8f0; --dim:#6b8499; --danger:#ff5555; --good:#4fdc8f;
+  --sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif}
+button,input,select{font-family:inherit;cursor:pointer}
+h1,h2,.bb{font-family:'Bebas Neue',sans-serif;letter-spacing:.04em}
 
-  /* ---------- TOPBAR ---------- */
-  #topbar{
-    display:flex; align-items:center; gap:6px;
-    padding:8px 10px; background:var(--panel);
-    border-bottom:1px solid var(--line); flex:0 0 auto; z-index:30;
-  }
-  #topbar .brand{display:flex; align-items:center; gap:6px; flex:0 0 auto;}
-  #topbar .brand .ico{width:24px;height:24px;flex:0 0 auto;}
-  #topbar h1{font-size:17px; margin:0; line-height:1; color:var(--ice); white-space:nowrap;}
-  #projName{
-    background:transparent; border:1px solid transparent; color:var(--text);
-    font-size:13px; font-weight:600; padding:6px 6px; border-radius:8px;
-    min-width:0; max-width:120px; flex:1 1 auto;
-  }
-  #projName:focus{border-color:var(--ice-dim); outline:none; background:var(--panel2);}
-  .iconbtn{
-    background:var(--panel2); border:1px solid var(--line); color:var(--text);
-    border-radius:8px; padding:7px 8px; font-size:11px; font-weight:600;
-    display:flex; align-items:center; gap:4px; white-space:nowrap;
-  }
-  .iconbtn:active{transform:scale(.96);}
-  .iconbtn.ghost{background:transparent;}
-  .iconbtn svg{width:16px;height:16px;flex:0 0 auto;}
-  #saveDot{width:7px;height:7px;border-radius:50%; background:var(--good); flex:0 0 auto; transition:background .2s;}
-  #saveDot.busy{background:var(--ember);}
-  #saveDot.err{background:var(--danger);}
-  #topRight{display:flex; gap:4px; flex:0 0 auto; overflow-x:auto; -webkit-overflow-scrolling:touch;}
-  @media (max-width:400px){
-    #topbar h1{display:none;}
-    #projName{max-width:90px;}
-  }
+/* ── LAYOUT ── */
+#app{display:flex;flex-direction:column;height:100%;height:100dvh}
+#topbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:6px;
+  padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line);
+  z-index:30;min-height:50px;
+}
+#topbar h1{font-size:18px;color:var(--ice);white-space:nowrap;flex:0 0 auto}
+#projName{
+  background:transparent;border:1px solid transparent;color:var(--text);
+  font-size:13px;font-weight:600;padding:5px 6px;border-radius:7px;
+  flex:1 1 auto;min-width:0;max-width:130px;
+}
+#projName:focus{border-color:var(--ice2);outline:none;background:var(--panel2)}
+.ib{
+  flex:0 0 auto;background:var(--panel2);border:1px solid var(--line);
+  color:var(--text);border-radius:7px;padding:6px 9px;font-size:11px;
+  font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:4px
+}
+.ib:active{opacity:.7}
+.ib.ghost{background:transparent;border-color:transparent}
+#saveDot{width:7px;height:7px;border-radius:50%;background:var(--good);flex:0 0 auto;transition:background .2s}
+#saveDot.busy{background:var(--ember)}
 
-  /* ---------- LAYOUT ---------- */
-  #workspace{flex:1 1 auto; display:flex; min-height:0; position:relative;}
-  #palette{
-    flex:0 0 auto; background:var(--panel); border-right:1px solid var(--line);
-    overflow-y:auto; padding:10px 8px; width:120px;
-  }
-  .pgroup{margin-bottom:14px;}
-  .pgroup h3{font-size:11px; color:var(--text-dim); margin:0 0 6px 2px; font-weight:600; letter-spacing:.06em; font-family:'DM Sans',sans-serif; text-transform:uppercase;}
-  .pitem{
-    display:flex; flex-direction:column; align-items:center; gap:4px;
-    background:var(--panel2); border:1px solid var(--line); border-radius:10px;
-    padding:8px 4px; margin-bottom:6px; width:100%;
-  }
-  .pitem .swatch{width:38px;height:38px; display:flex; align-items:center; justify-content:center;}
-  .pitem .lbl{font-size:9.5px; color:var(--text-dim); text-align:center; line-height:1.15; font-weight:600;}
-  .pitem.active{border-color:var(--ice); box-shadow:0 0 0 2px rgba(79,209,255,.25);}
-  .pitem:active{transform:scale(.96);}
+/* ── WORKSPACE ── */
+#workspace{flex:1 1 auto;display:flex;min-height:0;position:relative}
 
-  #canvasWrap{
-    flex:1 1 auto; overflow:auto; position:relative; background:var(--canvas-bg);
-    touch-action:pan-x pan-y;
-  }
-  #board{display:block; touch-action:pan-x pan-y;}
-  .node, .wirehit, .handle, .terminal{touch-action:none;}
-  #emptyHint{
-    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    color:var(--text-dim); font-size:14px; text-align:center; pointer-events:none;
-    width:240px; line-height:1.5;
-  }
+/* ── PALETTE ── */
+#palette{
+  flex:0 0 72px;background:var(--panel);border-right:1px solid var(--line);
+  overflow-y:auto;overflow-x:hidden;padding:8px 4px;
+}
+.pg{margin-bottom:10px}
+.pg-title{font-size:9px;color:var(--dim);font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;text-align:center;margin-bottom:4px;padding:0 2px}
+.pi{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  padding:6px 2px;margin-bottom:4px;width:100%;
+}
+.pi .icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.pi .lbl{font-size:8px;color:var(--dim);text-align:center;line-height:1.2;font-weight:600}
+.pi.armed{border-color:var(--ice);box-shadow:0 0 0 2px rgba(79,209,255,.2)}
+.pi:active{transform:scale(.95)}
+.pi-add{border-style:dashed;cursor:pointer}
 
-  #inspector{
-    position:fixed; left:0; right:0; bottom:0; background:var(--panel);
-    border-top:1px solid var(--line); border-radius:14px 14px 0 0;
-    padding:14px 16px calc(14px + var(--safe-b)); transform:translateY(110%);
-    transition:transform .22s ease; z-index:40; box-shadow:0 -8px 30px rgba(0,0,0,.5);
-    max-height:60vh; overflow-y:auto;
-  }
-  #inspector.open{transform:translateY(0);}
-  #inspector .row{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
-  #inspector label{font-size:11px; color:var(--text-dim); font-weight:600; text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px;}
-  #inspector input[type=text], #inspector select{
-    width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--text);
-    border-radius:8px; padding:9px 10px; font-size:14px;
-  }
-  #inspector input[type=text]:focus, #inspector select:focus{outline:none; border-color:var(--ice-dim);}
-  #inspHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
-  #inspHead .title{font-size:18px; font-family:'Bebas Neue',sans-serif; color:var(--ice);}
-  .swrow{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px;}
-  .swdot{width:30px;height:30px;border-radius:50%; border:2px solid transparent; flex:0 0 auto;}
-  .swdot.sel{border-color:var(--ice);}
-  .btnrow{display:flex; gap:8px; margin-top:4px; flex-wrap:wrap;}
-  .btn{
-    border:1px solid var(--line); background:var(--panel2); color:var(--text);
-    border-radius:8px; padding:9px 14px; font-size:13px; font-weight:600; flex:1 1 auto;
-    display:flex; align-items:center; justify-content:center; gap:6px;
-  }
-  .btn:active{transform:scale(.97);}
-  .btn.danger{background:rgba(255,93,93,.12); border-color:rgba(255,93,93,.4); color:var(--danger);}
-  .btn.primary{background:var(--ice); border-color:var(--ice); color:#04222b;}
-  .btn.ghost{background:transparent;}
+/* ── VIEWPORT ── */
+#viewport{flex:1 1 auto;position:relative;overflow:hidden;background:#080f16}
+#board{
+  position:absolute;inset:0;width:100%;height:100%;
+  touch-action:none; /* CRITICAL for iOS */
+  user-select:none;-webkit-user-select:none;
+  cursor:default;
+}
+#statusBanner{
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  background:var(--panel);border:1px solid var(--ice2);color:var(--ice);
+  padding:7px 12px;border-radius:30px;font-size:12px;font-weight:600;
+  display:none;align-items:center;gap:10px;z-index:20;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);max-width:88%;
+}
+#statusBanner.on{display:flex}
+#statusBanner button{background:rgba(255,85,85,.15);color:var(--danger);
+  border:none;border-radius:14px;padding:4px 10px;font-size:11px;font-weight:700}
+#legendBtn{
+  position:absolute;top:10px;right:10px;z-index:21;
+  width:32px;height:32px;border-radius:50%;background:var(--panel);
+  border:1px solid var(--line);font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.4)
+}
+#legendPanel{
+  position:absolute;top:48px;right:10px;z-index:21;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;min-width:170px;max-height:55vh;overflow-y:auto;
+  font-size:11px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none
+}
+#legendPanel.on{display:block}
+.leg-group{margin-bottom:7px}
+.leg-t{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--dim);margin-bottom:3px}
+.leg-row{display:flex;align-items:center;gap:6px;padding:2px 0;font-weight:600}
+.leg-sw{width:11px;height:11px;border-radius:2px;flex:0 0 auto;border:1px solid rgba(255,255,255,.18)}
 
-  /* ---------- BOTTOM TOOLBAR ---------- */
-  #toolbar{
-    flex:0 0 auto; display:flex; gap:6px; padding:8px 10px calc(8px + var(--safe-b));
-    background:var(--panel); border-top:1px solid var(--line); overflow-x:auto; z-index:25;
-  }
-  .tbtn{
-    flex:0 0 auto; min-width:58px; background:var(--panel2); border:1px solid var(--line);
-    color:var(--text-dim); border-radius:9px; padding:8px 6px; display:flex; flex-direction:column;
-    align-items:center; gap:3px; font-size:9.5px; font-weight:700; text-transform:uppercase;
-  }
-  .tbtn svg{width:19px;height:19px;}
-  .tbtn.active{border-color:var(--ice); color:var(--ice); background:rgba(79,209,255,.08);}
-  .tbtn:disabled{opacity:.35;}
-  .tbtn.danger-tone{color:var(--danger);}
-  #zoomLbl{font-size:9.5px; color:var(--text-dim); align-self:center; min-width:34px; text-align:center;}
+/* ── TOOLBAR ── */
+#toolbar{
+  flex:0 0 auto;display:flex;gap:5px;padding:7px 8px calc(7px + var(--sb));
+  background:var(--panel);border-top:1px solid var(--line);overflow-x:auto;z-index:25
+}
+.tb{
+  flex:0 0 auto;min-width:52px;background:var(--panel2);border:1px solid var(--line);
+  color:var(--dim);border-radius:8px;padding:7px 5px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:9px;font-weight:700;text-transform:uppercase
+}
+.tb svg{width:18px;height:18px}
+.tb.on{border-color:var(--ice);color:var(--ice);background:rgba(79,209,255,.07)}
+.tb.danger{color:var(--danger)}
+.tb:disabled{opacity:.35}
+#zoomLabel{font-size:9px;color:var(--dim);align-self:center;min-width:32px;text-align:center}
 
-  /* ---------- STATUS BANNER ---------- */
-  #statusBar{
-    position:absolute; top:10px; left:50%; transform:translateX(-50%);
-    background:var(--panel); border:1px solid var(--ice-dim); color:var(--ice);
-    padding:8px 12px; border-radius:30px; font-size:12.5px; font-weight:600;
-    display:none; align-items:center; gap:10px; z-index:20; box-shadow:0 4px 16px rgba(0,0,0,.4);
-    max-width:90%;
-  }
-  #statusBar.show{display:flex;}
-  #statusBar button{background:rgba(255,93,93,.15); color:var(--danger); border:none; border-radius:14px; padding:4px 10px; font-size:11px; font-weight:700;}
+/* ── INSPECTOR ── */
+#inspector{
+  position:fixed;left:0;right:0;bottom:0;background:var(--panel);
+  border-top:1px solid var(--line);border-radius:14px 14px 0 0;
+  padding:14px 16px calc(14px + var(--sb));
+  transform:translateY(110%);transition:transform .22s ease;
+  z-index:50;box-shadow:0 -8px 30px rgba(0,0,0,.6);
+  max-height:62vh;overflow-y:auto
+}
+#inspector.on{transform:translateY(0)}
+#insp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+#insp-title{font-size:18px;font-family:'Bebas Neue',sans-serif;color:var(--ice)}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.col{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.lbl{font-size:10px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.fi{
+  width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  border-radius:8px;padding:9px 10px;font-size:14px
+}
+.fi:focus{outline:none;border-color:var(--ice2)}
+.btn-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
+.btn{
+  flex:1 1 auto;background:var(--panel2);border:1px solid var(--line);
+  color:var(--text);border-radius:8px;padding:9px 12px;
+  font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px
+}
+.btn:active{opacity:.75}
+.btn.primary{background:var(--ice);border-color:var(--ice);color:#04222b}
+.btn.danger{background:rgba(255,85,85,.12);border-color:rgba(255,85,85,.35);color:var(--danger)}
+.btn.ghost{background:transparent}
+.swatch-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid transparent;flex:0 0 auto}
+.sw.sel{border-color:var(--ice)}
+input[type=color].sw{padding:0;cursor:pointer}
 
-  /* ---------- LEGEND (auto-built key for colors/shapes used in the diagram) ---------- */
-  #legendPanel{
-    position:absolute; top:10px; right:10px; z-index:22;
-    display:flex; flex-direction:column; align-items:flex-end; gap:6px;
-  }
-  #legendToggle{
-    background:var(--panel); border:1px solid var(--line); color:var(--text);
-    width:32px; height:32px; border-radius:50%; font-size:14px; line-height:1;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,.35);
-  }
-  #legendBody{
-    display:none; background:var(--panel); border:1px solid var(--line); border-radius:10px;
-    padding:10px 12px; max-width:200px; max-height:55vh; overflow-y:auto;
-    font-size:11.5px; box-shadow:0 6px 22px rgba(0,0,0,.45);
-  }
-  #legendBody.open{display:block;}
-  .legendGroup{margin-bottom:8px;}
-  .legendGroup:last-child{margin-bottom:0;}
-  .legendTitle{font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px;}
-  .legendRow{display:flex; align-items:center; gap:7px; padding:2.5px 0; font-weight:600; color:var(--text);}
-  .legendSwatch{width:12px; height:12px; border-radius:3px; flex:0 0 auto; border:1px solid rgba(255,255,255,.25);}
-  .legendEmpty{color:var(--text-dim); font-size:11px; max-width:150px;}
+/* ── MODAL ── */
+#modal-layer{
+  position:fixed;inset:0;background:rgba(4,8,12,.75);
+  display:none;align-items:flex-end;justify-content:center;z-index:60;
+  backdrop-filter:blur(3px)
+}
+#modal-layer.on{display:flex}
+.modal-card{
+  background:var(--panel);border-radius:16px 16px 0 0;width:100%;max-width:480px;
+  max-height:88vh;overflow-y:auto;padding:18px 18px calc(18px + var(--sb));
+  border-top:1px solid var(--line)
+}
+@media(min-width:600px){#modal-layer{align-items:center}.modal-card{border-radius:16px}}
+.modal-card h2{font-size:22px;margin-bottom:12px;color:var(--ice);font-family:'Bebas Neue',sans-serif;letter-spacing:.04em}
+.help-text{font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:10px}
+.count-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.count-btn{
+  background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  padding:9px 4px;display:flex;flex-direction:column;align-items:center;gap:5px
+}
+.count-btn:active{transform:scale(.95)}
+.count-btn .n{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text)}
+.dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;max-width:50px}
+.dots i{width:6px;height:6px;border-radius:50%;display:inline-block}
+.proj-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.proj-row{
+  display:flex;align-items:center;gap:8px;background:var(--panel2);
+  border:1px solid var(--line);border-radius:9px;padding:10px
+}
+.proj-row .pname{flex:1 1 auto;font-size:14px;font-weight:600}
+.proj-row .pdate{font-size:10px;color:var(--dim)}
+.proj-row button{background:none;border:none;color:var(--dim);padding:4px 7px}
+.proj-row .del-proj{color:var(--danger)}
+.shape-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.shape-btn{
+  background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;color:var(--dim)
+}
+.shape-btn.sel{border-color:var(--ice);color:var(--ice)}
+.terms-list{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+.term-row{display:flex;gap:6px;align-items:center}
+.term-inp{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:7px 9px;font-size:13px}
+.term-del{background:none;border:none;color:var(--danger);font-size:16px;padding:4px 7px}
 
-  /* ---------- MODAL ---------- */
-  #modalLayer{
-    position:fixed; inset:0; background:rgba(4,6,9,.72); display:none;
-    align-items:flex-end; justify-content:center; z-index:60; backdrop-filter:blur(2px);
-  }
-  #modalLayer.show{display:flex;}
-  .modalCard{
-    background:var(--panel); border-radius:16px 16px 0 0; width:100%; max-width:480px;
-    max-height:85vh; overflow-y:auto; padding:18px 18px calc(18px + var(--safe-b));
-    border-top:1px solid var(--line);
-  }
-  @media (min-width:640px){
-    #modalLayer{align-items:center;}
-    .modalCard{border-radius:16px;}
-  }
-  .modalCard h2{font-size:22px; margin:0 0 12px; color:var(--ice);}
-  .countGrid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px;}
-  .countBtn{
-    background:var(--panel2); border:1px solid var(--line); border-radius:10px;
-    padding:10px 4px; display:flex; flex-direction:column; align-items:center; gap:6px;
-  }
-  .countBtn:active{transform:scale(.95);}
-  .countBtn .n{font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--text);}
-  .countBtn .dots{display:flex; gap:2px;}
-  .countBtn .dots i{width:6px;height:6px;border-radius:50%; display:inline-block;}
-  .miniHelp{font-size:12px; color:var(--text-dim); margin-bottom:10px; line-height:1.5;}
-  .customWrap{display:none; border-top:1px solid var(--line); padding-top:12px; margin-top:6px;}
-  .customWrap.show{display:block;}
-  .customWrap .row{display:flex; gap:10px; align-items:center; margin-bottom:10px;}
-  .colorPick{width:46px;height:40px;border-radius:8px;border:1px solid var(--line); background:var(--panel2); padding:0;}
-  .projList{display:flex; flex-direction:column; gap:6px; margin-top:6px;}
-  .projRow{
-    display:flex; align-items:center; gap:8px; background:var(--panel2); border:1px solid var(--line);
-    border-radius:10px; padding:10px 10px;
-  }
-  .projRow .pname{flex:1 1 auto; font-size:14px; font-weight:600;}
-  .projRow .pdate{font-size:10.5px; color:var(--text-dim);}
-  .projRow button{background:transparent; border:none; color:var(--text-dim); padding:6px;}
-  .projRow .del{color:var(--danger);}
+/* ── TOAST ── */
+#toast{
+  position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(16px);
+  background:var(--panel3);border:1px solid var(--line);color:var(--text);
+  padding:8px 16px;border-radius:30px;font-size:12px;font-weight:600;z-index:80;
+  opacity:0;transition:opacity .2s,transform .2s;pointer-events:none
+}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  #toast{
-    position:fixed; left:50%; bottom:90px; transform:translateX(-50%) translateY(20px);
-    background:var(--panel3); border:1px solid var(--line); color:var(--text);
-    padding:9px 16px; border-radius:30px; font-size:12.5px; font-weight:600; z-index:80;
-    opacity:0; transition:opacity .2s, transform .2s; pointer-events:none;
-  }
-  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-
-  /* node / wire svg helpers */
-  .wire-label-bg{fill:#0a0e13; opacity:.88;}
-  .wire-label{fill:#e9eef3; font-size:11px; font-family:'DM Sans',sans-serif; font-weight:600;}
-  .node-abbr{fill:#0a0e13; font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; text-anchor:middle; dominant-baseline:middle; pointer-events:none;}
-  .node-label{fill:#c7d3dc; font-size:11px; font-family:'DM Sans',sans-serif; text-anchor:middle; pointer-events:none;}
-  .node-shape{stroke-width:2;}
-  .node.selected .node-shape{stroke:var(--ice) !important; stroke-width:3;}
-
-  ::-webkit-scrollbar{width:8px; height:8px;}
-  ::-webkit-scrollbar-thumb{background:#2a3440; border-radius:8px;}
+/* ── SVG helpers ── */
+.node-txt{font-family:'DM Sans',sans-serif;font-weight:700;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.wire-label-bg{fill:#08111a;opacity:.9}
+.wire-label-txt{fill:#c8d8e4;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;text-anchor:middle}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#1e3040;border-radius:6px}
 </style>
 </head>
 <body>
+<div id="app">
 
 <div id="topbar">
-  <div class="brand">
-    <svg class="ico" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z" stroke="#4fd1ff" stroke-width="1.6" fill="none"/><path d="M12 7v10M7.5 9.5l9 5M16.5 9.5l-9 5" stroke="#4fd1ff" stroke-width="1.4"/></svg>
-    <h1>СХЕМИ</h1>
-  </div>
+  <a href="admin.html" class="ib ghost" style="color:var(--dim);font-size:12px">← Admin</a>
+  <h1>СХЕМИ</h1>
   <input id="projName" value="Нова схема" maxlength="60">
-  <div id="saveDot" title="Статус збереження"></div>
-  <div id="topRight">
-    <a href="admin.html" class="iconbtn ghost" id="btnBackAdmin" title="Назад до адмінки">← Admin</a>
-    <button class="iconbtn ghost" id="btnFile">⇅ Файл</button>
-    <button class="iconbtn ghost" id="btnProjects">📁 Мої</button>
-    <button class="iconbtn ghost" id="btnNew">＋ Нова</button>
+  <div id="saveDot"></div>
+  <div style="display:flex;gap:4px;flex:0 0 auto;margin-left:auto">
+    <button class="ib ghost" id="btnProjects">📁</button>
+    <button class="ib ghost" id="btnNew">＋</button>
+    <button class="ib ghost" id="btnFile">⇅</button>
   </div>
 </div>
-<input type="file" id="fileImportInput" accept=".json,application/json" style="display:none;">
 
 <div id="workspace">
   <div id="palette"></div>
-
-  <div id="canvasWrap">
-    <div id="statusBar"><span id="statusText"></span><button id="statusCancel">✕</button></div>
-    <div id="legendPanel">
-      <button id="legendToggle" title="Легенда">ℹ️</button>
-      <div id="legendBody"></div>
-    </div>
-    <svg id="board" viewBox="0 0 1700 1100" width="100%" preserveAspectRatio="xMinYMin meet">
+  <div id="viewport">
+    <svg id="board" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
-          <path d="M36 0H0V36" fill="none" stroke="#141c25" stroke-width="1"/>
+        <pattern id="g1" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M40 0H0V40" fill="none" stroke="#0e1a24" stroke-width="1"/>
         </pattern>
-        <pattern id="gridMajor" width="180" height="180" patternUnits="userSpaceOnUse">
-          <rect width="180" height="180" fill="url(#grid)"/>
-          <path d="M180 0H0V180" fill="none" stroke="#1b2630" stroke-width="1.2"/>
+        <pattern id="g2" width="200" height="200" patternUnits="userSpaceOnUse">
+          <rect width="200" height="200" fill="url(#g1)"/>
+          <path d="M200 0H0V200" fill="none" stroke="#132030" stroke-width="1.4"/>
         </pattern>
       </defs>
-      <rect id="bgRect" x="0" y="0" width="1700" height="1100" fill="url(#gridMajor)"></rect>
-      <text id="emptyHintSvg" x="850" y="550" text-anchor="middle" fill="#5b6b78" font-size="20" font-family="DM Sans">Натисни прилад зліва, потім торкнись полотна, щоб розмістити</text>
-      <g id="nodesLayer"></g>
+      <rect id="bg" x="-9999" y="-9999" width="99999" height="99999" fill="url(#g2)"/>
+      <text id="emptyHint" x="1200" y="800" text-anchor="middle" fill="#2a4055" font-size="22" font-family="DM Sans">Обери прилад зліва, потім торкнись полотна</text>
       <g id="wiresLayer"></g>
+      <g id="nodesLayer"></g>
       <g id="handlesLayer"></g>
     </svg>
-  </div>
-
-  <div id="inspector">
-    <div id="inspHead"><div class="title" id="inspTitle">Прилад</div><button class="iconbtn ghost" id="inspClose">✕ Закрити</button></div>
-    <div id="inspBody"></div>
+    <div id="statusBanner"><span id="statusText"></span><button id="statusCancel">✕</button></div>
+    <button id="legendBtn">ℹ️</button>
+    <div id="legendPanel"></div>
   </div>
 </div>
 
 <div id="toolbar">
-  <button class="tbtn active" data-tool="select" id="tSelect">
+  <button class="tb on" id="tSel" title="Вибір">
     <svg viewBox="0 0 24 24" fill="none"><path d="M5 3l5.5 16 2-6.5L19 10 5 3z" fill="currentColor"/></svg>
     Вибір
   </button>
-  <button class="tbtn" id="tCable">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="6" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="18" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M7 7l10 10" stroke="currentColor" stroke-width="1.6"/></svg>
+  <button class="tb" id="tCable" title="Кабель">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="6" r="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="18" r="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 7.5l10 10" stroke="currentColor" stroke-width="1.6"/></svg>
     Кабель
   </button>
-  <button class="tbtn" id="tText">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M5 5h14M12 5v14" stroke="currentColor" stroke-width="1.8"/></svg>
-    Текст
-  </button>
-  <button class="tbtn danger-tone" id="tDelete" disabled>
-    <svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.7"/></svg>
+  <button class="tb danger" id="tDel" disabled title="Видалити">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.6"/></svg>
     Видал.
   </button>
-  <button class="tbtn" id="tUndo">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M7 7L3 11l4 4M3 11h11a6 6 0 010 12h-2" stroke="currentColor" stroke-width="1.7" fill="none"/></svg>
+  <button class="tb" id="tUndo" title="Скасувати">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M7 7L3 11l4 4M3 11h11a6 6 0 010 12h-2" stroke="currentColor" stroke-width="1.6"/></svg>
     Назад
   </button>
-  <button class="tbtn" id="tZoomOut">－<span></span></button>
-  <div id="zoomLbl">100%</div>
-  <button class="tbtn" id="tZoomIn">＋<span></span></button>
-  <button class="tbtn" id="tFit">⤢<span></span>Вид</button>
-  <button class="tbtn" id="tPdf">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M6 2h9l5 5v15H6V2z" stroke="currentColor" stroke-width="1.6"/><path d="M9 13h6M9 16h6M9 10h2" stroke="currentColor" stroke-width="1.6"/></svg>
+  <button class="tb" id="tZoomOut">－</button>
+  <div id="zoomLabel">100%</div>
+  <button class="tb" id="tZoomIn">＋</button>
+  <button class="tb" id="tFit">⤢ Вид</button>
+  <button class="tb" id="tPdf">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 2h9l5 5v15H6V2z" stroke="currentColor" stroke-width="1.5"/><path d="M9 12h6M9 15h6M9 9h2" stroke="currentColor" stroke-width="1.5"/></svg>
     PDF
   </button>
-  <button class="tbtn" id="tHelp">？<span></span>Допом.</button>
+  <button class="tb" id="tHelp">？ Допом.</button>
 </div>
 
-<div id="modalLayer"><div class="modalCard" id="modalCard"></div></div>
+<div id="inspector">
+  <div id="insp-head">
+    <div id="insp-title">Прилад</div>
+    <button class="ib ghost" id="inspClose">✕</button>
+  </div>
+  <div id="insp-body"></div>
+</div>
+
+</div>
+<div id="modal-layer"><div class="modal-card" id="modal-card"></div></div>
 <div id="toast"></div>
+<input type="file" id="fileInput" accept=".json" style="display:none">
 
 <script>
-(function(){
-"use strict";
+(function(){'use strict';
 
-/* ============== DATA / CONFIG ============== */
-const WIRE_COLORS = [
-  {key:'red',    hex:'#e3402f', label:'R · 24В'},
-  {key:'white',  hex:'#f3f1ea', label:'W · Нагрів'},
-  {key:'yellow', hex:'#f4c430', label:'Y · Холод'},
-  {key:'green',  hex:'#3f9142', label:'G · Вент.'},
-  {key:'blue',   hex:'#2f6fb0', label:'C · Спільн.'},
-  {key:'brown',  hex:'#7a4a26', label:'Зона/2-й ст.'},
-  {key:'orange', hex:'#e07b29', label:'O/B · Реверс'},
-  {key:'black',  hex:'#2b2f33', label:'Допом.'}
+// ═══════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════
+const WIRE_COLORS=[
+  {hex:'#e03030',label:'R · 24В'},
+  {hex:'#f0ede4',label:'W · Нагрів'},
+  {hex:'#f4c430',label:'Y · Холод'},
+  {hex:'#3a8f3e',label:'G · Вент.'},
+  {hex:'#2a65b0',label:'C · Спільн.'},
+  {hex:'#7a4a26',label:'Зона / 2-й'},
+  {hex:'#e07830',label:'O/B · Реверс'},
+  {hex:'#404448',label:'Допом.'},
 ];
-
-const TYPE_INFO = {
-  furnace:      {abbr:'ПІЧ', label:'Піч / повітронагрівач', accent:'#ff8a4c', shape:'rect',   w:96,h:64},
-  ac:           {abbr:'AC',  label:'Кондиціонер (AC)',       accent:'#4fd1ff', shape:'rect',   w:96,h:64},
-  coil:         {abbr:'КОЙЛ',label:'Койл (Coil)',            accent:'#4fd1ff', shape:'rect',   w:84,h:56},
-  thermostat:   {abbr:'T',   label:'Термостат',              accent:'#e9eef3', shape:'circle', w:66,h:66},
-  zoneboard:    {abbr:'ZB',  label:'Зонна коробка',          accent:'#b07bff', shape:'hex',    w:104,h:74},
-  damper:       {abbr:'DMP', label:'Демпфер',                accent:'#2bd1a0', shape:'rectRot',w:74,h:42},
-  humidifier:   {abbr:'HUM', label:'Зволожувач',             accent:'#4fd1ff', shape:'diamond',w:66,h:66},
-  humidistat:   {abbr:'HSTAT',label:'Гумідистат',            accent:'#ff6f91', shape:'circle', w:54,h:54},
-  relay:        {abbr:'REL', label:'Реле зволожувача',       accent:'#ffd24f', shape:'rect',   w:58,h:58},
-  transformer:  {abbr:'TR',  label:'Трансформатор',          accent:'#ffd24f', shape:'triangle',w:66,h:66},
-  sensor:       {abbr:'S',   label:'Сенсор зони',            accent:'#5fd96a', shape:'circle', w:42,h:42},
-  outdoorsensor:{abbr:'OAS', label:'Сенсор зовн. повітря',   accent:'#5fe0e0', shape:'circleDash',w:42,h:42},
-  board:        {abbr:'ПЛАТА',label:'Плата з клемами',       accent:'#9bd17f', shape:'board',  w:140,h:70},
-  custom:       {abbr:'?',   label:'Свій блок',              accent:'#9aa7b3', shape:'rectDash',w:92,h:60},
-  note:         {abbr:'',    label:'',                       accent:'#9aa7b3', shape:'none',   w:140,h:28}
+const EQUIP={
+  furnace:      {abbr:'ПІЧ', label:'Піч / повітронагрівач',accent:'#ff8a4c',shape:'rect',    bw:90, bh:60},
+  ac:           {abbr:'AC',  label:'Кондиціонер (AC)',      accent:'#4fd1ff',shape:'rect',    bw:90, bh:60},
+  coil:         {abbr:'КОЙЛ',label:'Койл',                  accent:'#4fd1ff',shape:'rect',    bw:80, bh:54},
+  thermostat:   {abbr:'T',   label:'Термостат',             accent:'#e9eef3',shape:'circle',  bw:64, bh:64},
+  zoneboard:    {abbr:'ZB',  label:'Зонна коробка',         accent:'#b07bff',shape:'hex',     bw:100,bh:70},
+  humidistat:   {abbr:'HSTAT',label:'Гумідистат',           accent:'#ff6f91',shape:'circle',  bw:54, bh:54},
+  transformer:  {abbr:'TR',  label:'Трансформатор',         accent:'#ffd24f',shape:'triangle',bw:64, bh:64},
+  relay:        {abbr:'REL', label:'Реле',                  accent:'#ffd24f',shape:'rect',    bw:58, bh:58},
+  humidifier:   {abbr:'HUM', label:'Зволожувач',            accent:'#4fd1ff',shape:'diamond', bw:64, bh:64},
+  damper:       {abbr:'DMP', label:'Демпфер',               accent:'#2bd1a0',shape:'rectRot', bw:70, bh:40},
+  sensor:       {abbr:'S',   label:'Сенсор зони',           accent:'#5fd96a',shape:'circle',  bw:40, bh:40},
+  outdoorsensor:{abbr:'OAS', label:'Зовн. сенсор',          accent:'#5fe0e0',shape:'circleDash',bw:40,bh:40},
+  board:        {abbr:'ПЛАТА',label:'Плата з клемами',      accent:'#9bd17f',shape:'board',   bw:140,bh:70},
+  custom:       {abbr:'?',   label:'Свій блок',             accent:'#9aa7b3',shape:'rectDash',bw:88, bh:58},
+  note:         {abbr:'',    label:'Нотатка',               accent:'#9aa7b3',shape:'none',    bw:130,bh:28},
 };
-// type keys that ship with the app — used to know which TYPE_INFO entries are user-added custom ones
-const BUILTIN_TYPE_KEYS = Object.keys(TYPE_INFO);
-
-const PALETTE_GROUPS = [
-  {title:'Обладнання', items:['furnace','ac','coil']},
-  {title:'Контроль',   items:['thermostat','zoneboard','transformer','relay','humidistat']},
-  {title:'Сенсори',    items:['sensor','outdoorsensor']},
-  {title:'Плати',      items:['board']},
-  {title:'Інше',       items:['humidifier','damper','custom']}
+const PALETTE_GROUPS=[
+  {title:'Обладнання',items:['furnace','ac','coil']},
+  {title:'Контроль',  items:['thermostat','zoneboard','transformer','relay','humidistat']},
+  {title:'Сенсори',   items:['sensor','outdoorsensor']},
+  {title:'Плати',     items:['board']},
+  {title:'Інше',      items:['humidifier','damper','custom','note']},
+];
+const CUSTOM_SHAPES=[
+  {key:'rect',label:'Прямок.'},
+  {key:'circle',label:'Коло'},
+  {key:'diamond',label:'Ромб'},
+  {key:'triangle',label:'Трикут.'},
+  {key:'hex',label:'Шестик.'},
 ];
 
-/* ============== STATE ============== */
-let state = null;          // current project {id,name,nodes,wires}
-let history = [];
-let tool = 'select';
-let selectedId = null;     // currently selected node/wire id
-let selectedKind = null;   // 'node' | 'wire'
-let pendingCable = null;   // {colors:[{hex,label}]}
-let pendingFromId = null;
-let pendingFromTerm = null; // terminal index on a 'board' node, if connection started from a specific pin
-let customTypes = [];      // user-added equipment types, persisted globally: {key,abbr,label,accent,shape,w,h}
-let dragCtx = null;        // active pointer drag info
-let zoomIdx = 2;
-const ZOOM_STEPS = [60,80,100,130,160,200,260];
-let saveTimer = null;
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let proj=null;      // {id,name,nodes[],wires[]}
+let hist=[];        // undo snapshots
+let customTypes=[]; // [{key,abbr,label,accent,shape,bw,bh}]
+let selId=null, selKind=null; // 'node'|'wire'
+let toolMode='select'; // 'select'|'place'|'cable-from'|'cable-to'
+let armType=null;       // type key being placed
+let pendingCable=null;  // {colors:[{hex,label}]}
+let cableFromId=null;
+let saveTimer=null;
 
-const board = document.getElementById('board');
-const nodesLayer = document.getElementById('nodesLayer');
-const wiresLayer = document.getElementById('wiresLayer');
-const handlesLayer = document.getElementById('handlesLayer');
-const canvasWrap = document.getElementById('canvasWrap');
-const emptyHintSvg = document.getElementById('emptyHintSvg');
-const statusBar = document.getElementById('statusBar');
-const statusText = document.getElementById('statusText');
+// Viewport — SVG viewBox
+// board element fills its container, viewBox controls what's shown
+const board=document.getElementById('board');
+const viewport=document.getElementById('viewport');
+let vb={x:0,y:0,w:1600,h:1000}; // current viewBox
+function setVB(){board.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`)}
+function toSVG(cx,cy){
+  const r=board.getBoundingClientRect();
+  return{x:vb.x+(cx-r.left)/r.width*vb.w, y:vb.y+(cy-r.top)/r.height*vb.h};
+}
+function svgPx(){// how many SVG units = 1 CSS pixel
+  return vb.w/board.getBoundingClientRect().width;
+}
 
-/* ============== STORAGE ABSTRACTION (works inside Claude.ai preview AND once deployed on the real site) ============== */
-const Store = {
-  async get(key){
-    try{
-      if(window.storage && window.storage.get){
-        const r = await window.storage.get(key,false);
-        return r ? r.value : null;
-      }
-    }catch(e){}
-    try{ return localStorage.getItem(key); }catch(e){ return null; }
+// ═══════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════
+const Store={
+  async get(k){
+    try{if(window.storage?.get){const r=await window.storage.get(k,false);return r?.value||null}}catch(e){}
+    try{return localStorage.getItem(k)}catch(e){return null}
   },
-  async set(key, value){
-    try{
-      if(window.storage && window.storage.set){
-        await window.storage.set(key, value, false);
-        return true;
-      }
-    }catch(e){}
-    try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
+  async set(k,v){
+    try{if(window.storage?.set){await window.storage.set(k,v,false);return}}catch(e){}
+    try{localStorage.setItem(k,v)}catch(e){}
   },
-  async del(key){
-    try{ if(window.storage && window.storage.delete){ await window.storage.delete(key,false); } }catch(e){}
-    try{ localStorage.removeItem(key); }catch(e){}
-  }
+  async del(k){
+    try{if(window.storage?.delete){await window.storage.delete(k,false)}}catch(e){}
+    try{localStorage.removeItem(k)}catch(e){}
+  },
 };
-
-function uid(){ return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-
-function blankProject(name){
-  return {id:uid(), name: name||'Нова схема', updatedAt:Date.now(), nodes:[], wires:[]};
+const IDX_KEY='fh-wiring-idx', LAST_KEY='fh-wiring-last', CT_KEY='fh-wiring-ct';
+function projKey(id){return'fh-wiring-p-'+id}
+function uid(){return'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function blankProj(name){
+  return{id:uid(),name:name||'Нова схема',updatedAt:Date.now(),nodes:[],wires:[]};
 }
-
-function getNode(id){ return state.nodes.find(n=>n.id===id); }
-function getWire(id){ return state.wires.find(w=>w.id===id); }
-
-/* ============== DISTINCT COLOR GENERATOR (for user-added equipment) ============== */
-function hexToHue(hex){
-  let r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
-  const max=Math.max(r,g,b), min=Math.min(r,g,b); let h=0;
-  if(max!==min){
-    const d=max-min;
-    if(max===r) h=((g-b)/d)%6; else if(max===g) h=(b-r)/d+2; else h=(r-g)/d+4;
-    h*=60; if(h<0) h+=360;
-  }
-  return h;
-}
-function hslToHex(h,s,l){
-  s/=100; l/=100;
-  const c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2;
-  let r=0,g=0,b=0;
-  if(h<60){r=c;g=x;b=0;} else if(h<120){r=x;g=c;b=0;} else if(h<180){r=0;g=c;b=x;}
-  else if(h<240){r=0;g=x;b=c;} else if(h<300){r=x;g=0;b=c;} else {r=c;g=0;b=x;}
-  const toHex=v=>Math.round((v+m)*255).toString(16).padStart(2,'0');
-  return '#'+toHex(r)+toHex(g)+toHex(b);
-}
-function hueDist(a,b){ const d=Math.abs(a-b)%360; return d>180? 360-d : d; }
-function nextDistinctColor(){
-  const used = Object.values(TYPE_INFO).map(t=>hexToHue(t.accent)).concat(customTypes.map(c=>hexToHue(c.accent)));
-  let best=null, bestScore=-1;
-  for(let i=0;i<36;i++){
-    const hue = (i*137.508 + 17) % 360; // golden-angle spread = maximally even coverage
-    const score = used.length? Math.min(...used.map(u=>hueDist(hue,u))) : 999;
-    if(score>bestScore){ bestScore=score; best=hue; }
-  }
-  return hslToHex(best, 64, 56);
-}
-
-const CUSTOM_SHAPES = [
-  {key:'rect',     label:'Прямокутник'},
-  {key:'circle',   label:'Коло'},
-  {key:'diamond',  label:'Ромб'},
-  {key:'triangle', label:'Трикутник'},
-  {key:'hex',      label:'Шестикутник'}
-];
-
-function registerCustomType(label, shapeKey){
-  const key = 'custom_'+uid();
-  const accent = nextDistinctColor();
-  const abbr = (label.trim().slice(0,5) || 'НОВ').toUpperCase();
-  const entry = {key, abbr, label: label.trim()||'Новий елемент', accent, shape:shapeKey||'rect', w:84, h:60};
-  TYPE_INFO[key] = {abbr:entry.abbr, label:entry.label, accent:entry.accent, shape:entry.shape, w:entry.w, h:entry.h};
-  customTypes.push(entry);
-  saveCustomTypes();
-  buildPalette();
-  return key;
-}
-async function saveCustomTypes(){
-  try{ await Store.set('frosthawk-wiring-customtypes', JSON.stringify(customTypes)); }catch(e){}
-}
+async function loadIdx(){try{const r=await Store.get(IDX_KEY);return r?JSON.parse(r):[]}catch(e){return[]}}
+async function saveIdx(list){await Store.set(IDX_KEY,JSON.stringify(list))}
 async function loadCustomTypes(){
-  try{
-    const raw = await Store.get('frosthawk-wiring-customtypes');
-    customTypes = raw? JSON.parse(raw) : [];
-    customTypes.forEach(c=>{ TYPE_INFO[c.key] = {abbr:c.abbr, label:c.label, accent:c.accent, shape:c.shape, w:c.w, h:c.h}; });
-  }catch(e){ customTypes=[]; }
+  try{const r=await Store.get(CT_KEY);customTypes=r?JSON.parse(r):[];}catch(e){customTypes=[];}
+  customTypes.forEach(c=>{EQUIP[c.key]={abbr:c.abbr,label:c.label,accent:c.accent,shape:c.shape,bw:c.bw,bh:c.bh};});
 }
+async function saveCustomTypes(){await Store.set(CT_KEY,JSON.stringify(customTypes))}
 
-/* ============== TOAST ============== */
-let toastTimer=null;
-function toast(msg){
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.classList.remove('show'), 1800);
+function getNode(id){return proj.nodes.find(n=>n.id===id)}
+function getWire(id){return proj.wires.find(w=>w.id===id)}
+
+// ═══════════════════════════════════════════════════════════
+// GEOMETRY
+// ═══════════════════════════════════════════════════════════
+function nodeDims(n){
+  const e=EQUIP[n.type];
+  const w=n.nodeW!=null?n.nodeW:(n.type==='board'?Math.max(120,(n.terminals||[]).length*34+20):e.bw);
+  const h=n.nodeH!=null?n.nodeH:e.bh;
+  return{w:Math.max(20,w),h:Math.max(14,h)};
 }
+function rot(lx,ly,rad){return{x:lx*Math.cos(rad)-ly*Math.sin(rad),y:lx*Math.sin(rad)+ly*Math.cos(rad)}}
+function nodeTransform(n){return`translate(${n.x},${n.y}) rotate(${n.rotation||0})`}
 
-/* ============== STATUS BAR ============== */
-function setStatus(text, withCancel){
-  statusText.textContent = text;
-  statusBar.classList.add('show');
-  statusBar.querySelector('#statusCancel').style.display = withCancel===false?'none':'inline-block';
+function pointOnBoundary(n,tx,ty){
+  const{w,h}=nodeDims(n);
+  const rx=w/2+8, ry=h/2+8;
+  const rad=-((n.rotation||0)*Math.PI/180);
+  let dx=tx-n.x, dy=ty-n.y;
+  // rotate into local frame
+  const lx=dx*Math.cos(rad)-dy*Math.sin(rad);
+  const ly=dx*Math.sin(rad)+dy*Math.cos(rad);
+  let fx=lx,fy=ly;
+  if(Math.abs(lx)<.001&&Math.abs(ly)<.001){fx=1;fy=0;}
+  const d=Math.sqrt((fx*fx)/(rx*rx)+(fy*fy)/(ry*ry))||1;
+  const t=1/d;
+  const bxl=fx*t, byl=fy*t;
+  // rotate back
+  const radfwd=(n.rotation||0)*Math.PI/180;
+  const br=rot(bxl,byl,radfwd);
+  return{x:n.x+br.x,y:n.y+br.y};
 }
-function clearStatus(){ statusBar.classList.remove('show'); }
-document.getElementById('statusCancel').addEventListener('click', cancelMode);
-
-function cancelMode(){
-  tool='select'; pendingCable=null; pendingFromId=null; pendingFromTerm=null;
-  clearStatus(); refreshToolButtons();
+function terminalPoint(n,idx){
+  const{w,h}=nodeDims(n);
+  const terms=(n.terminals||[]);
+  const cnt=terms.length||1;
+  const lx=-w/2+(w/(cnt+1))*(idx+1);
+  const ly=h/2;
+  const rad=(n.rotation||0)*Math.PI/180;
+  const r=rot(lx,ly,rad);
+  return{x:n.x+r.x,y:n.y+r.y};
 }
-
-/* ============== UNDO ============== */
-function pushHistory(){
-  history.push(JSON.stringify({nodes:state.nodes, wires:state.wires}));
-  if(history.length>40) history.shift();
-}
-function undo(){
-  if(!history.length){ toast('Нічого скасовувати'); return; }
-  const snap = JSON.parse(history.pop());
-  state.nodes = snap.nodes; state.wires = snap.wires;
-  selectedId=null; selectedKind=null; closeInspector();
-  render(); saveDebounced();
-}
-
-/* ============== PALETTE ============== */
-function buildPalette(){
-  const root = document.getElementById('palette');
-  root.innerHTML='';
-  PALETTE_GROUPS.forEach(g=>{
-    const grp = document.createElement('div'); grp.className='pgroup';
-    const h = document.createElement('h3'); h.textContent=g.title; grp.appendChild(h);
-    g.items.forEach(type=>{
-      const info = TYPE_INFO[type];
-      const item = document.createElement('div');
-      item.className='pitem'; item.dataset.type=type;
-      item.innerHTML = `<div class="swatch">${miniIconSvg(type)}</div><div class="lbl">${info.label}</div>`;
-      item.addEventListener('click', ()=>armPlace(type, item));
-      grp.appendChild(item);
-    });
-    root.appendChild(grp);
-  });
-
-  // user-added custom equipment — each keeps its own auto-assigned distinct color
-  const grpCustom = document.createElement('div'); grpCustom.className='pgroup';
-  grpCustom.innerHTML = `<h3>Мої елементи</h3>`;
-  customTypes.forEach(c=>{
-    const item = document.createElement('div');
-    item.className='pitem'; item.dataset.type=c.key;
-    item.innerHTML = `<div class="swatch">${miniIconSvg(c.key)}</div><div class="lbl">${escapeXml(c.label)}</div>`;
-    item.addEventListener('click', ()=>armPlace(c.key, item));
-    grpCustom.appendChild(item);
-  });
-  const addBtn = document.createElement('div');
-  addBtn.className='pitem'; addBtn.style.borderStyle='dashed';
-  addBtn.innerHTML = `<div class="swatch"><svg width="34" height="34" viewBox="-17 -17 34 34"><circle cx="0" cy="0" r="14" fill="none" stroke="#4fd1ff" stroke-width="2" stroke-dasharray="3,3"/><path d="M0 -6V6M-6 0H6" stroke="#4fd1ff" stroke-width="2"/></svg></div><div class="lbl">Додати своє</div>`;
-  addBtn.addEventListener('click', openNewTypeModal);
-  grpCustom.appendChild(addBtn);
-  root.appendChild(grpCustom);
-
-  const grpTxt = document.createElement('div'); grpTxt.className='pgroup';
-  grpTxt.innerHTML = `<h3>Нотатка</h3>`;
-  const item = document.createElement('div');
-  item.className='pitem'; item.dataset.type='note';
-  item.innerHTML = `<div class="swatch">${miniIconSvg('note')}</div><div class="lbl">Текстова мітка</div>`;
-  item.addEventListener('click', ()=>armPlace('note', item));
-  grpTxt.appendChild(item);
-  root.appendChild(grpTxt);
-}
-
-function openNewTypeModal(){
-  const shapeBtns = CUSTOM_SHAPES.map((s,i)=>`<button class="countBtn" data-shape="${s.key}" style="grid-column:span 1;">
-      <span class="swatch" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;">${miniShapePreview(s.key)}</span>
-      <span style="font-size:10px;color:var(--text-dim);">${s.label}</span>
-    </button>`).join('');
-  openModal(`
-    <h2>Новий елемент</h2>
-    <div class="miniHelp">Дай назву своєму обладнанню (наприклад «Бойлер» чи «Насос конденсату»). Колір підбереться автоматично так, щоб не плутався з рештою.</div>
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label style="font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase;display:block;margin-bottom:4px;">Назва</label>
-      <input type="text" id="ntName" placeholder="напр. Бойлер" style="width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:9px 10px;font-size:14px;">
-    </div>
-    <label style="font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase;display:block;margin:10px 0 6px;">Форма</label>
-    <div class="countGrid" id="ntShapeGrid">${shapeBtns}</div>
-    <button class="btn primary" id="ntCreate" style="width:100%;">Створити елемент</button>
-  `);
-  let chosenShape='rect';
-  modalCard.querySelectorAll('#ntShapeGrid .countBtn').forEach(b=>{
-    if(b.dataset.shape==='rect') b.classList.add('active');
-    b.style.borderColor = b.dataset.shape==='rect' ? 'var(--ice)' : '';
-    b.addEventListener('click', ()=>{
-      chosenShape=b.dataset.shape;
-      modalCard.querySelectorAll('#ntShapeGrid .countBtn').forEach(x=>x.style.borderColor='');
-      b.style.borderColor='var(--ice)';
-    });
-  });
-  document.getElementById('ntCreate').addEventListener('click', ()=>{
-    const name = document.getElementById('ntName').value.trim();
-    if(!name){ toast('Введи назву'); return; }
-    const key = registerCustomType(name, chosenShape);
-    closeModal();
-    toast('Додано: '+name);
-    const newItem = document.querySelector(`.pitem[data-type="${key}"]`);
-    if(newItem) armPlace(key, newItem);
-  });
-}
-function miniShapePreview(shapeKey){
-  const c='#4fd1ff';
-  switch(shapeKey){
-    case 'circle': return `<svg width="26" height="26"><circle cx="13" cy="13" r="10" fill="${c}"/></svg>`;
-    case 'diamond': return `<svg width="26" height="26" viewBox="-13 -13 26 26"><polygon points="0,-11 11,0 0,11 -11,0" fill="${c}"/></svg>`;
-    case 'triangle': return `<svg width="26" height="26" viewBox="-13 -13 26 26"><polygon points="0,-11 10,9 -10,9" fill="${c}"/></svg>`;
-    case 'hex': return `<svg width="26" height="26" viewBox="-13 -13 26 26"><polygon points="${hexPoints(11,8)}" fill="${c}"/></svg>`;
-    default: return `<svg width="26" height="26" viewBox="-13 -13 26 26"><rect x="-11" y="-8" width="22" height="16" rx="2" fill="${c}"/></svg>`;
+function wireEndPoint(w,end){
+  const id=w[end+'Id'];
+  if(id){
+    const n=getNode(id); if(!n)return null;
+    const term=w[end+'Term'];
+    if(n.type==='board'&&term!=null&&n.terminals?.[term]!=null){
+      const tp=terminalPoint(n,term);
+      return{x:tp.x,y:tp.y,node:n,isTerminal:true};
+    }
+    return{x:n.x,y:n.y,node:n,isTerminal:false};
   }
+  const p=w[end+'Point'];
+  return p?{x:p.x,y:p.y,node:null}:null;
+}
+function computeWireGeom(w){
+  const A=wireEndPoint(w,'from'), B=wireEndPoint(w,'to');
+  if(!A||!B)return null;
+  const dir=w.bend||B;
+  const dirA=w.bend||A;
+  let p1=A.isTerminal?{x:A.x,y:A.y}:pointOnBoundary(A.node,dir.x,dir.y);
+  let p2=B.isTerminal?{x:B.x,y:B.y}:pointOnBoundary(B.node,dirA.x,dirA.y);
+  // parallel offset for bundle
+  if(!w.bend&&w.fromId&&w.toId&&!A.isTerminal&&!B.isTerminal){
+    const sibs=proj.wires.filter(s=>s.fromId===w.fromId&&s.toId===w.toId&&!s.bend&&s.fromTerm==null&&s.toTerm==null);
+    const idx=sibs.findIndex(s=>s.id===w.id);
+    const off=(idx-(sibs.length-1)/2)*6;
+    if(off){
+      const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.hypot(dx,dy)||1;
+      const nx=-dy/len,ny=dx/len;
+      p1={x:p1.x+nx*off,y:p1.y+ny*off};
+      p2={x:p2.x+nx*off,y:p2.y+ny*off};
+    }
+  }
+  return{p1,p2,mid:w.bend||{x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2}};
+}
+function ptSegDist(px,py,ax,ay,bx,by){
+  const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
+  if(!l2)return Math.hypot(px-ax,py-ay);
+  const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l2));
+  return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));
 }
 
-function miniIconSvg(type){
-  const info = TYPE_INFO[type];
-  const c = info.accent;
-  switch(info.shape){
-    case 'circle': return `<svg width="34" height="34"><circle cx="17" cy="17" r="13" fill="${c}"/></svg>`;
-    case 'circleDash': return `<svg width="34" height="34"><circle cx="17" cy="17" r="13" fill="none" stroke="${c}" stroke-width="2.4" stroke-dasharray="3,3"/></svg>`;
-    case 'hex': return `<svg width="34" height="34" viewBox="-17 -17 34 34"><polygon points="${hexPoints(15,11)}" fill="${c}"/></svg>`;
-    case 'diamond': return `<svg width="34" height="34" viewBox="-17 -17 34 34"><polygon points="0,-15 15,0 0,15 -15,0" fill="${c}"/></svg>`;
-    case 'triangle': return `<svg width="34" height="34" viewBox="-17 -17 34 34"><polygon points="0,-15 14,12 -14,12" fill="${c}"/></svg>`;
-    case 'rectRot': return `<svg width="34" height="34" viewBox="-17 -17 34 34"><rect x="-15" y="-8" width="30" height="16" rx="2" fill="${c}" transform="rotate(22)"/></svg>`;
-    case 'rectDash': return `<svg width="34" height="34" viewBox="-17 -17 34 34"><rect x="-14" y="-10" width="28" height="20" rx="4" fill="none" stroke="${c}" stroke-width="2.4" stroke-dasharray="4,3"/></svg>`;
-    case 'board': return `<svg width="34" height="34" viewBox="-17 -17 34 34"><rect x="-15" y="-10" width="30" height="20" rx="2" fill="${c}"/><circle cx="-9" cy="9" r="2" fill="${c}"/><circle cx="0" cy="9" r="2" fill="${c}"/><circle cx="9" cy="9" r="2" fill="${c}"/></svg>`;
-    case 'none': return `<svg width="34" height="34" viewBox="-17 -17 34 34"><text x="0" y="5" text-anchor="middle" font-size="20" fill="${c}" font-family="DM Sans">Aa</text></svg>`;
-    default: return `<svg width="34" height="34" viewBox="-17 -17 34 34"><rect x="-15" y="-11" width="30" height="22" rx="3" fill="${c}"/></svg>`;
+// ═══════════════════════════════════════════════════════════
+// HIT TESTING  (all in SVG coordinates)
+// ═══════════════════════════════════════════════════════════
+function hitNode(sx,sy){
+  const margin=svgPx()*14;
+  for(let i=proj.nodes.length-1;i>=0;i--){
+    const n=proj.nodes[i];
+    if(n.type==='note'){
+      const{w}=nodeDims(n);
+      if(Math.abs(sx-n.x)<=w/2+margin&&Math.abs(sy-n.y)<=16+margin)return n;
+      continue;
+    }
+    const{w,h}=nodeDims(n);
+    const rad=-((n.rotation||0)*Math.PI/180);
+    const dx=sx-n.x,dy=sy-n.y;
+    const lx=dx*Math.cos(rad)-dy*Math.sin(rad);
+    const ly=dx*Math.sin(rad)+dy*Math.cos(rad);
+    if(Math.abs(lx)<=w/2+margin&&Math.abs(ly)<=h/2+margin)return n;
   }
+  return null;
 }
-function hexPoints(rx,ry){
+function hitWire(sx,sy){
+  const thr=svgPx()*16;
+  for(const w of proj.wires){
+    const g=computeWireGeom(w); if(!g)continue;
+    const d=w.bend
+      ?Math.min(ptSegDist(sx,sy,g.p1.x,g.p1.y,w.bend.x,w.bend.y),
+                ptSegDist(sx,sy,w.bend.x,w.bend.y,g.p2.x,g.p2.y))
+      :ptSegDist(sx,sy,g.p1.x,g.p1.y,g.p2.x,g.p2.y);
+    if(d<thr)return w;
+  }
+  return null;
+}
+// Returns {type,data} or null
+// types: 'resize-right','resize-left','resize-top','resize-bottom','rotate','wire-from','wire-to','wire-bend'
+function hitHandle(sx,sy){
+  const thr=svgPx()*24; // generous hit area for fingers
+  if(selKind==='node'){
+    const n=getNode(selId); if(!n)return null;
+    const{w,h}=nodeDims(n);
+    const rad=(n.rotation||0)*Math.PI/180;
+    // edge handles
+    const edges=[
+      {type:'resize-right', lx:w/2, ly:0},
+      {type:'resize-left',  lx:-w/2,ly:0},
+      {type:'resize-bottom',lx:0,   ly:h/2},
+      {type:'resize-top',   lx:0,   ly:-h/2},
+    ];
+    for(const e of edges){
+      const r=rot(e.lx,e.ly,rad);
+      if(Math.hypot(sx-n.x-r.x,sy-n.y-r.y)<thr)return{type:e.type,node:n};
+    }
+    // rotate handle: above the node
+    const{h:nh}=nodeDims(n);
+    const arm=nh/2+40;
+    const rr=rot(0,-arm,rad);
+    if(Math.hypot(sx-n.x-rr.x,sy-n.y-rr.y)<thr)return{type:'rotate',node:n};
+  }
+  if(selKind==='wire'){
+    const w=getWire(selId); if(!w)return null;
+    const g=computeWireGeom(w); if(!g)return null;
+    if(Math.hypot(sx-g.p1.x,sy-g.p1.y)<thr)return{type:'wire-from',wire:w,geom:g};
+    if(Math.hypot(sx-g.p2.x,sy-g.p2.y)<thr)return{type:'wire-to',  wire:w,geom:g};
+    if(Math.hypot(sx-g.mid.x,sy-g.mid.y)<thr)return{type:'wire-bend',wire:w,geom:g};
+  }
+  return null;
+}
+function findNodeNear(sx,sy,exceptId){
+  const thr=svgPx()*32;
+  let best=null,bestD=Infinity;
+  proj.nodes.forEach(n=>{
+    if(n.id===exceptId||n.type==='note')return;
+    const d=Math.hypot(sx-n.x,sy-n.y);
+    if(d<thr&&d<bestD){bestD=d;best=n;}
+  });
+  if(!best)return null;
+  let term=null;
+  if(best.type==='board'&&best.terminals?.length){
+    let td=Infinity;
+    best.terminals.forEach((_,i)=>{
+      const tp=terminalPoint(best,i);
+      const dd=Math.hypot(sx-tp.x,sy-tp.y);
+      if(dd<td&&dd<thr){td=dd;term=i;}
+    });
+  }
+  return{node:best,term};
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+const nodesLayer=document.getElementById('nodesLayer');
+const wiresLayer=document.getElementById('wiresLayer');
+const handlesLayer=document.getElementById('handlesLayer');
+const emptyHint=document.getElementById('emptyHint');
+const SVG='http://www.w3.org/2000/svg';
+function el(tag,attrs={}){
+  const e=document.createElementNS(SVG,tag);
+  for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);
+  return e;
+}
+function txt(s){return document.createTextNode(s)}
+
+function hexPts(rx,ry){
   const pts=[];
-  for(let i=0;i<6;i++){ const a = Math.PI/180*(60*i-30); pts.push((rx*Math.cos(a)).toFixed(1)+','+(ry*Math.sin(a)).toFixed(1)); }
+  for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-30);pts.push(`${(rx*Math.cos(a)).toFixed(1)},${(ry*Math.sin(a)).toFixed(1)}`);}
   return pts.join(' ');
 }
 
-function armPlace(type, el){
-  document.querySelectorAll('.pitem').forEach(p=>p.classList.remove('active'));
-  if(tool==='place' && pendingPlaceType===type){
-    tool='select'; pendingPlaceType=null; clearStatus(); refreshToolButtons(); return;
-  }
-  el.classList.add('active');
-  pendingPlaceType = type;
-  tool='place';
-  setStatus('Торкнись полотна, щоб розмістити: '+TYPE_INFO[type].label, false);
-  refreshToolButtons();
-}
-let pendingPlaceType=null;
-
-/* ============== NODE RENDERING ============== */
-function nodeDims(node){
-  const info = TYPE_INFO[node.type];
-  let baseW, baseH;
-  if(node.type==='board'){
-    const n = (node.terminals||[]).length || 1;
-    baseW = Math.max(120, n*34+20); baseH = 70;
-  } else {
-    baseW = info.w; baseH = info.h;
-  }
-  // nodeW/nodeH override the base dimensions independently (free resize).
-  // Fall back to old uniform scale for backwards compatibility with saved diagrams.
-  const sc = node.scale || 1;
-  const w = node.nodeW != null ? node.nodeW : baseW * sc;
-  const h = node.nodeH != null ? node.nodeH : baseH * sc;
-  return {w: Math.max(24, w), h: Math.max(18, h), baseW, baseH};
-}
-
-function nodeShapeMarkup(node){
-  const info = TYPE_INFO[node.type];
-  const {w,h} = nodeDims(node);
-  const c = info.accent;
-  switch(info.shape){
-    case 'circle':
-      return `<circle class="node-shape" r="${w/2}" fill="${c}" stroke="#04222b" />`;
-    case 'circleDash':
-      return `<circle class="node-shape" r="${w/2}" fill="${shade(c,0.12)}" stroke="${c}" stroke-dasharray="4,3"/>`;
-    case 'hex':
-      return `<polygon class="node-shape" points="${hexPoints(w/2,h/2)}" fill="${c}" stroke="#04222b"/>`;
-    case 'diamond':
-      return `<polygon class="node-shape" points="0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0" fill="${c}" stroke="#04222b"/>`;
-    case 'triangle':
-      return `<polygon class="node-shape" points="0,${-h/2} ${w/2},${h/2} ${-w/2},${h/2}" fill="${c}" stroke="#04222b"/>`;
-    case 'rectRot':
-      return `<rect class="node-shape" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="5" fill="${c}" stroke="#04222b" transform="rotate(18)"/>`;
-    case 'rectDash':
-      return `<rect class="node-shape" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="8" fill="${shade(c,0.12)}" stroke="${c}" stroke-dasharray="5,4"/>`;
-    case 'none':
-      return '';
-    default:
-      return `<rect class="node-shape" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="8" fill="${c}" stroke="#04222b"/>`;
+function nodeShape(n){
+  const e=EQUIP[n.type],{w,h}=nodeDims(n),c=e.accent;
+  switch(e.shape){
+    case'circle':   return[el('circle',{r:w/2,fill:c,stroke:'#05101a','stroke-width':2})];
+    case'circleDash':return[el('circle',{r:w/2,fill:'none',stroke:c,'stroke-width':2.2,'stroke-dasharray':'4,3'})];
+    case'hex':      return[el('polygon',{points:hexPts(w/2,h/2),fill:c,stroke:'#05101a','stroke-width':2})];
+    case'diamond':  return[el('polygon',{points:`0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0`,fill:c,stroke:'#05101a','stroke-width':2})];
+    case'triangle': return[el('polygon',{points:`0,${-h/2} ${w/2},${h/2} ${-w/2},${h/2}`,fill:c,stroke:'#05101a','stroke-width':2})];
+    case'rectRot':  {const r=el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:4,fill:c,stroke:'#05101a','stroke-width':2,transform:'rotate(18)'});return[r];}
+    case'rectDash': return[el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:7,fill:'none',stroke:c,'stroke-width':2.2,'stroke-dasharray':'5,4'})];
+    case'board':    return buildBoardShape(n);
+    case'none':     return[];
+    default:        return[el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:8,fill:c,stroke:'#05101a','stroke-width':2})];
   }
 }
-function shade(hex, alpha){
-  return hex; // accent fill used directly; dashed shapes use accent at full sat for stroke + same for fill (kept simple/legible)
-}
-
-function terminalPoint(node, idx){
-  const {w,h} = nodeDims(node);
-  const terms = node.terminals||[];
-  const n = terms.length||1;
-  const spacing = w/(n+1);
-  const lx = -w/2 + spacing*(idx+1);
-  const ly = h/2;
-  const rad = ((node.rotation||0)*Math.PI)/180;
-  if(rad){ const wp = rotatePt(lx,ly,rad); return {x:node.x+wp.x, y:node.y+wp.y}; }
-  return {x: node.x+lx, y: node.y+ly};
-}
-
-function boardMarkup(node){
-  const info = TYPE_INFO[node.type];
-  const {w,h,scale} = nodeDims(node);
-  const terms = node.terminals||[];
-  let pins = '';
-  const pw=18*scale, ph=14*scale, fs=(8.6*scale).toFixed(1);
-  terms.forEach((label,i)=>{
-    const lx = -w/2 + (w/(terms.length+1))*(i+1);
-    pins += `<g class="terminal" data-idx="${i}">
-      <rect x="${lx-pw/2}" y="${h/2-6*scale}" width="${pw}" height="${ph}" rx="2" fill="#1a2128" stroke="${info.accent}" stroke-width="1.4"></rect>
-      <text x="${lx}" y="${h/2+4*scale}" text-anchor="middle" font-size="${fs}" font-family="DM Sans" font-weight="700" fill="#cfe0ea" pointer-events="none">${escapeXml(label||'·')}</text>
-    </g>`;
+function buildBoardShape(n){
+  const e=EQUIP[n.type]||EQUIP.board,{w,h}=nodeDims(n),c=e.accent;
+  const parts=[
+    el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:6,fill:'#141e2a',stroke:c,'stroke-width':2}),
+    el('rect',{x:-w/2+5,y:-h/2+5,width:w-10,height:14,rx:3,fill:c,opacity:.2}),
+  ];
+  (n.terminals||[]).forEach((lbl,i)=>{
+    const{w:tw}=nodeDims(n);
+    const cnt=(n.terminals||[]).length||1;
+    const lx=-tw/2+(tw/(cnt+1))*(i+1);
+    const by=h/2;
+    const bg=el('rect',{x:lx-9,y:by-7,width:18,height:14,rx:2,fill:'#0e1a24',stroke:c,'stroke-width':1.4});
+    const t=el('text',{x:lx,y:by+1,'text-anchor':'middle','dominant-baseline':'middle','font-size':8.5,'font-family':'DM Sans','font-weight':700,fill:'#cce0ea','pointer-events':'none'});
+    t.textContent=lbl||'·';
+    parts.push(bg,t);
   });
-  return `<rect class="node-shape" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="6" fill="#161d27" stroke="${info.accent}" stroke-width="2"></rect>
-    <rect x="${-w/2+6}" y="${-h/2+6}" width="${w-12}" height="14" rx="3" fill="${info.accent}" opacity="0.18"></rect>
-    ${pins}`;
+  return parts;
 }
 
-function nodeInnerMarkup(node){
-  const info = TYPE_INFO[node.type];
-  const {w,h,scale} = nodeDims(node);
-  const abbrSize = (13*scale).toFixed(1);
-  if(node.type==='note'){
-    return `
-      <rect x="${-w/2}" y="-14" width="${w}" height="28" rx="6" fill="#0a0e13" stroke="#2a3440" stroke-dasharray="3,3" opacity=".85"></rect>
-      <text x="0" y="4" text-anchor="middle" font-size="${(12.5*scale).toFixed(1)}" font-family="DM Sans" fill="#cfe0ea">${escapeXml(node.label||'Текст…')}</text>
-    `;
-  } else if(node.type==='board'){
-    return boardMarkup(node) +
-      `<text class="node-abbr" y="${-h/2+22}" style="fill:#e9eef3;font-size:${abbrSize}px;">${escapeXml(truncate(node.label||info.abbr,18))}</text>`;
+function buildNodeEl(n){
+  const g=el('g',{transform:nodeTransform(n),'data-id':n.id,class:'nd'+(selId===n.id&&selKind==='node'?' sel':'')});
+  const e=EQUIP[n.type],{w,h}=nodeDims(n);
+  if(n.type==='note'){
+    g.appendChild(el('rect',{x:-w/2,y:-14,width:w,height:28,rx:6,fill:'#09111a',stroke:'#2a3f50','stroke-dasharray':'3,3',opacity:.9}));
+    const t=el('text',{x:0,y:4,'text-anchor':'middle','dominant-baseline':'middle','font-size':12.5,'font-family':'DM Sans',fill:'#c0d4e0','pointer-events':'none'});
+    t.textContent=n.label||'Текст…';
+    g.appendChild(t);
   } else {
-    return nodeShapeMarkup(node) +
-      `<text class="node-abbr" style="font-size:${abbrSize}px;">${info.abbr}</text>`;
-  }
-}
-
-function buildNodeEl(node){
-  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-  g.setAttribute('class','node'+(selectedKind==='node'&&selectedId===node.id?' selected':''));
-  g.setAttribute('transform', nodeTransform(node));
-  g.dataset.id = node.id;
-  g.innerHTML = nodeInnerMarkup(node);
-  attachNodeEvents(g, node);
-  if(node.type==='board'){
-    g.querySelectorAll('.terminal').forEach(t=>attachTerminalEvents(t, node, parseInt(t.dataset.idx,10)));
+    nodeShape(n).forEach(s=>g.appendChild(s));
+    // abbreviation text
+    const t=el('text',{x:0,y:n.type==='board'?-h/2+21:0,'text-anchor':'middle','dominant-baseline':'middle',fill:n.type==='board'?'#dde8f0':'#04222b','font-size':13,'font-family':'DM Sans','font-weight':700,'pointer-events':'none'});
+    t.textContent=trunc(n.label||e.abbr,16);
+    g.appendChild(t);
   }
   return g;
 }
 
-function truncate(s,n){ return s.length>n? s.slice(0,n-1)+'…' : s; }
-function escapeXml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-// Lightweight in-place redraw — used while live-resizing, so we never destroy
-// the node's <g> mid-gesture (that would drop pointer capture, same issue drag had).
-function updateNodeEl(node){
-  const el = nodesLayer.querySelector('.node[data-id="'+node.id+'"]');
-  if(!el) return;
-  el.innerHTML = nodeInnerMarkup(node);
-  if(node.type==='board'){
-    el.querySelectorAll('.terminal').forEach(t=>attachTerminalEvents(t, node, parseInt(t.dataset.idx,10)));
+function buildWireEl(w){
+  const g=el('g',{'data-id':w.id,class:'wr'+(selId===w.id&&selKind==='wire'?' sel':'')});
+  const geo=computeWireGeom(w); if(!geo)return g;
+  const{p1,p2,mid}=geo;
+  const isSel=selId===w.id&&selKind==='wire';
+  const d=w.bend?`M${p1.x},${p1.y}L${w.bend.x},${w.bend.y}L${p2.x},${p2.y}`:`M${p1.x},${p1.y}L${p2.x},${p2.y}`;
+  const attrs={'fill':'none','stroke-linecap':'round','stroke-linejoin':'round'};
+  if(isSel){g.appendChild(el('path',{...attrs,d,stroke:'var(--ice)','stroke-width':10,opacity:.25}));}
+  g.appendChild(el('path',{...attrs,d,stroke:'#000','stroke-width':5.5,opacity:.4}));
+  g.appendChild(el('path',{...attrs,d,stroke:w.color,'stroke-width':3.2}));
+  // wide invisible hit area
+  g.appendChild(el('path',{...attrs,d,stroke:'transparent','stroke-width':24,class:'whit'}));
+  // label only when selected
+  if(isSel&&w.label){
+    const lw=Math.max(18,w.label.length*6.3+10);
+    g.appendChild(el('rect',{class:'wire-label-bg',x:mid.x-lw/2,y:mid.y-9,width:lw,height:16,rx:4}));
+    const lt=el('text',{class:'wire-label-txt',x:mid.x,y:mid.y+3});
+    lt.textContent=w.label;
+    g.appendChild(lt);
   }
-}
-
-/* ============== SVG POINT HELPERS ============== */
-function svgPoint(evt){
-  const pt = board.createSVGPoint();
-  pt.x = evt.clientX; pt.y = evt.clientY;
-  const ctm = board.getScreenCTM();
-  if(!ctm) return {x:0,y:0};
-  const loc = pt.matrixTransform(ctm.inverse());
-  return {x:loc.x, y:loc.y};
-}
-
-function nodeRadii(node){
-  const {w,h} = nodeDims(node);
-  return {rx: w/2 + 7, ry: h/2 + 7};
-}
-function rotatePt(lx,ly,rad){
-  return {x: lx*Math.cos(rad)-ly*Math.sin(rad), y: lx*Math.sin(rad)+ly*Math.cos(rad)};
-}
-function nodeTransform(node){
-  return `translate(${node.x},${node.y}) rotate(${node.rotation||0})`;
-}
-function pointOnBoundary(node, towardX, towardY){
-  const {rx,ry} = nodeRadii(node);
-  let dx = towardX-node.x, dy = towardY-node.y;
-  if(Math.abs(dx)<0.001 && Math.abs(dy)<0.001){ dx=1; dy=0; }
-  const rad = ((node.rotation||0)*Math.PI)/180;
-  if(rad){
-    // work out the boundary in the node's own (unrotated) frame, then rotate the result back
-    const loc = rotatePt(dx,dy,-rad);
-    dx = loc.x; dy = loc.y;
-  }
-  const denom = Math.sqrt((dx*dx)/(rx*rx)+(dy*dy)/(ry*ry)) || 1;
-  const t = 1/denom;
-  let px = dx*t, py = dy*t;
-  if(rad){ const w = rotatePt(px,py,rad); px=w.x; py=w.y; }
-  return {x:node.x+px, y:node.y+py};
-}
-
-/* ============== NODE INTERACTION (drag / tap) ============== */
-function attachNodeEvents(g, node){
-  g.addEventListener('pointerdown', (e)=>{
-    e.stopPropagation();
-    if(tool==='connect-from'){
-      pendingFromId = node.id; pendingFromTerm=null; tool='connect-to';
-      setStatus('Тепер торкнись приладу-призначення (2/2)');
-      return;
-    }
-    if(tool==='connect-to'){
-      if(node.id===pendingFromId && pendingFromTerm==null){ toast('Обери інший прилад'); return; }
-      createCable(pendingFromId, node.id, pendingFromTerm, null);
-      cancelMode();
-      return;
-    }
-    if(tool!=='select') return;
-    g.setPointerCapture(e.pointerId);
-    const start = svgPoint(e);
-    dragCtx = {type:'node', id:node.id, startX:start.x, startY:start.y, ox:node.x, oy:node.y, moved:false, pointerId:e.pointerId};
-    const mv = (ev)=>{
-      const p = svgPoint(ev);
-      const dx=p.x-dragCtx.startX, dy=p.y-dragCtx.startY;
-      if(!dragCtx.moved && Math.hypot(dx,dy)>4){
-        dragCtx.moved=true;
-        pushHistory(); // snapshot BEFORE the move, so Undo restores the pre-drag spot
-      }
-      if(dragCtx.moved){
-        node.x = dragCtx.ox+dx; node.y = dragCtx.oy+dy;
-        // move just this node + its wires directly — NOT a full render() — so we
-        // never destroy the element mid-drag (that would drop pointer capture).
-        g.setAttribute('transform', nodeTransform(node));
-        refreshWiresFor(node.id);
-        buildHandles(); // cheap (handlesLayer only ever holds a couple of small shapes) and keeps any visible resize/rotate/wire handles in sync
-      }
-    };
-    const up = (ev)=>{
-      g.removeEventListener('pointermove', mv);
-      g.removeEventListener('pointerup', up);
-      g.removeEventListener('pointercancel', up);
-      if(dragCtx.moved){ saveDebounced(); render(); }
-      else { selectNode(node.id); }
-      dragCtx=null;
-    };
-    g.addEventListener('pointermove', mv);
-    g.addEventListener('pointerup', up);
-    g.addEventListener('pointercancel', up);
-  });
-}
-
-function attachTerminalEvents(termEl, node, idx){
-  termEl.addEventListener('pointerdown', (e)=>{
-    if(tool==='connect-from'){
-      e.stopPropagation();
-      pendingFromId = node.id; pendingFromTerm = idx; tool='connect-to';
-      setStatus('Тепер торкнись приладу-призначення (2/2)');
-      return;
-    }
-    if(tool==='connect-to'){
-      e.stopPropagation();
-      if(node.id===pendingFromId && pendingFromTerm===idx){ toast('Обери іншу клему'); return; }
-      createCable(pendingFromId, node.id, pendingFromTerm, idx);
-      cancelMode();
-      return;
-    }
-    // in select mode let the event bubble up to the node's own handler (select / drag)
-  });
-}
-
-/* ============== WIRE GEOMETRY ============== */
-function rawEnd(wire, end){
-  const id = wire[end+'Id'];
-  if(id){
-    const n = getNode(id);
-    if(!n) return null;
-    const term = wire[end+'Term'];
-    if(n.type==='board' && term!=null && n.terminals && n.terminals[term]!=null){
-      const tp = terminalPoint(n, term);
-      return {x:tp.x, y:tp.y, node:n, isTerminal:true};
-    }
-    return {x:n.x,y:n.y,node:n};
-  }
-  const p = wire[end+'Point'];
-  return p? {x:p.x,y:p.y,node:null} : null;
-}
-
-function computeGeom(wire){
-  const fromRaw = rawEnd(wire,'from');
-  const toRaw = rawEnd(wire,'to');
-  if(!fromRaw || !toRaw) return null;
-  const bend = wire.bend;
-  const dirForFrom = bend || toRaw;
-  const dirForTo = bend || fromRaw;
-  let p1 = fromRaw.isTerminal ? {x:fromRaw.x,y:fromRaw.y} : (fromRaw.node ? pointOnBoundary(fromRaw.node, dirForFrom.x, dirForFrom.y) : {x:fromRaw.x,y:fromRaw.y});
-  let p2 = toRaw.isTerminal ? {x:toRaw.x,y:toRaw.y} : (toRaw.node ? pointOnBoundary(toRaw.node, dirForTo.x, dirForTo.y) : {x:toRaw.x,y:toRaw.y});
-  let off=0;
-  if(!bend && wire.fromId && wire.toId && !fromRaw.isTerminal && !toRaw.isTerminal){
-    const sibs = state.wires.filter(w=>w.fromId===wire.fromId && w.toId===wire.toId && !w.bend && w.fromTerm==null && w.toTerm==null);
-    const idx = sibs.findIndex(w=>w.id===wire.id);
-    const n = sibs.length;
-    off = (idx-(n-1)/2)*6.5;
-  }
-  if(off){
-    const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1;
-    const nx=-dy/len, ny=dx/len;
-    p1={x:p1.x+nx*off,y:p1.y+ny*off};
-    p2={x:p2.x+nx*off,y:p2.y+ny*off};
-  }
-  return {p1,p2,bend, rawFrom:fromRaw, rawTo:toRaw};
-}
-
-function buildWireEl(wire){
-  const geom = computeGeom(wire);
-  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-  const isSel = selectedKind==='wire'&&selectedId===wire.id;
-  g.setAttribute('class','wire'+(isSel?' selected':''));
-  g.dataset.id = wire.id;
-  if(!geom){ return g; }
-  const d = wire.bend ? `M${geom.p1.x},${geom.p1.y} L${wire.bend.x},${wire.bend.y} L${geom.p2.x},${geom.p2.y}`
-                       : `M${geom.p1.x},${geom.p1.y} L${geom.p2.x},${geom.p2.y}`;
-  const selStroke = isSel ? 'var(--ice)' : 'transparent';
-  const mid = wire.bend ? wire.bend : {x:(geom.p1.x+geom.p2.x)/2, y:(geom.p1.y+geom.p2.y)/2};
-  // labels stay hidden by default (they cluttered the canvas) — only the
-  // currently-selected wire shows its label, as a quick confirmation while editing.
-  const lblText = isSel ? (wire.label||'') : '';
-  const lblW = Math.max(18, lblText.length*6.4+10);
-  g.innerHTML = `
-    <path d="${d}" fill="none" stroke="${selStroke}" stroke-width="9" opacity="${isSel?0.35:0}"></path>
-    <path d="${d}" fill="none" stroke="#000" stroke-width="5.4" opacity="0.45" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="${d}" fill="none" stroke="${wire.color}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path class="wirehit" d="${d}" fill="none" stroke="transparent" stroke-width="20"></path>
-    ${lblText? `<rect class="wire-label-bg" x="${mid.x-lblW/2}" y="${mid.y-9}" width="${lblW}" height="16" rx="4"></rect>
-    <text class="wire-label" x="${mid.x}" y="${mid.y+3}" text-anchor="middle">${escapeXml(lblText)}</text>`:''}
-  `;
-  attachWireEvents(g, wire);
   return g;
 }
 
-function attachWireEvents(g, wire){
-  g.addEventListener('pointerdown',(e)=>{
-    if(tool!=='select') return;
-    e.stopPropagation();
-    selectWire(wire.id);
-  });
-}
-
-// Lightweight in-place update used while dragging — avoids destroying/rebuilding
-// DOM elements mid-gesture (which would kill pointer capture and feel "laggy").
-function updateWireEl(wire){
-  const el = wiresLayer.querySelector('.wire[data-id="'+wire.id+'"]');
-  if(!el) return;
-  const geom = computeGeom(wire);
-  if(!geom) return;
-  const d = wire.bend ? `M${geom.p1.x},${geom.p1.y} L${wire.bend.x},${wire.bend.y} L${geom.p2.x},${geom.p2.y}`
-                       : `M${geom.p1.x},${geom.p1.y} L${geom.p2.x},${geom.p2.y}`;
-  el.querySelectorAll('path').forEach(p=>p.setAttribute('d', d));
-  const mid = wire.bend ? wire.bend : {x:(geom.p1.x+geom.p2.x)/2, y:(geom.p1.y+geom.p2.y)/2};
-  const lblBg = el.querySelector('.wire-label-bg');
-  const lblTxt = el.querySelector('.wire-label');
-  if(lblBg && lblTxt){
-    const lblText = wire.label||'';
-    const lblW = Math.max(18, lblText.length*6.4+10);
-    lblBg.setAttribute('x', mid.x-lblW/2); lblBg.setAttribute('y', mid.y-9); lblBg.setAttribute('width', lblW);
-    lblTxt.setAttribute('x', mid.x); lblTxt.setAttribute('y', mid.y+3);
-  }
-}
-function refreshWiresFor(nodeId){
-  state.wires.forEach(w=>{ if(w.fromId===nodeId || w.toId===nodeId) updateWireEl(w); });
-}
-
-/* ============== HANDLES (endpoint + bend dragging for selected wire, resize for selected node) ============== */
 function buildHandles(){
   handlesLayer.innerHTML='';
-  if(selectedKind==='node'){
-    const node = getNode(selectedId);
-    if(node){ makeResizeHandle(node); makeRotateHandle(node); }
-    return;
+  if(selKind==='node'){
+    const n=getNode(selId); if(!n)return;
+    buildNodeHandles(n);
+  } else if(selKind==='wire'){
+    const w=getWire(selId); if(!w)return;
+    buildWireHandles(w);
   }
-  if(selectedKind!=='wire') return;
-  const wire = getWire(selectedId);
-  if(!wire) return;
-  const geom = computeGeom(wire);
-  if(!geom) return;
-
-  makeHandle(geom.p1.x, geom.p1.y, '#4fd1ff', wire, 'from', (nx,ny,hit)=>{
-    if(hit){ wire.fromId=hit.node.id; delete wire.fromPoint; wire.fromTerm = hit.term!=null? hit.term : null; }
-    else { wire.fromId=null; wire.fromPoint={x:nx,y:ny}; wire.fromTerm=null; }
-    wire.bend=null;
-  });
-  makeHandle(geom.p2.x, geom.p2.y, '#ff8a4c', wire, 'to', (nx,ny,hit)=>{
-    if(hit){ wire.toId=hit.node.id; delete wire.toPoint; wire.toTerm = hit.term!=null? hit.term : null; }
-    else { wire.toId=null; wire.toPoint={x:nx,y:ny}; wire.toTerm=null; }
-    wire.bend=null;
-  });
-  // bend handle (midpoint) - drag to create/move a kink
-  const mid = wire.bend || {x:(geom.p1.x+geom.p2.x)/2, y:(geom.p1.y+geom.p2.y)/2};
-  makeHandle(mid.x, mid.y, '#ffd24f', wire, 'bend', (nx,ny)=>{ wire.bend = {x:nx,y:ny}; }, true);
 }
-
-function makeHandle(x,y,color,wire,endKey,onDrop,isBend){
-  const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r', isBend?9:13);
-  c.setAttribute('fill', color); c.setAttribute('stroke','#04222b'); c.setAttribute('stroke-width','2');
-  c.setAttribute('class','handle'); c.style.cursor='grab';
+function makeHandleCircle(x,y,r,fill,cls=''){
+  const c=el('circle',{cx:x,cy:y,r,fill,stroke:'#04222b','stroke-width':2,class:'handle'+' '+cls});
   handlesLayer.appendChild(c);
-  c.addEventListener('pointerdown',(e)=>{
-    e.stopPropagation();
-    c.setPointerCapture(e.pointerId);
-    pushHistory(); // snapshot BEFORE this drag's mutation, for correct undo
-    // remember the committed endpoint state so we can restore it before the real (snapped) commit on release
-    const orig = {fromId:wire.fromId, fromPoint:wire.fromPoint, fromTerm:wire.fromTerm,
-                  toId:wire.toId, toPoint:wire.toPoint, toTerm:wire.toTerm, bend:wire.bend};
-    const mv=(ev)=>{
-      const p = svgPoint(ev);
-      c.setAttribute('cx',p.x); c.setAttribute('cy',p.y);
-      // live preview: let the wire itself visually stretch to follow the finger, not just the dot
-      if(endKey==='from'){ wire.fromId=null; wire.fromPoint={x:p.x,y:p.y}; wire.fromTerm=null; }
-      else if(endKey==='to'){ wire.toId=null; wire.toPoint={x:p.x,y:p.y}; wire.toTerm=null; }
-      else { wire.bend = {x:p.x,y:p.y}; }
-      updateWireEl(wire);
-    };
-    const up=(ev)=>{
-      c.removeEventListener('pointermove',mv);
-      c.removeEventListener('pointerup',up);
-      // restore the pre-drag state, then apply the real commit (with node/terminal snapping)
-      wire.fromId=orig.fromId; wire.fromPoint=orig.fromPoint; wire.fromTerm=orig.fromTerm;
-      wire.toId=orig.toId; wire.toPoint=orig.toPoint; wire.toTerm=orig.toTerm; wire.bend=orig.bend;
-      const p = svgPoint(ev);
-      const hit = endKey==='bend'? null : findNodeNear(p.x,p.y);
-      onDrop(p.x,p.y,hit);
-      render(); saveDebounced();
-    };
-    c.addEventListener('pointermove',mv);
-    c.addEventListener('pointerup',up);
+  return c;
+}
+function makeHandleRect(x,y,w,h,fill){
+  const r=el('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:4,fill,stroke:'#04222b','stroke-width':2,class:'handle'});
+  handlesLayer.appendChild(r);
+  return r;
+}
+function buildNodeHandles(n){
+  const{w,h}=nodeDims(n);
+  const rad=(n.rotation||0)*Math.PI/180;
+  const R=14;
+  // 4 edge handles
+  [{lx:w/2,ly:0},{lx:-w/2,ly:0},{lx:0,ly:h/2},{lx:0,ly:-h/2}].forEach(({lx,ly})=>{
+    const r=rot(lx,ly,rad);
+    makeHandleCircle(n.x+r.x,n.y+r.y,R,'#1c2d3a');
+    // icon
+    const t=el('text',{x:n.x+r.x,y:n.y+r.y,'text-anchor':'middle','dominant-baseline':'middle',
+      'font-size':13,fill:'#4fd1ff','pointer-events':'none'});
+    t.textContent=Math.abs(lx)>Math.abs(ly)?'⇔':'⇕';
+    handlesLayer.appendChild(t);
   });
+  // rotate handle (arm + circle)
+  const arm=h/2+38;
+  const rr=rot(0,-arm,rad);
+  const hx=n.x+rr.x, hy=n.y+rr.y;
+  const edge=rot(0,-h/2,rad);
+  const ln=el('line',{x1:n.x+edge.x,y1:n.y+edge.y,x2:hx,y2:hy,stroke:'#ffd24f','stroke-width':2,'stroke-dasharray':'4,3','pointer-events':'none'});
+  handlesLayer.appendChild(ln);
+  makeHandleCircle(hx,hy,R,'#ffd24f');
+  const t=el('text',{x:hx,y:hy,'text-anchor':'middle','dominant-baseline':'middle',
+    'font-size':16,fill:'#05101a','pointer-events':'none','font-weight':'bold'});
+  t.textContent='↻';
+  handlesLayer.appendChild(t);
+}
+function buildWireHandles(w){
+  const g=computeWireGeom(w); if(!g)return;
+  const R=13;
+  makeHandleCircle(g.p1.x,g.p1.y,R,'#4fd1ff');
+  makeHandleCircle(g.p2.x,g.p2.y,R,'#ff8a4c');
+  makeHandleCircle(g.mid.x,g.mid.y,10,'#ffd24f');
 }
 
-// Corner handle — drag outward/inward to scale the element up or down, live.
-// Creates 4 edge-midpoint handles (right, bottom, left, top).
-// Dragging right/left changes width only; dragging top/bottom changes height only.
-// All maths are done in the node's local (unrotated) frame, then projected back.
-function makeResizeHandle(node){
-  const rad = ()=>((node.rotation||0)*Math.PI)/180;
-
-  // edge definitions: {axis:'w'|'h', sign:+1|-1, localOffset:fn→{lx,ly}}
-  const edges = [
-    { axis:'w', sign: 1, local:()=>{ const {w,h}=nodeDims(node); return { lx: w/2,   ly: 0       }; }, icon:'⇔', color:'#4fd1ff' },
-    { axis:'h', sign: 1, local:()=>{ const {w,h}=nodeDims(node); return { lx: 0,     ly: h/2     }; }, icon:'⇕', color:'#4fd1ff' },
-    { axis:'w', sign:-1, local:()=>{ const {w,h}=nodeDims(node); return { lx:-w/2,   ly: 0       }; }, icon:'⇔', color:'#4fd1ff' },
-    { axis:'h', sign:-1, local:()=>{ const {w,h}=nodeDims(node); return { lx: 0,     ly:-h/2     }; }, icon:'⇕', color:'#4fd1ff' },
-  ];
-
-  // init nodeW/nodeH from current dims so first drag starts from actual size
-  if(node.nodeW == null){ const d=nodeDims(node); node.nodeW=d.w; node.nodeH=d.h; }
-
-  const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
-  lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('font-size','12');
-  lbl.setAttribute('font-family','DM Sans'); lbl.setAttribute('font-weight','700');
-  lbl.setAttribute('fill','#4fd1ff'); lbl.setAttribute('pointer-events','none');
-  lbl.style.display='none';
-  handlesLayer.appendChild(lbl);
-
-  edges.forEach(edge=>{
-    const R=14;
-    function screenPos(){
-      const loc=edge.local();
-      const wp=rotatePt(loc.lx, loc.ly, rad());
-      return {x:node.x+wp.x, y:node.y+wp.y};
-    }
-    let sp=screenPos();
-
-    const hit=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    hit.setAttribute('cx',sp.x); hit.setAttribute('cy',sp.y); hit.setAttribute('r',26);
-    hit.setAttribute('fill','transparent'); hit.setAttribute('class','handle');
-    handlesLayer.appendChild(hit);
-
-    const pill=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    pill.setAttribute('cx',sp.x); pill.setAttribute('cy',sp.y); pill.setAttribute('r',R);
-    pill.setAttribute('fill','#1c2d3a'); pill.setAttribute('stroke',edge.color); pill.setAttribute('stroke-width','2');
-    pill.setAttribute('pointer-events','none');
-    handlesLayer.appendChild(pill);
-
-    const ico=document.createElementNS('http://www.w3.org/2000/svg','text');
-    ico.setAttribute('text-anchor','middle'); ico.setAttribute('dominant-baseline','middle');
-    ico.setAttribute('font-size','13'); ico.setAttribute('fill',edge.color);
-    ico.setAttribute('pointer-events','none'); ico.setAttribute('font-weight','700');
-    ico.textContent=edge.icon;
-    ico.setAttribute('x',sp.x); ico.setAttribute('y',sp.y);
-    handlesLayer.appendChild(ico);
-
-    function reposition(){
-      const np=screenPos();
-      hit.setAttribute('cx',np.x); hit.setAttribute('cy',np.y);
-      pill.setAttribute('cx',np.x); pill.setAttribute('cy',np.y);
-      ico.setAttribute('x',np.x); ico.setAttribute('y',np.y);
-    }
-
-    hit.addEventListener('pointerdown',(e)=>{
-      e.stopPropagation();
-      hit.setPointerCapture(e.pointerId);
-      pushHistory();
-      const startP=svgPoint(e);
-      const startW=node.nodeW; const startH=node.nodeH;
-      // unit vector along this edge's axis in screen space
-      const axisLocal = edge.axis==='w' ? {lx:edge.sign,ly:0} : {lx:0,ly:edge.sign};
-      const axisScreen = rotatePt(axisLocal.lx, axisLocal.ly, rad());
-      lbl.style.display='block';
-      const mv=(ev)=>{
-        const p=svgPoint(ev);
-        const dx=p.x-startP.x, dy=p.y-startP.y;
-        // project drag onto this edge's axis
-        const delta=(dx*axisScreen.x + dy*axisScreen.y)*2; // *2 because we resize from centre
-        if(edge.axis==='w') node.nodeW=Math.max(28, startW+delta);
-        else                node.nodeH=Math.max(20, startH+delta);
-        updateNodeEl(node); refreshWiresFor(node.id); reposition();
-        const nsp=screenPos();
-        lbl.setAttribute('x',nsp.x+20); lbl.setAttribute('y',nsp.y);
-        lbl.textContent = edge.axis==='w'
-          ? Math.round(node.nodeW)+'px'
-          : Math.round(node.nodeH)+'px';
-      };
-      const up=()=>{
-        hit.removeEventListener('pointermove',mv);
-        hit.removeEventListener('pointerup',up);
-        lbl.style.display='none';
-        render(); saveDebounced();
-      };
-      hit.addEventListener('pointermove',mv);
-      hit.addEventListener('pointerup',up);
-    });
-  });
-}
-
-function makeRotateHandle(node){
-  const ARM = 44; // length of the arm from element edge to handle centre
-  function pos(){
-    const {h} = nodeDims(node);
-    const rad = ((node.rotation||0)*Math.PI)/180;
-    const edge = rotatePt(0,-h/2,rad);
-    const tip  = rotatePt(0,-(h/2+ARM),rad);
-    return {ex:node.x+edge.x, ey:node.y+edge.y, hx:node.x+tip.x, hy:node.y+tip.y};
-  }
-  let p0=pos();
-  const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-  line.setAttribute('x1',p0.ex); line.setAttribute('y1',p0.ey);
-  line.setAttribute('x2',p0.hx); line.setAttribute('y2',p0.hy);
-  line.setAttribute('stroke','#ffd24f'); line.setAttribute('stroke-width','2');
-  line.setAttribute('stroke-dasharray','4,3'); line.setAttribute('pointer-events','none');
-  handlesLayer.appendChild(line);
-
-  const R=20;
-  const hit = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  hit.setAttribute('cx',p0.hx); hit.setAttribute('cy',p0.hy); hit.setAttribute('r',30);
-  hit.setAttribute('fill','transparent'); hit.setAttribute('class','handle');
-  handlesLayer.appendChild(hit);
-
-  const pill = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  pill.setAttribute('cx',p0.hx); pill.setAttribute('cy',p0.hy); pill.setAttribute('r',R);
-  pill.setAttribute('fill','#ffd24f'); pill.setAttribute('stroke','#04222b'); pill.setAttribute('stroke-width','1.8');
-  pill.setAttribute('pointer-events','none');
-  handlesLayer.appendChild(pill);
-
-  const ico = document.createElementNS('http://www.w3.org/2000/svg','text');
-  ico.setAttribute('text-anchor','middle'); ico.setAttribute('dominant-baseline','middle');
-  ico.setAttribute('font-size','18'); ico.setAttribute('fill','#04222b');
-  ico.setAttribute('pointer-events','none'); ico.setAttribute('font-weight','700');
-  ico.textContent='↻';
-  function setIcoPos(x,y){ ico.setAttribute('x',x); ico.setAttribute('y',y); }
-  setIcoPos(p0.hx,p0.hy);
-  handlesLayer.appendChild(ico);
-
-  const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
-  lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('font-size','13');
-  lbl.setAttribute('font-family','DM Sans'); lbl.setAttribute('font-weight','700');
-  lbl.setAttribute('fill','#ffd24f'); lbl.setAttribute('pointer-events','none');
-  lbl.style.display='none';
-  handlesLayer.appendChild(lbl);
-
-  hit.addEventListener('pointerdown',(e)=>{
-    e.stopPropagation();
-    hit.setPointerCapture(e.pointerId);
-    pushHistory();
-    const sp=svgPoint(e);
-    const startAngle=Math.atan2(sp.y-node.y,sp.x-node.x)*180/Math.PI;
-    const startRot=node.rotation||0;
-    const el=nodesLayer.querySelector('.node[data-id="'+node.id+'"]');
-    lbl.style.display='block';
-    const mv=(ev)=>{
-      const p=svgPoint(ev);
-      const ang=Math.atan2(p.y-node.y,p.x-node.x)*180/Math.PI;
-      // snap to 15° steps while dragging, but allow free rotation by holding — snap feels right in practice
-      let newRot=startRot+(ang-startAngle);
-      newRot=((Math.round(newRot/15)*15)%360+360)%360;
-      node.rotation=newRot;
-      if(el) el.setAttribute('transform',nodeTransform(node));
-      refreshWiresFor(node.id);
-      const np=pos();
-      line.setAttribute('x1',np.ex); line.setAttribute('y1',np.ey);
-      line.setAttribute('x2',np.hx); line.setAttribute('y2',np.hy);
-      hit.setAttribute('cx',np.hx); hit.setAttribute('cy',np.hy);
-      pill.setAttribute('cx',np.hx); pill.setAttribute('cy',np.hy);
-      setIcoPos(np.hx,np.hy);
-      lbl.setAttribute('x',np.hx); lbl.setAttribute('y',np.hy-R-8);
-      lbl.textContent=Math.round(node.rotation)+'°';
-    };
-    const up=()=>{
-      hit.removeEventListener('pointermove',mv);
-      hit.removeEventListener('pointerup',up);
-      lbl.style.display='none';
-      render(); saveDebounced();
-    };
-    hit.addEventListener('pointermove',mv);
-    hit.addEventListener('pointerup',up);
-  });
-}
-
-function findNodeNear(x,y){
-  let best=null, bestD=Infinity;
-  state.nodes.forEach(n=>{
-    if(n.type==='note') return;
-    const {w,h} = nodeDims(n);
-    const r = Math.max(w,h)/2 + 18;
-    const d = Math.hypot(n.x-x,n.y-y);
-    if(d<r && d<bestD){ bestD=d; best=n; }
-  });
-  if(!best) return null;
-  let term=null;
-  if(best.type==='board' && best.terminals && best.terminals.length){
-    let td=Infinity;
-    best.terminals.forEach((t,i)=>{
-      const tp = terminalPoint(best,i);
-      const dd = Math.hypot(tp.x-x, tp.y-y);
-      if(dd<td){ td=dd; term=i; }
-    });
-    if(td>28) term=null; // too far from any pin — connect to the board generically instead
-  }
-  return {node:best, term};
-}
-
-/* ============== SELECTION / INSPECTOR ============== */
-function selectNode(id){ selectedKind='node'; selectedId=id; openInspectorNode(getNode(id)); render(); }
-function selectWire(id){ selectedKind='wire'; selectedId=id; openInspectorWire(getWire(id)); render(); }
-function clearSelection(){ selectedKind=null; selectedId=null; closeInspector(); render(); }
-
-function openInspectorNode(node){
-  const insp = document.getElementById('inspector');
-  document.getElementById('inspTitle').textContent = node.type==='note' ? 'Текстова мітка' : 'Прилад';
-  const body = document.getElementById('inspBody');
-  let typeOptions = Object.keys(TYPE_INFO).filter(t=>t!=='note').map(t=>`<option value="${t}" ${t===node.type?'selected':''}>${TYPE_INFO[t].label}</option>`).join('');
-  const termsHtml = node.type==='board' ? `
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Клеми плати</label>
-      <div id="fTerms"></div>
-      <button class="btn ghost" id="fTermAdd" style="margin-top:6px;">＋ Додати клему</button>
-    </div>` : '';
-  const sizePct = Math.round((node.scale||1)*100);
-  const sizeHtml = `
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Розмір</label>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <button class="btn ghost" id="fSizeMinus" style="flex:0 0 auto; width:42px; font-size:18px; padding:7px 0;">－</button>
-        <div style="flex:1; text-align:center; font-weight:700; font-size:14px;" id="fSizeLbl">${sizePct}%</div>
-        <button class="btn ghost" id="fSizePlus" style="flex:0 0 auto; width:42px; font-size:18px; padding:7px 0;">＋</button>
-      </div>
-    </div>`;
-  const rotDeg = Math.round(node.rotation||0);
-  const rotHtml = `
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Поворот</label>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <button class="btn ghost" id="fRotMinus" style="flex:0 0 auto; width:42px; font-size:16px; padding:7px 0;">↺15°</button>
-        <div style="flex:1; text-align:center; font-weight:700; font-size:14px;" id="fRotLbl">${rotDeg}°</div>
-        <button class="btn ghost" id="fRotPlus" style="flex:0 0 auto; width:42px; font-size:16px; padding:7px 0;">↻15°</button>
-        <button class="btn ghost" id="fRot180" style="flex:0 0 auto; width:50px; font-size:12px; padding:7px 0;">⟲180°</button>
-      </div>
-    </div>`;
-  body.innerHTML = `
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Підпис</label>
-      <input type="text" id="fLabel" value="${escapeXml(node.label||'')}" placeholder="${node.type==='note'?'Введи текст…':TYPE_INFO[node.type].label}">
-    </div>
-    ${node.type!=='note' ? `<div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Тип приладу</label>
-      <select id="fType">${typeOptions}</select>
-    </div>` : ''}
-    ${termsHtml}
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Шар</label>
-      <div class="btnrow">
-        <button class="btn ghost" id="fToFront">⬆ Наперед</button>
-        <button class="btn ghost" id="fToBack">⬇ Назад</button>
-      </div>
-    </div>
-    <div class="btnrow">
-      <button class="btn" id="fDup">⎘ Дублювати</button>
-      <button class="btn danger" id="fDel">🗑 Видалити</button>
-    </div>
-  `;
-  insp.classList.add('open');
-  const fLabel = document.getElementById('fLabel');
-  fLabel.addEventListener('input', ()=>{ node.label = fLabel.value; renderNodesOnly(); saveDebounced(); });
-  const fType = document.getElementById('fType');
-  if(fType) fType.addEventListener('change', ()=>{
-    node.type = fType.value;
-    if(node.type==='board' && !node.terminals) node.terminals = ['R','C','G','Y','W','O/B'];
-    pushHistory(); render(); openInspectorNode(node); saveDebounced();
-  });
-  document.getElementById('fToFront').addEventListener('click', ()=>{
-    pushHistory();
-    state.nodes = state.nodes.filter(n=>n.id!==node.id);
-    state.nodes.push(node);
-    render(); saveDebounced();
-  });
-  document.getElementById('fToBack').addEventListener('click', ()=>{
-    pushHistory();
-    state.nodes = state.nodes.filter(n=>n.id!==node.id);
-    state.nodes.unshift(node);
-    render(); saveDebounced();
-  });
-  if(node.type==='board') renderTermRows(node);
-  document.getElementById('fDup').addEventListener('click', ()=>{
-    const cp = JSON.parse(JSON.stringify(node));
-    cp.id = uid(); cp.x = node.x+34; cp.y = node.y+34;
-    state.nodes.push(cp); pushHistory(); selectNode(cp.id); saveDebounced();
-  });
-  document.getElementById('fDel').addEventListener('click', ()=>deleteNode(node.id));
-  if(node.type==='note') setTimeout(()=>fLabel.focus(), 50);
-}
-
-function renderTermRows(node){
-  const wrap = document.getElementById('fTerms');
-  if(!wrap) return;
-  wrap.innerHTML = node.terminals.map((t,i)=>`
-    <div class="row" data-i="${i}" style="margin-bottom:6px;">
-      <input type="text" class="termInput" data-i="${i}" value="${escapeXml(t)}" style="flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 9px;font-size:13px;">
-      <button class="termDel" data-i="${i}" style="background:transparent;border:none;color:var(--danger);font-size:16px;padding:4px 8px;">✕</button>
-    </div>`).join('');
-  wrap.querySelectorAll('.termInput').forEach(inp=>{
-    inp.addEventListener('input', ()=>{
-      node.terminals[parseInt(inp.dataset.i,10)] = inp.value;
-      renderNodesOnly(); renderWiresOnly(); saveDebounced();
-    });
-  });
-  wrap.querySelectorAll('.termDel').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const i = parseInt(btn.dataset.i,10);
-      pushHistory();
-      node.terminals.splice(i,1);
-      // wires pointing past the removed terminal shift down by one; wires pointing at the removed one detach
-      state.wires.forEach(w=>{
-        if(w.fromId===node.id && w.fromTerm!=null){
-          if(w.fromTerm===i){ w.fromTerm=null; w.fromId=null; w.fromPoint={x:node.x,y:node.y}; }
-          else if(w.fromTerm>i) w.fromTerm--;
-        }
-        if(w.toId===node.id && w.toTerm!=null){
-          if(w.toTerm===i){ w.toTerm=null; w.toId=null; w.toPoint={x:node.x,y:node.y}; }
-          else if(w.toTerm>i) w.toTerm--;
-        }
-      });
-      render(); renderTermRows(node); saveDebounced();
-    });
-  });
-}
-document.addEventListener('click', (e)=>{
-  if(e.target && e.target.id==='fTermAdd'){
-    const node = selectedKind==='node' ? getNode(selectedId) : null;
-    if(node && node.type==='board'){
-      pushHistory();
-      node.terminals.push('');
-      render(); renderTermRows(node); saveDebounced();
-    }
-  }
-});
-
-function openInspectorWire(wire){
-  const insp = document.getElementById('inspector');
-  document.getElementById('inspTitle').textContent = 'Провід / кабель';
-  const body = document.getElementById('inspBody');
-  const swatches = WIRE_COLORS.map(c=>`<div class="swdot ${c.hex===wire.color?'sel':''}" data-hex="${c.hex}" data-label="${c.label}" style="background:${c.hex}"></div>`).join('');
-  body.innerHTML = `
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Колір жили</label>
-      <div class="swrow">${swatches}<input type="color" class="colorPick" id="fCustomColor" value="${wire.color}"></div>
-    </div>
-    <div class="row" style="flex-direction:column; align-items:stretch;">
-      <label>Підпис</label>
-      <input type="text" id="fWLabel" value="${escapeXml(wire.label||'')}" placeholder="напр. R · 24В">
-    </div>
-    <div class="miniHelp">Перетягни кінці проводу (кружечки на схемі) до іншого приладу, щоб перенаправити його в іншу зону.</div>
-    <div class="btnrow">
-      <button class="btn" id="fWStraight">／ Прибрати вигин</button>
-      <button class="btn danger" id="fWDel">🗑 Видалити</button>
-    </div>
-  `;
-  insp.classList.add('open');
-  body.querySelectorAll('.swdot').forEach(sw=>{
-    sw.addEventListener('click', ()=>{
-      wire.color = sw.dataset.hex;
-      if(!wire.label) wire.label = sw.dataset.label;
-      render(); openInspectorWire(wire); saveDebounced();
-    });
-  });
-  document.getElementById('fCustomColor').addEventListener('input', (e)=>{
-    wire.color = e.target.value; renderWiresOnly(); saveDebounced();
-  });
-  const fWLabel = document.getElementById('fWLabel');
-  fWLabel.addEventListener('input', ()=>{ wire.label = fWLabel.value; renderWiresOnly(); saveDebounced(); });
-  document.getElementById('fWStraight').addEventListener('click', ()=>{ wire.bend=null; pushHistory(); render(); saveDebounced(); });
-  document.getElementById('fWDel').addEventListener('click', ()=>deleteWire(wire.id));
-}
-
-function closeInspector(){
-  document.getElementById('inspector').classList.remove('open');
-}
-document.getElementById('inspClose').addEventListener('click', clearSelection);
-
-function deleteNode(id){
-  pushHistory();
-  const n = getNode(id);
-  // detach wires instead of destroying them — keep dangling end at last position
-  state.wires.forEach(w=>{
-    if(w.fromId===id){
-      const p = (n.type==='board' && w.fromTerm!=null && n.terminals && n.terminals[w.fromTerm]!=null) ? terminalPoint(n,w.fromTerm) : {x:n.x,y:n.y};
-      w.fromId=null; w.fromPoint=p; w.fromTerm=null;
-    }
-    if(w.toId===id){
-      const p = (n.type==='board' && w.toTerm!=null && n.terminals && n.terminals[w.toTerm]!=null) ? terminalPoint(n,w.toTerm) : {x:n.x,y:n.y};
-      w.toId=null; w.toPoint=p; w.toTerm=null;
-    }
-  });
-  state.nodes = state.nodes.filter(x=>x.id!==id);
-  clearSelection(); saveDebounced();
-}
-function deleteWire(id){
-  pushHistory();
-  state.wires = state.wires.filter(w=>w.id!==id);
-  clearSelection(); saveDebounced();
-}
-
-/* ============== CABLE CREATION ============== */
-function createCable(fromId, toId, fromTerm, toTerm){
-  pushHistory();
-  const cableId = uid();
-  pendingCable.colors.forEach((c,i)=>{
-    state.wires.push({id:uid(), cableId, slot:i, color:c.hex, label:c.label, fromId, toId,
-      fromTerm: fromTerm!=null? fromTerm : null, toTerm: toTerm!=null? toTerm : null, bend:null});
-  });
-  toast(pendingCable.colors.length+'-жильний кабель додано');
-  saveDebounced();
-}
-
-/* ============== RENDER ============== */
-function render(full){
-  renderNodesOnly();
-  renderWiresOnly();
-  if(full!==false) buildHandles(); else buildHandles();
-  emptyHintSvg.style.display = state.nodes.length? 'none':'block';
-}
-function renderNodesOnly(){
+function renderAll(){
   nodesLayer.innerHTML='';
-  state.nodes.forEach(n=> nodesLayer.appendChild(buildNodeEl(n)));
-}
-function renderWiresOnly(){
   wiresLayer.innerHTML='';
-  state.wires.forEach(w=> wiresLayer.appendChild(buildWireEl(w)));
+  handlesLayer.innerHTML='';
+  proj.wires.forEach(w=>wiresLayer.appendChild(buildWireEl(w)));
+  proj.nodes.forEach(n=>nodesLayer.appendChild(buildNodeEl(n)));
   buildHandles();
+  emptyHint.style.display=proj.nodes.length?'none':'block';
   buildLegend();
 }
-
-/* ============== LEGEND (auto key for shapes/colors currently used) ============== */
-function buildLegend(){
-  const body = document.getElementById('legendBody');
-  if(!body) return;
-  const types = new Map(); // type key -> info
-  state.nodes.forEach(n=>{
-    if(n.type==='note') return;
-    if(!types.has(n.type)) types.set(n.type, TYPE_INFO[n.type]);
-  });
-  const colors = new Map(); // hex -> label
-  state.wires.forEach(w=>{ if(w.label) colors.set(w.color, w.label); });
-
-  let html = '';
-  if(types.size){
-    html += `<div class="legendGroup"><div class="legendTitle">Обладнання</div>`;
-    types.forEach(info=>{ html += `<div class="legendRow"><span class="legendSwatch" style="background:${info.accent}"></span>${escapeXml(info.label)}</div>`; });
-    html += `</div>`;
-  }
-  if(colors.size){
-    html += `<div class="legendGroup"><div class="legendTitle">Проводи</div>`;
-    colors.forEach((label,hex)=>{ html += `<div class="legendRow"><span class="legendSwatch" style="background:${hex}"></span>${escapeXml(label)}</div>`; });
-    html += `</div>`;
-  }
-  body.innerHTML = html || `<div class="legendEmpty">Тут з'явиться пояснення кольорів і приладів, коли почнеш будувати схему</div>`;
+// Fast update of a single node's SVG element (used during drag/resize)
+function updateNodeInPlace(n){
+  const old=nodesLayer.querySelector(`[data-id="${n.id}"]`);
+  if(!old)return;
+  const neo=buildNodeEl(n);
+  nodesLayer.replaceChild(neo,old);
 }
-document.getElementById('legendToggle').addEventListener('click', ()=>{
-  document.getElementById('legendBody').classList.toggle('open');
-});
+// Fast update of wires connected to a node (used during drag)
+function updateWiresFor(nodeId){
+  proj.wires.forEach(w=>{
+    if(w.fromId!==nodeId&&w.toId!==nodeId)return;
+    const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);
+    if(!old)return;
+    wiresLayer.replaceChild(buildWireEl(w),old);
+  });
+}
 
-/* ============== BOARD-LEVEL CLICK (placing / deselect) ============== */
-board.addEventListener('click', (e)=>{
-  if(e.target.closest && (e.target.closest('.node') || e.target.closest('.wire') || e.target.closest('.handle'))) return;
-  if(tool==='place' && pendingPlaceType){
-    const p = svgPoint(e);
-    pushHistory();
-    const node = {id:uid(), type:pendingPlaceType, x:Math.round(p.x), y:Math.round(p.y), label:''};
-    if(pendingPlaceType==='board'){ node.terminals = ['R','C','G','Y','W','O/B']; }
-    state.nodes.push(node);
-    cancelMode();
-    document.querySelectorAll('.pitem').forEach(pi=>pi.classList.remove('active'));
-    render();
-    selectNode(node.id);
-    saveDebounced();
+// ═══════════════════════════════════════════════════════════
+// POINTER EVENT HANDLING (THE KEY PART)
+// All touch/mouse events go to the board SVG, no child listeners.
+// This is the only reliable way on iOS Safari.
+// ═══════════════════════════════════════════════════════════
+let drag=null;
+let ptrMap=new Map(); // pointerId → {x,y}
+
+board.addEventListener('pointerdown',onDown,{passive:false});
+board.addEventListener('pointermove',onMove,{passive:false});
+board.addEventListener('pointerup',  onUp);
+board.addEventListener('pointercancel',onUp);
+
+function onDown(e){
+  e.preventDefault();
+  board.setPointerCapture(e.pointerId);
+  ptrMap.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  
+  if(ptrMap.size===2){
+    // Switch to pan/pinch mode
+    const pts=[...ptrMap.values()];
+    drag={type:'pinch',
+      startDist:Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y),
+      startMidC:{x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2},
+      startVB:{...vb}};
     return;
   }
-  if(tool==='connect-from' || tool==='connect-to'){
-    return; // must tap an actual node
+
+  const s=toSVG(e.clientX,e.clientY);
+
+  // 1. Place mode
+  if(toolMode==='place'&&armType){
+    pushHist();
+    const n={id:uid(),type:armType,x:Math.round(s.x),y:Math.round(s.y),
+      label:'', rotation:0};
+    if(armType==='board')n.terminals=['R','C','G','Y','W','O/B'];
+    proj.nodes.push(n);
+    disarm();
+    selId=n.id; selKind='node';
+    renderAll(); saveDeferred();
+    openInspNode(n);
+    return;
   }
-  clearSelection();
-});
 
-/* ============== TOOLBAR ============== */
-function refreshToolButtons(){
-  document.querySelectorAll('.tbtn[data-tool]').forEach(b=>b.classList.toggle('active', b.dataset.tool===tool || (tool.startsWith('connect') && b.dataset.tool==='select')));
-  document.getElementById('tDelete').disabled = !selectedId;
-}
-document.getElementById('tSelect').addEventListener('click', ()=>{ cancelMode(); document.querySelectorAll('.pitem').forEach(p=>p.classList.remove('active')); });
-document.getElementById('tDelete').addEventListener('click', ()=>{
-  if(selectedKind==='node') deleteNode(selectedId);
-  else if(selectedKind==='wire') deleteWire(selectedId);
-});
-document.getElementById('tUndo').addEventListener('click', undo);
-document.getElementById('tText').addEventListener('click', ()=>{
-  document.querySelectorAll('.pitem').forEach(p=>p.classList.remove('active'));
-  armPlace('note', document.querySelector('.pitem[data-type="note"]'));
-});
-document.getElementById('tZoomIn').addEventListener('click', ()=>setZoom(zoomIdx+1));
-document.getElementById('tZoomOut').addEventListener('click', ()=>setZoom(zoomIdx-1));
-document.getElementById('tFit').addEventListener('click', ()=>{ setZoom(2); canvasWrap.scrollTo({left:0,top:0,behavior:'smooth'}); });
-function setZoom(idx){
-  zoomIdx = Math.max(0, Math.min(ZOOM_STEPS.length-1, idx));
-  board.style.width = ZOOM_STEPS[zoomIdx]+'%';
-  document.getElementById('zoomLbl').textContent = ZOOM_STEPS[zoomIdx]+'%';
-}
-
-document.getElementById('tCable').addEventListener('click', openCableModal);
-document.getElementById('tHelp').addEventListener('click', openHelpModal);
-document.getElementById('tPdf').addEventListener('click', exportPdf);
-
-/* ============== KEYBOARD (desktop convenience) ============== */
-window.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape') cancelMode();
-  if((e.key==='Delete'||e.key==='Backspace') && selectedId && document.activeElement.tagName!=='INPUT'){
-    e.preventDefault();
-    if(selectedKind==='node') deleteNode(selectedId); else if(selectedKind==='wire') deleteWire(selectedId);
+  // 2. Cable-from mode: tap a node
+  if(toolMode==='cable-from'){
+    const n=hitNode(s.x,s.y);
+    if(n){cableFromId=n.id; toolMode='cable-to'; setStatus('Тепер торкнись приладу-призначення (2/2)');}
+    return;
   }
-});
-
-/* ============== MODAL SYSTEM ============== */
-const modalLayer = document.getElementById('modalLayer');
-const modalCard = document.getElementById('modalCard');
-function openModal(html){ modalCard.innerHTML = html; modalLayer.classList.add('show'); }
-function closeModal(){ modalLayer.classList.remove('show'); modalCard.innerHTML=''; }
-modalLayer.addEventListener('click', (e)=>{ if(e.target===modalLayer) closeModal(); });
-
-function openCableModal(){
-  const counts = [1,2,3,4,5,6,7,8];
-  const grid = counts.map(n=>{
-    const dots = WIRE_COLORS.slice(0,n).map(c=>`<i style="background:${c.hex}"></i>`).join('');
-    return `<button class="countBtn" data-n="${n}"><span class="n">${n}</span><span class="dots">${dots}</span></button>`;
-  }).join('');
-  openModal(`
-    <h2>Новий кабель</h2>
-    <div class="miniHelp">Обери кількість жил. Кожна жила отримає стандартний колір — потім її можна перетягнути в окрему зону.</div>
-    <div class="countGrid">${grid}</div>
-    <button class="btn ghost" id="customWireBtn" style="width:100%;">🎨 Один провід свого кольору</button>
-    <div class="customWrap" id="customWrap">
-      <div class="row">
-        <input type="color" class="colorPick" id="cwColor" value="#4fd1ff">
-        <input type="text" id="cwLabel" placeholder="Підпис (напр. Живлення 220В)" style="flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:9px 10px;">
-      </div>
-      <button class="btn primary" id="cwCreate" style="width:100%;">Створити провід</button>
-    </div>
-  `);
-  modalCard.querySelectorAll('.countBtn').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const n = parseInt(b.dataset.n,10);
-      pendingCable = {colors: WIRE_COLORS.slice(0,n).map(c=>({hex:c.hex,label:c.label}))};
-      closeModal();
-      tool='connect-from';
-      setStatus('Торкнись приладу-джерела (1/2)');
-      refreshToolButtons();
-    });
-  });
-  document.getElementById('customWireBtn').addEventListener('click', ()=>{
-    document.getElementById('customWrap').classList.toggle('show');
-  });
-  document.getElementById('cwCreate').addEventListener('click', ()=>{
-    const hex = document.getElementById('cwColor').value;
-    const lbl = document.getElementById('cwLabel').value || 'Провід';
-    pendingCable = {colors:[{hex,label:lbl}]};
-    closeModal();
-    tool='connect-from';
-    setStatus('Торкнись приладу-джерела (1/2)');
-    refreshToolButtons();
-  });
-}
-
-function openHelpModal(){
-  openModal(`
-    <h2>Як користуватись</h2>
-    <div class="miniHelp" style="font-size:13.5px;">
-      <b>1. Розмістити прилад</b> — обери значок зліва, потім торкнись полотна.<br><br>
-      <b>2. Провести кабель</b> — натисни «Кабель» внизу, обери кількість жил, торкнись приладу-джерела, потім приладу-призначення. Усі жили проведуться одразу одним пучком.<br><br>
-      <b>3. Розвести жили по зонах</b> — торкнись потрібного проводу в пучку (з'явиться панель знизу і кружечки на кінцях), і перетягни кінець-кружечок до іншого приладу — саме так розводиться, наприклад, 6-жильний кабель на різні зони.<br><br>
-      <b>4. Вигин лінії</b> — жовтий кружечок по центру вибраного проводу можна тягнути, щоб обійти інші елементи.<br><br>
-      <b>5. Своє обладнання</b> — внизу палітри є «Додати своє»: впиши назву, обери форму — колір підбереться автоматично так, щоб не плутався з рештою. Елемент залишиться в палітрі назавжди.<br><br>
-      <b>6. Плата з клемами</b> — у групі «Плати» є блок із підписаними клемами (R, C, G, Y, W, O/B за замовчуванням). Клеми можна перейменувати, додати чи видалити в панелі знизу. Кабель можна підключити прямо до конкретної клеми, а не просто до плати загалом — тоді кінець «прилипне» саме до тієї клеми.<br><br>
-      <b>7. Підпис і колір</b> — після вибору проводу/приладу знизу відкривається панель редагування.<br><br>
-      <b>8. Зберігається само</b> — схема автоматично зберігається в браузері. Натисни «PDF», щоб отримати файл для друку чи відправки клієнту.
-    </div>
-    <button class="btn primary" style="width:100%;" onclick="this.closest('#modalLayer').classList.remove('show')">Зрозуміло</button>
-  `);
-}
-
-/* ============== PROJECTS (save / load / list) ============== */
-const INDEX_KEY = 'frosthawk-wiring-index';
-function projKey(id){ return 'frosthawk-wiring-proj-'+id; }
-
-async function loadIndex(){
-  const raw = await Store.get(INDEX_KEY);
-  try{ return raw? JSON.parse(raw) : []; }catch(e){ return []; }
-}
-async function saveIndex(list){
-  await Store.set(INDEX_KEY, JSON.stringify(list));
-}
-
-async function saveCurrent(){
-  setSaveDot('busy');
-  try{
-    state.updatedAt = Date.now();
-    state.name = document.getElementById('projName').value || 'Без назви';
-    const ok = await Store.set(projKey(state.id), JSON.stringify(state));
-    let idx = await loadIndex();
-    idx = idx.filter(p=>p.id!==state.id);
-    idx.unshift({id:state.id, name:state.name, updatedAt:state.updatedAt});
-    await saveIndex(idx);
-    await Store.set('frosthawk-wiring-last', state.id);
-    setSaveDot(ok? 'ok':'err');
-  }catch(e){ setSaveDot('err'); }
-}
-function setSaveDot(s){
-  const dot = document.getElementById('saveDot');
-  dot.classList.remove('busy','err');
-  if(s==='busy') dot.classList.add('busy');
-  else if(s==='err') dot.classList.add('err');
-}
-function saveDebounced(){
-  setSaveDot('busy');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveCurrent, 900);
-}
-
-async function loadProject(id){
-  const raw = await Store.get(projKey(id));
-  if(!raw){ toast('Схему не знайдено'); return; }
-  try{
-    state = JSON.parse(raw);
-    state.nodes = state.nodes||[]; state.wires = state.wires||[];
-    document.getElementById('projName').value = state.name||'Без назви';
-    history=[]; selectedId=null; selectedKind=null; closeInspector();
-    render();
-    await Store.set('frosthawk-wiring-last', state.id);
-  }catch(e){ toast('Помилка завантаження'); }
-}
-
-async function newProject(){
-  state = blankProject('Нова схема '+new Date().toLocaleDateString('uk-UA'));
-  document.getElementById('projName').value = state.name;
-  history=[]; selectedId=null; selectedKind=null; closeInspector();
-  render();
-  await saveCurrent();
-}
-
-/* ============== DOWNLOAD / IMPORT / GITHUB ============== */
-function safeFileSlug(s){
-  return (s||'shema').toLowerCase().replace(/[^a-z0-9а-яіїєё]+/gi,'-').replace(/^-+|-+$/g,'') || 'shema';
-}
-
-function downloadProjectJson(){
-  const data = JSON.stringify(state, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = safeFileSlug(state.name)+'.json';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  toast('Файл завантажено');
-}
-
-document.getElementById('fileImportInput').addEventListener('change', (e)=>{
-  const file = e.target.files[0];
-  e.target.value = '';
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    try{
-      const data = JSON.parse(reader.result);
-      if(!data || !Array.isArray(data.nodes) || !Array.isArray(data.wires)){ toast('Файл не схожий на схему'); return; }
-      data.id = data.id || uid();
-      state = data;
-      document.getElementById('projName').value = state.name || 'Без назви';
-      history=[]; selectedId=null; selectedKind=null; closeInspector();
-      render();
-      saveDebounced();
-      toast('Схему відкрито');
-    }catch(err){ toast('Не вдалося прочитати файл'); }
-  };
-  reader.readAsText(file);
-});
-
-const GITHUB_CFG_KEY = 'frosthawk-wiring-github-cfg';
-async function loadGithubCfg(){
-  try{ const raw = await Store.get(GITHUB_CFG_KEY); return raw? JSON.parse(raw) : null; }catch(e){ return null; }
-}
-
-async function saveToGithub(cfg){
-  toast('Зберігаю на GitHub…');
-  try{
-    const path = (cfg.folder? cfg.folder.replace(/^\/+|\/+$/g,'')+'/' : '') + safeFileSlug(state.name) + '.json';
-    const apiUrl = `https://api.github.com/repos/${cfg.repo}/contents/${path}`;
-    const headers = { 'Authorization': 'Bearer '+cfg.token, 'Accept': 'application/vnd.github+json' };
-    let sha;
-    const getRes = await fetch(apiUrl+`?ref=${encodeURIComponent(cfg.branch||'main')}`, {headers});
-    if(getRes.status===200){ sha = (await getRes.json()).sha; }
-    else if(getRes.status!==404){ throw new Error('Перевірка файлу: код '+getRes.status); }
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
-    const putRes = await fetch(apiUrl, {
-      method:'PUT',
-      headers: Object.assign({'Content-Type':'application/json'}, headers),
-      body: JSON.stringify({
-        message: 'Схема підключення: '+(state.name||'Без назви'),
-        content, sha, branch: cfg.branch||'main'
-      })
-    });
-    if(!putRes.ok){
-      if(putRes.status===401) throw new Error('Невірний токен');
-      if(putRes.status===404) throw new Error('Репозиторій/гілка не знайдені');
-      throw new Error('Код '+putRes.status);
+  // 3. Cable-to mode: tap destination
+  if(toolMode==='cable-to'){
+    const n=hitNode(s.x,s.y);
+    if(n&&n.id!==cableFromId){
+      createCable(cableFromId,n.id);
+      cancelMode();
     }
-    toast('Збережено на GitHub ✓');
-  }catch(err){
-    toast('Помилка GitHub: '+(err.message||'спробуй ще раз'));
+    return;
+  }
+
+  // 4. Select mode: hit test handles → nodes → wires → pan
+  const h=hitHandle(s.x,s.y);
+  if(h){
+    drag={type:h.type,s0:s,...h,vb0:{...vb}};
+    if(h.type==='wire-from'||h.type==='wire-to'||h.type==='wire-bend'){
+      const orig={fromId:h.wire.fromId,fromPoint:h.wire.fromPoint,fromTerm:h.wire.fromTerm,
+        toId:h.wire.toId,toPoint:h.wire.toPoint,toTerm:h.wire.toTerm,bend:h.wire.bend};
+      drag.orig=orig;
+    }
+    pushHist();
+    return;
+  }
+
+  const n=hitNode(s.x,s.y);
+  if(n){
+    if(selId!==n.id||selKind!=='node'){selId=n.id;selKind='node';renderAll();openInspNode(n);}
+    drag={type:'node',node:n,s0:s,ox:n.x,oy:n.y,moved:false};
+    return;
+  }
+
+  const w=hitWire(s.x,s.y);
+  if(w){
+    if(selId!==w.id||selKind!=='wire'){selId=w.id;selKind='wire';renderAll();openInspWire(w);}
+    drag={type:'wire-sel'};
+    return;
+  }
+
+  // Empty space → deselect + start pan
+  clearSel();
+  drag={type:'pan',s0:s,vb0:{...vb}};
+}
+
+function onMove(e){
+  e.preventDefault();
+  const prev=ptrMap.get(e.pointerId)||{x:e.clientX,y:e.clientY};
+  ptrMap.set(e.pointerId,{x:e.clientX,y:e.clientY});
+
+  if(ptrMap.size===2&&drag?.type==='pinch'){
+    const pts=[...ptrMap.values()];
+    const dist=Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y);
+    const midC={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
+    const vb0=drag.startVB;
+    const scale=drag.startDist/dist;
+    const newW=Math.max(400,Math.min(4000,vb0.w*scale));
+    const newH=newW*(vb0.h/vb0.w);
+    // keep the pinch midpoint stationary in SVG space
+    const midSVG={x:vb0.x+(drag.startMidC.x-board.getBoundingClientRect().left)/board.getBoundingClientRect().width*vb0.w,
+                  y:vb0.y+(drag.startMidC.y-board.getBoundingClientRect().top)/board.getBoundingClientRect().height*vb0.h};
+    const r=board.getBoundingClientRect();
+    const fx=(midC.x-r.left)/r.width;
+    const fy=(midC.y-r.top)/r.height;
+    vb={x:midSVG.x-fx*newW,y:midSVG.y-fy*newH,w:newW,h:newH};
+    setVB(); updateZoomLabel();
+    return;
+  }
+
+  if(!drag)return;
+  const s=toSVG(e.clientX,e.clientY);
+
+  if(drag.type==='pan'){
+    const ds=drag.s0, vb0=drag.vb0;
+    vb.x=vb0.x-(s.x-ds.x);
+    vb.y=vb0.y-(s.y-ds.y);
+    // recalculate s because vb just changed - use client delta instead
+    const r=board.getBoundingClientRect();
+    const dCx=e.clientX-prev.x, dCy=e.clientY-prev.y;
+    const svgPerPxX=vb.w/r.width, svgPerPxY=vb.h/r.height;
+    vb.x-=dCx*svgPerPxX; vb.y-=dCy*svgPerPxY;
+    setVB(); return;
+  }
+
+  if(drag.type==='node'){
+    const{node:n,s0,ox,oy}=drag;
+    const dx=s.x-s0.x,dy=s.y-s0.y;
+    if(!drag.moved&&Math.hypot(dx,dy)>svgPx()*5)drag.moved=true;
+    if(drag.moved){
+      n.x=ox+dx; n.y=oy+dy;
+      const g=nodesLayer.querySelector(`[data-id="${n.id}"]`);
+      if(g)g.setAttribute('transform',nodeTransform(n));
+      updateWiresFor(n.id);
+      buildHandles();
+    }
+    return;
+  }
+
+  // Resize handles
+  if(drag.type.startsWith('resize-')){
+    const n=drag.node;
+    if(n.nodeW==null){const d=nodeDims(n);n.nodeW=d.w;n.nodeH=d.h;}
+    const rad=(n.rotation||0)*Math.PI/180;
+    const r=board.getBoundingClientRect();
+    const dCx=e.clientX-prev.x,dCy=e.clientY-prev.y;
+    const spx=vb.w/r.width, spy=vb.h/r.height;
+    const dlx=dCx*spx, dly=dCy*spy;
+    // project delta onto handle axis in local frame
+    const axis=drag.type==='resize-right'?{lx:1,ly:0}
+              :drag.type==='resize-left'? {lx:-1,ly:0}
+              :drag.type==='resize-bottom'?{lx:0,ly:1}:{lx:0,ly:-1};
+    const axS=rot(axis.lx,axis.ly,rad);
+    const delta=(dlx*axS.x+dly*axS.y)*2;
+    if(drag.type.includes('right')||drag.type.includes('left'))
+      n.nodeW=Math.max(24,n.nodeW+delta);
+    else
+      n.nodeH=Math.max(16,n.nodeH+delta);
+    updateNodeInPlace(n);
+    updateWiresFor(n.id);
+    buildHandles();
+    return;
+  }
+
+  // Rotate handle
+  if(drag.type==='rotate'){
+    const n=drag.node;
+    const ang=Math.atan2(s.y-n.y,s.x-n.x)*180/Math.PI+90;
+    n.rotation=((Math.round(ang/15)*15)%360+360)%360;
+    const g=nodesLayer.querySelector(`[data-id="${n.id}"]`);
+    if(g)g.setAttribute('transform',nodeTransform(n));
+    updateWiresFor(n.id);
+    buildHandles();
+    return;
+  }
+
+  // Wire endpoint drag
+  if(drag.type==='wire-from'||drag.type==='wire-to'){
+    const w=drag.wire;
+    const end=drag.type==='wire-from'?'from':'to';
+    w[end+'Id']=null; w[end+'Point']={x:s.x,y:s.y}; w[end+'Term']=null;
+    w.bend=null;
+    const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);
+    if(old)wiresLayer.replaceChild(buildWireEl(w),old);
+    buildHandles();
+    return;
+  }
+
+  // Wire bend drag
+  if(drag.type==='wire-bend'){
+    drag.wire.bend={x:s.x,y:s.y};
+    const old=wiresLayer.querySelector(`[data-id="${drag.wire.id}"]`);
+    if(old)wiresLayer.replaceChild(buildWireEl(drag.wire),old);
+    buildHandles();
+    return;
   }
 }
 
-function fieldHtml(id, label, value, placeholder){
-  return `<div class="row" style="flex-direction:column; align-items:stretch;">
-    <label>${label}</label>
-    <input type="text" id="${id}" value="${escapeXml(value||'')}" placeholder="${escapeXml(placeholder||'')}" style="width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:9px 10px;font-size:14px;">
-  </div>`;
+function onUp(e){
+  ptrMap.delete(e.pointerId);
+
+  if(ptrMap.size<2&&drag?.type==='pinch'){
+    drag=null; return;
+  }
+
+  if(!drag){return;}
+  const dt=drag;
+  drag=null;
+
+  if(dt.type==='node'&&dt.moved){saveDeferred();}
+
+  if(dt.type==='wire-from'||dt.type==='wire-to'){
+    const w=dt.wire, end=dt.type==='wire-from'?'from':'to';
+    const s=toSVG(e.clientX,e.clientY);
+    const hit=findNodeNear(s.x,s.y,null);
+    if(hit){
+      w[end+'Id']=hit.node.id; delete w[end+'Point'];
+      w[end+'Term']=hit.term!=null?hit.term:null;
+    }
+    w.bend=null;
+    renderAll(); saveDeferred();
+  }
+
+  if(dt.type==='wire-bend'){renderAll(); saveDeferred();}
+  if(dt.type.startsWith('resize-')||dt.type==='rotate'){renderAll(); saveDeferred();}
 }
 
-async function openFileModal(){
-  const cfg = await loadGithubCfg();
-  const hasCfg = cfg && cfg.token && cfg.repo;
-  openModal(`
-    <h2>Файл</h2>
-    <div class="miniHelp">Тримай копію поза браузером — щоб не загубилась і щоб відкрити на іншому пристрої.</div>
-    <div class="btnrow" style="margin-bottom:16px;">
-      <button class="btn" id="fmDownload">⬇ Завантажити .json</button>
+// ═══════════════════════════════════════════════════════════
+// SELECTION & INSPECTOR
+// ═══════════════════════════════════════════════════════════
+const inspector=document.getElementById('inspector');
+const inspBody=document.getElementById('insp-body');
+const inspTitle=document.getElementById('insp-title');
+document.getElementById('inspClose').addEventListener('click',clearSel);
+
+function clearSel(){selId=null;selKind=null;inspector.classList.remove('on');renderAll();}
+function openInspNode(n){
+  inspTitle.textContent=n.type==='note'?'Нотатка':'Прилад';
+  const e=EQUIP[n.type];
+  let typeOpts=Object.keys(EQUIP).filter(t=>t!=='note').map(t=>`<option value="${t}"${t===n.type?' selected':''}>${EQUIP[t].label}</option>`).join('');
+  let termsHtml='';
+  if(n.type==='board'){
+    const rows=(n.terminals||[]).map((t,i)=>`
+      <div class="term-row">
+        <input class="term-inp t-inp" data-i="${i}" value="${escX(t)}" placeholder="Клема ${i+1}">
+        <button class="term-del" data-i="${i}">✕</button>
+      </div>`).join('');
+    termsHtml=`<div class="col"><div class="lbl">Клеми</div><div class="terms-list">${rows}</div>
+      <button class="btn ghost t-add" style="width:100%">＋ Клема</button></div>`;
+  }
+  inspBody.innerHTML=`
+    <div class="col"><div class="lbl">Підпис</div>
+      <input class="fi" id="fLabel" value="${escX(n.label||'')}" placeholder="${e.label}"></div>
+    ${n.type!=='note'?`<div class="col"><div class="lbl">Тип</div>
+      <select class="fi" id="fType">${typeOpts}</select></div>`:''}
+    ${termsHtml}
+    <div class="col"><div class="lbl">Шар</div>
+      <div class="btn-row">
+        <button class="btn ghost" id="fFront">⬆ Наперед</button>
+        <button class="btn ghost" id="fBack">⬇ Назад</button>
+      </div></div>
+    <div class="btn-row">
+      <button class="btn ghost" id="fDup">⎘ Дублювати</button>
+      <button class="btn danger" id="fDel">🗑 Видалити</button>
+    </div>`;
+  inspector.classList.add('on');
+  document.getElementById('fLabel').addEventListener('input',ev=>{n.label=ev.target.value;updateNodeInPlace(n);saveDeferred();buildLegend();});
+  const fType=document.getElementById('fType');
+  if(fType)fType.addEventListener('change',()=>{
+    n.type=fType.value;
+    if(n.type==='board'&&!n.terminals)n.terminals=['R','C','G','Y','W','O/B'];
+    pushHist();renderAll();openInspNode(n);saveDeferred();
+  });
+  // Terms events via delegation
+  inspBody.addEventListener('input',ev=>{
+    if(ev.target.classList.contains('t-inp')){
+      const i=+ev.target.dataset.i;
+      if(n.terminals)n.terminals[i]=ev.target.value;
+      updateNodeInPlace(n);saveDeferred();
+    }
+  });
+  inspBody.addEventListener('click',ev=>{
+    if(ev.target.classList.contains('term-del')){
+      const i=+ev.target.dataset.i;
+      pushHist();n.terminals?.splice(i,1);
+      renderAll();openInspNode(n);saveDeferred();
+    }
+    if(ev.target.classList.contains('t-add')){
+      pushHist();(n.terminals=n.terminals||[]).push('');
+      renderAll();openInspNode(n);saveDeferred();
+    }
+    if(ev.target.id==='fFront'){
+      pushHist();proj.nodes=proj.nodes.filter(x=>x.id!==n.id);
+      proj.nodes.push(n);renderAll();saveDeferred();
+    }
+    if(ev.target.id==='fBack'){
+      pushHist();proj.nodes=proj.nodes.filter(x=>x.id!==n.id);
+      proj.nodes.unshift(n);renderAll();saveDeferred();
+    }
+    if(ev.target.id==='fDup'){
+      const cp=JSON.parse(JSON.stringify(n));
+      cp.id=uid();cp.x+=30;cp.y+=30;
+      pushHist();proj.nodes.push(cp);
+      selId=cp.id;selKind='node';
+      renderAll();openInspNode(cp);saveDeferred();
+    }
+    if(ev.target.id==='fDel'){pushHist();deleteNode(n.id);}
+  });
+  if(n.type==='note')setTimeout(()=>document.getElementById('fLabel')?.focus(),60);
+  updateDeleteBtn();
+}
+function openInspWire(w){
+  inspTitle.textContent='Провід';
+  const swatches=WIRE_COLORS.map(c=>`<div class="sw${c.hex===w.color?' sel':''}" data-hex="${c.hex}" data-lbl="${c.label}" style="background:${c.hex}" title="${c.label}"></div>`).join('');
+  inspBody.innerHTML=`
+    <div class="col"><div class="lbl">Колір</div>
+      <div class="swatch-row">${swatches}
+        <input type="color" class="sw" id="fCustomC" value="${w.color}" style="width:28px;height:28px;padding:0;border:2px solid var(--line)">
+      </div></div>
+    <div class="col"><div class="lbl">Підпис</div>
+      <input class="fi" id="fWlbl" value="${escX(w.label||'')}" placeholder="напр. R · 24В"></div>
+    <div class="help-text" style="margin-bottom:8px">Синій і помаранчевий кружечки на проводах — тягни до іншого приладу, щоб перенаправити жилу.</div>
+    <div class="btn-row">
+      <button class="btn ghost" id="fStraight">／ Прибрати вигин</button>
+      <button class="btn danger" id="fWdel">🗑 Видалити</button>
+    </div>`;
+  inspector.classList.add('on');
+  inspBody.querySelectorAll('.sw[data-hex]').forEach(d=>{
+    d.addEventListener('click',()=>{
+      w.color=d.dataset.hex;if(!w.label)w.label=d.dataset.lbl;
+      renderAll();openInspWire(w);saveDeferred();
+    });
+  });
+  document.getElementById('fCustomC').addEventListener('input',ev=>{w.color=ev.target.value;const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);if(old)wiresLayer.replaceChild(buildWireEl(w),old);saveDeferred();});
+  document.getElementById('fWlbl').addEventListener('input',ev=>{w.label=ev.target.value;const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);if(old)wiresLayer.replaceChild(buildWireEl(w),old);saveDeferred();buildLegend();});
+  document.getElementById('fStraight').addEventListener('click',()=>{w.bend=null;pushHist();renderAll();saveDeferred();});
+  document.getElementById('fWdel').addEventListener('click',()=>{pushHist();proj.wires=proj.wires.filter(x=>x.id!==w.id);clearSel();saveDeferred();});
+  updateDeleteBtn();
+}
+function updateDeleteBtn(){document.getElementById('tDel').disabled=!selId;}
+function deleteNode(id){
+  const n=getNode(id);
+  proj.wires.forEach(w=>{
+    if(w.fromId===id){w.fromId=null;w.fromPoint={x:n.x,y:n.y};}
+    if(w.toId===id){w.toId=null;w.toPoint={x:n.x,y:n.y};}
+  });
+  proj.nodes=proj.nodes.filter(x=>x.id!==id);
+  clearSel();renderAll();saveDeferred();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOLBAR & TOOLS
+// ═══════════════════════════════════════════════════════════
+document.getElementById('tSel').addEventListener('click',cancelMode);
+document.getElementById('tCable').addEventListener('click',openCableModal);
+document.getElementById('tDel').addEventListener('click',()=>{
+  if(!selId)return;
+  pushHist();
+  if(selKind==='node')deleteNode(selId);
+  else{proj.wires=proj.wires.filter(w=>w.id!==selId);clearSel();renderAll();saveDeferred();}
+});
+document.getElementById('tUndo').addEventListener('click',undo);
+document.getElementById('tZoomOut').addEventListener('click',()=>zoom(1.3));
+document.getElementById('tZoomIn').addEventListener('click',()=>zoom(0.77));
+document.getElementById('tFit').addEventListener('click',fitView);
+document.getElementById('tPdf').addEventListener('click',exportPdf);
+document.getElementById('tHelp').addEventListener('click',openHelp);
+
+function zoom(factor){
+  const cx=vb.x+vb.w/2, cy=vb.y+vb.h/2;
+  const nw=Math.max(400,Math.min(4200,vb.w*factor));
+  const nh=Math.max(250,Math.min(3000,vb.h*factor));
+  vb={x:cx-nw/2,y:cy-nh/2,w:nw,h:nh};
+  setVB();updateZoomLabel();
+}
+function updateZoomLabel(){
+  // "zoom" is how much bigger than default (1600 wide = 100%)
+  const pct=Math.round(1600/vb.w*100);
+  document.getElementById('zoomLabel').textContent=pct+'%';
+}
+function fitView(){
+  const r=board.getBoundingClientRect();
+  const aspect=r.height/r.width;
+  vb={x:0,y:0,w:1600,h:1600*aspect};
+  setVB();updateZoomLabel();
+}
+function setStatus(txt,noCancel){
+  const b=document.getElementById('statusBanner');
+  document.getElementById('statusText').textContent=txt;
+  document.getElementById('statusCancel').style.display=noCancel?'none':'inline-block';
+  b.classList.add('on');
+}
+function clearStatus(){document.getElementById('statusBanner').classList.remove('on');}
+document.getElementById('statusCancel').addEventListener('click',cancelMode);
+function cancelMode(){
+  toolMode='select';armType=null;pendingCable=null;cableFromId=null;
+  clearStatus();
+  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('armed'));
+  document.getElementById('tSel').classList.add('on');
+  document.getElementById('tCable').classList.remove('on');
+}
+function disarm(){
+  toolMode='select';armType=null;
+  clearStatus();
+  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('armed'));
+}
+function armPlace(type,itemEl){
+  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('armed'));
+  if(toolMode==='place'&&armType===type){cancelMode();return;}
+  itemEl.classList.add('armed');
+  toolMode='place';armType=type;
+  setStatus('Торкнись полотна, щоб розмістити: '+EQUIP[type].label,true);
+  document.getElementById('tSel').classList.remove('on');
+}
+
+// ═══════════════════════════════════════════════════════════
+// PALETTE
+// ═══════════════════════════════════════════════════════════
+function buildPalette(){
+  const pal=document.getElementById('palette');
+  pal.innerHTML='';
+  PALETTE_GROUPS.forEach(g=>{
+    const sec=document.createElement('div');sec.className='pg';
+    sec.innerHTML=`<div class="pg-title">${g.title}</div>`;
+    g.items.forEach(type=>sec.appendChild(makePaletteItem(type)));
+    pal.appendChild(sec);
+  });
+  // Custom types
+  const cg=document.createElement('div');cg.className='pg';
+  cg.innerHTML=`<div class="pg-title">Свої</div>`;
+  customTypes.forEach(c=>cg.appendChild(makePaletteItem(c.key)));
+  const addBtn=document.createElement('div');
+  addBtn.className='pi pi-add';
+  addBtn.innerHTML=`<div class="icon">${miniSVG('add','#4fd1ff')}</div><div class="lbl">Додати</div>`;
+  addBtn.addEventListener('click',openCustomTypeModal);
+  cg.appendChild(addBtn);
+  pal.appendChild(cg);
+}
+function makePaletteItem(type){
+  const e=EQUIP[type]; if(!e)return document.createElement('div');
+  const item=document.createElement('div');item.className='pi';
+  item.innerHTML=`<div class="icon">${miniSVG(e.shape,e.accent)}</div><div class="lbl">${e.label}</div>`;
+  item.addEventListener('click',()=>armPlace(type,item));
+  return item;
+}
+function miniSVG(shape,c){
+  switch(shape){
+    case'circle':    return`<svg viewBox="-17 -17 34 34" width="34" height="34"><circle cx="0" cy="0" r="13" fill="${c}"/></svg>`;
+    case'circleDash':return`<svg viewBox="-17 -17 34 34" width="34" height="34"><circle cx="0" cy="0" r="13" fill="none" stroke="${c}" stroke-width="2.2" stroke-dasharray="3,3"/></svg>`;
+    case'hex':       return`<svg viewBox="-17 -17 34 34" width="34" height="34"><polygon points="${hexPts(14,10)}" fill="${c}"/></svg>`;
+    case'diamond':   return`<svg viewBox="-17 -17 34 34" width="34" height="34"><polygon points="0,-14 14,0 0,14 -14,0" fill="${c}"/></svg>`;
+    case'triangle':  return`<svg viewBox="-17 -17 34 34" width="34" height="34"><polygon points="0,-14 13,12 -13,12" fill="${c}"/></svg>`;
+    case'rectRot':   return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-14" y="-7" width="28" height="14" rx="2" fill="${c}" transform="rotate(20)"/></svg>`;
+    case'rectDash':  return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-13" y="-9" width="26" height="18" rx="3" fill="none" stroke="${c}" stroke-width="2.2" stroke-dasharray="4,3"/></svg>`;
+    case'board':     return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-14" y="-9" width="28" height="18" rx="2" fill="${c}"/><circle cx="-7" cy="9" r="2.5" fill="${c}"/><circle cx="0" cy="9" r="2.5" fill="${c}"/><circle cx="7" cy="9" r="2.5" fill="${c}"/></svg>`;
+    case'none':      return`<svg viewBox="-17 -17 34 34" width="34" height="34"><text x="0" y="6" text-anchor="middle" font-size="20" fill="${c}" font-family="DM Sans">Aa</text></svg>`;
+    case'add':       return`<svg viewBox="-17 -17 34 34" width="34" height="34"><circle cx="0" cy="0" r="13" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="3,3"/><path d="M0 -6V6M-6 0H6" stroke="${c}" stroke-width="2"/></svg>`;
+    default:         return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-14" y="-10" width="28" height="20" rx="3" fill="${c}"/></svg>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CABLE CREATION
+// ═══════════════════════════════════════════════════════════
+function createCable(fromId,toId,fromTerm,toTerm){
+  pushHist();
+  const cid=uid();
+  pendingCable.colors.forEach((c,i)=>{
+    proj.wires.push({id:uid(),cableId:cid,slot:i,color:c.hex,label:c.label,
+      fromId,toId,fromTerm:fromTerm??null,toTerm:toTerm??null,bend:null});
+  });
+  toast(pendingCable.colors.length+'-жильний кабель додано');
+  renderAll();saveDeferred();
+}
+function openCableModal(){
+  const grid=WIRE_COLORS.slice(0,8).map((_,n)=>{
+    const dots=WIRE_COLORS.slice(0,n+1).map(c=>`<i style="background:${c.hex}"></i>`).join('');
+    return`<button class="count-btn" data-n="${n+1}"><span class="n">${n+1}</span><span class="dots">${dots}</span></button>`;
+  }).join('');
+  openModal(`<h2>Новий кабель</h2>
+    <p class="help-text">Обери кількість жил. Потім торкнись джерела, потім призначення.</p>
+    <div class="count-grid">${grid}</div>
+    <button class="btn ghost" id="cwToggle">🎨 Один провід свого кольору</button>
+    <div id="cwCustom" style="display:none;margin-top:10px">
+      <div class="row" style="gap:10px">
+        <input type="color" id="cwColor" value="#4fd1ff" style="width:46px;height:38px;border-radius:7px;border:1px solid var(--line);background:var(--panel2)">
+        <input class="fi" id="cwLbl" placeholder="Підпис" style="flex:1">
+      </div>
+      <button class="btn primary" id="cwCreate" style="width:100%;margin-top:8px">Створити</button>
+    </div>`);
+  document.getElementById('cwToggle').addEventListener('click',()=>{
+    const d=document.getElementById('cwCustom');
+    d.style.display=d.style.display==='none'?'block':'none';
+  });
+  document.querySelectorAll('.count-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const n=+btn.dataset.n;
+      pendingCable={colors:WIRE_COLORS.slice(0,n).map(c=>({hex:c.hex,label:c.label}))};
+      closeModal();toolMode='cable-from';cableFromId=null;
+      document.getElementById('tCable').classList.add('on');
+      setStatus('Торкнись приладу-джерела (1/2)');
+    });
+  });
+  document.getElementById('cwCreate')?.addEventListener('click',()=>{
+    const hex=document.getElementById('cwColor').value;
+    const lbl=document.getElementById('cwLbl').value||'Провід';
+    pendingCable={colors:[{hex,label:lbl}]};
+    closeModal();toolMode='cable-from';cableFromId=null;
+    setStatus('Торкнись приладу-джерела (1/2)');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// CUSTOM TYPE CREATOR
+// ═══════════════════════════════════════════════════════════
+function hue2hex(h){
+  const s=65,l=55;
+  const f=n=>{const k=(n+h/30)%12;const a=s/100*Math.min(l/100,1-l/100);return Math.round(255*(l/100-a*Math.max(-1,Math.min(k-3,9-k,1))));}
+  return '#'+[f(0),f(8),f(4)].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function nextAccent(){
+  const used=Object.values(EQUIP).map(e=>e.accent).concat(customTypes.map(c=>c.accent));
+  const hueOf=h=>{let r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255;const max=Math.max(r,g,b),min=Math.min(r,g,b);let hv=0;if(max!==min){const d=max-min;if(max===r)hv=((g-b)/d)%6;else if(max===g)hv=(b-r)/d+2;else hv=(r-g)/d+4;hv*=60;if(hv<0)hv+=360;}return hv;};
+  const usedH=used.map(hueOf);
+  let best=0,bestScore=-1;
+  for(let i=0;i<36;i++){
+    const h=(i*137.508+17)%360;
+    const score=usedH.length?Math.min(...usedH.map(u=>{const d=Math.abs(h-u)%360;return d>180?360-d:d;})):999;
+    if(score>bestScore){bestScore=score;best=h;}
+  }
+  return hue2hex(best);
+}
+function openCustomTypeModal(){
+  const shapeGrid=CUSTOM_SHAPES.map(s=>`<button class="shape-btn" data-s="${s.key}">${miniSVG(s.shape,'#4fd1ff')}<span>${s.label}</span></button>`).join('');
+  openModal(`<h2>Новий елемент</h2>
+    <p class="help-text">Введи назву — колір підбереться автоматично, щоб не збігатися з рештою.</p>
+    <div class="col"><div class="lbl">Назва</div><input class="fi" id="ctName" placeholder="напр. Насос конденсату"></div>
+    <div class="lbl" style="margin-bottom:6px">Форма</div>
+    <div class="shape-grid">${shapeGrid}</div>
+    <button class="btn primary" id="ctCreate" style="width:100%">Створити</button>`);
+  let chosenShape='rect';
+  document.querySelector('.shape-btn[data-s="rect"]')?.classList.add('sel');
+  document.querySelectorAll('.shape-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.shape-btn').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');chosenShape=b.dataset.s;
+    });
+  });
+  document.getElementById('ctCreate').addEventListener('click',()=>{
+    const name=document.getElementById('ctName').value.trim();
+    if(!name){toast('Введи назву');return;}
+    const key='ct_'+uid();
+    const accent=nextAccent();
+    const abbr=name.slice(0,6).toUpperCase();
+    const entry={key,abbr,label:name,accent,shape:chosenShape,bw:86,bh:58};
+    customTypes.push(entry);
+    EQUIP[key]={abbr,label:name,accent,shape:chosenShape,bw:86,bh:58};
+    saveCustomTypes();buildPalette();closeModal();
+    toast('Додано: '+name);
+    const newItem=document.querySelector(`.pi[data-type="${key}"]`);
+    if(newItem)armPlace(key,newItem);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// LEGEND
+// ═══════════════════════════════════════════════════════════
+document.getElementById('legendBtn').addEventListener('click',()=>{
+  document.getElementById('legendPanel').classList.toggle('on');
+});
+function buildLegend(){
+  const panel=document.getElementById('legendPanel');
+  const types=new Map(),colors=new Map();
+  proj.nodes.forEach(n=>{if(n.type!=='note')types.set(n.type,EQUIP[n.type]);});
+  proj.wires.forEach(w=>{if(w.label)colors.set(w.color,w.label);});
+  let h='';
+  if(types.size){
+    h+=`<div class="leg-group"><div class="leg-t">Обладнання</div>`;
+    types.forEach((e,k)=>h+=`<div class="leg-row"><span class="leg-sw" style="background:${e.accent}"></span>${escX(e.label)}</div>`);
+    h+=`</div>`;
+  }
+  if(colors.size){
+    h+=`<div class="leg-group"><div class="leg-t">Проводи</div>`;
+    colors.forEach((lbl,hex)=>h+=`<div class="leg-row"><span class="leg-sw" style="background:${hex}"></span>${escX(lbl)}</div>`);
+    h+=`</div>`;
+  }
+  panel.innerHTML=h||`<div style="color:var(--dim);font-size:11px">Тут з'явиться легенда</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// UNDO
+// ═══════════════════════════════════════════════════════════
+function pushHist(){
+  hist.push(JSON.stringify({nodes:proj.nodes,wires:proj.wires}));
+  if(hist.length>40)hist.shift();
+}
+function undo(){
+  if(!hist.length){toast('Нічого скасовувати');return;}
+  const snap=JSON.parse(hist.pop());
+  proj.nodes=snap.nodes;proj.wires=snap.wires;
+  selId=null;selKind=null;inspector.classList.remove('on');
+  renderAll();saveDeferred();
+}
+
+// ═══════════════════════════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════════════════════════
+const SAVE_DOT=document.getElementById('saveDot');
+function setSaveDot(s){SAVE_DOT.classList.toggle('busy',s==='busy');}
+function saveDeferred(){
+  setSaveDot('busy');clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveNow,900);
+}
+async function saveNow(){
+  proj.name=document.getElementById('projName').value||'Без назви';
+  proj.updatedAt=Date.now();
+  await Store.set(projKey(proj.id),JSON.stringify(proj));
+  let idx=await loadIdx();
+  idx=idx.filter(p=>p.id!==proj.id);
+  idx.unshift({id:proj.id,name:proj.name,updatedAt:proj.updatedAt});
+  await saveIdx(idx);
+  await Store.set(LAST_KEY,proj.id);
+  setSaveDot('ok');
+}
+async function loadProject(id){
+  const raw=await Store.get(projKey(id)); if(!raw)return;
+  try{
+    proj=JSON.parse(raw);
+    proj.nodes=proj.nodes||[];proj.wires=proj.wires||[];
+    document.getElementById('projName').value=proj.name||'Без назви';
+    hist=[];selId=null;selKind=null;inspector.classList.remove('on');
+    renderAll();await Store.set(LAST_KEY,proj.id);
+  }catch(e){toast('Помилка завантаження');}
+}
+async function newProject(){
+  proj=blankProj('Нова схема '+new Date().toLocaleDateString('uk-UA'));
+  document.getElementById('projName').value=proj.name;
+  hist=[];selId=null;selKind=null;inspector.classList.remove('on');
+  renderAll();await saveNow();
+}
+document.getElementById('projName').addEventListener('change',saveDeferred);
+
+// ═══════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════
+const ml=document.getElementById('modal-layer');
+const mc=document.getElementById('modal-card');
+function openModal(html){mc.innerHTML=html;ml.classList.add('on');}
+function closeModal(){ml.classList.remove('on');mc.innerHTML='';}
+ml.addEventListener('click',e=>{if(e.target===ml)closeModal();});
+
+document.getElementById('btnNew').addEventListener('click',()=>openModal(`<h2>Нова схема</h2>
+  <p class="help-text">Поточна схема вже збережена. Продовжити?</p>
+  <div class="btn-row"><button class="btn ghost" id="ncCancel">Скасувати</button>
+    <button class="btn primary" id="ncOk">Створити</button></div>`));
+mc.addEventListener('click',async e=>{
+  if(e.target.id==='ncCancel')closeModal();
+  if(e.target.id==='ncOk'){closeModal();await newProject();}
+});
+
+document.getElementById('btnProjects').addEventListener('click',async()=>{
+  const idx=(await loadIdx()).sort((a,b)=>b.updatedAt-a.updatedAt);
+  const rows=idx.map(p=>`<div class="proj-row">
+    <div><div class="pname">${escX(p.name)}</div><div class="pdate">${new Date(p.updatedAt).toLocaleString('uk-UA')}</div></div>
+    <button class="ib ghost open-proj" data-id="${p.id}">📂</button>
+    <button class="ib ghost del-proj danger" data-id="${p.id}" style="color:var(--danger)">🗑</button>
+  </div>`).join('');
+  openModal(`<h2>Мої схеми</h2><div class="proj-list">${rows||'<div class="help-text">Ще немає схем</div>'}</div>`);
+  mc.addEventListener('click',async ev=>{
+    if(ev.target.classList.contains('open-proj')){closeModal();await loadProject(ev.target.dataset.id);}
+    if(ev.target.classList.contains('del-proj')){
+      const id=ev.target.dataset.id;
+      await Store.del(projKey(id));
+      let idx2=await loadIdx();idx2=idx2.filter(p=>p.id!==id);await saveIdx(idx2);
+      toast('Видалено');closeModal();
+    }
+  });
+});
+
+// File button
+const GHCFG_KEY='fh-wiring-ghcfg';
+document.getElementById('btnFile').addEventListener('click',async()=>{
+  const cfg=await loadGhCfg();
+  const hasCfg=cfg?.token&&cfg?.repo;
+  openModal(`<h2>Файл</h2>
+    <div class="btn-row" style="margin-bottom:16px">
+      <button class="btn" id="fmDown">⬇ Завантажити .json</button>
       <button class="btn ghost" id="fmOpen">📂 Відкрити файл</button>
     </div>
-    <div style="border-top:1px solid var(--line); padding-top:14px;">
-      <h2 style="font-size:19px; margin-bottom:8px;">GitHub</h2>
-      ${hasCfg ? `
-        <div class="miniHelp">Репозиторій: <b>${escapeXml(cfg.repo)}</b> · гілка <b>${escapeXml(cfg.branch||'main')}</b> · папка <b>${escapeXml(cfg.folder||'wiring-diagrams')}</b></div>
-        <button class="btn primary" id="fmPush" style="width:100%; margin-bottom:8px;">☁️ Зберегти цю схему на GitHub</button>
-        <button class="btn ghost" id="fmCfgEdit" style="width:100%;">⚙️ Змінити налаштування</button>
-      ` : `
-        <div class="miniHelp">Введи дані одноразово. Токен зберігається тільки в цьому браузері й використовується напряму для звернень до GitHub — більше нікуди не передається.</div>
-        ${fieldHtml('cfgToken','Personal Access Token','','ghp_…')}
-        ${fieldHtml('cfgRepo','Репозиторій (власник/назва)','','frosthawk/frosthawkhvac.com')}
-        ${fieldHtml('cfgBranch','Гілка','main','main')}
-        ${fieldHtml('cfgFolder','Папка в репозиторії','wiring-diagrams','wiring-diagrams')}
-        <button class="btn primary" id="fmCfgSave" style="width:100%;">Зберегти налаштування</button>
-      `}
-    </div>
-  `);
-  document.getElementById('fmDownload').addEventListener('click', ()=>{ downloadProjectJson(); closeModal(); });
-  document.getElementById('fmOpen').addEventListener('click', ()=>{ closeModal(); document.getElementById('fileImportInput').click(); });
-  if(hasCfg){
-    document.getElementById('fmPush').addEventListener('click', async ()=>{ closeModal(); await saveToGithub(cfg); });
-    document.getElementById('fmCfgEdit').addEventListener('click', async ()=>{ await Store.del(GITHUB_CFG_KEY); openFileModal(); });
-  } else {
-    document.getElementById('fmCfgSave').addEventListener('click', async ()=>{
-      const newCfg = {
-        token: document.getElementById('cfgToken').value.trim(),
-        repo: document.getElementById('cfgRepo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,''),
-        branch: document.getElementById('cfgBranch').value.trim()||'main',
-        folder: document.getElementById('cfgFolder').value.trim()||'wiring-diagrams'
-      };
-      if(!newCfg.token || !newCfg.repo.includes('/')){ toast('Заповни токен і репозиторій у форматі власник/назва'); return; }
-      await Store.set(GITHUB_CFG_KEY, JSON.stringify(newCfg));
-      toast('Налаштування збережено');
-      openFileModal();
-    });
-  }
+    <div style="border-top:1px solid var(--line);padding-top:14px">
+      <h2 style="font-size:18px;margin-bottom:8px">GitHub</h2>
+      ${hasCfg?`<p class="help-text">Репо: <b>${escX(cfg.repo)}</b> · ${escX(cfg.branch||'main')} · /${escX(cfg.folder||'wiring')}</p>
+        <button class="btn primary" id="fmPush" style="width:100%;margin-bottom:7px">☁️ Зберегти на GitHub</button>
+        <button class="btn ghost" id="fmReset" style="width:100%">⚙️ Змінити налаштування</button>`
+      :`<p class="help-text">Введи токен і репозиторій — далі одна кнопка "Зберегти".</p>
+        <div class="col"><div class="lbl">Personal Access Token</div><input class="fi" id="ghT" placeholder="ghp_…" type="password"></div>
+        <div class="col"><div class="lbl">Репозиторій (власник/назва)</div><input class="fi" id="ghR" placeholder="username/frosthawk-website"></div>
+        <div class="col"><div class="lbl">Гілка</div><input class="fi" id="ghB" value="main"></div>
+        <div class="col"><div class="lbl">Папка</div><input class="fi" id="ghF" value="wiring"></div>
+        <button class="btn primary" id="ghSave" style="width:100%">Зберегти налаштування</button>`}
+    </div>`);
+  document.getElementById('fmDown')?.addEventListener('click',()=>{downloadJson();closeModal();});
+  document.getElementById('fmOpen')?.addEventListener('click',()=>{closeModal();document.getElementById('fileInput').click();});
+  document.getElementById('fmPush')?.addEventListener('click',async()=>{closeModal();await pushToGithub(cfg);});
+  document.getElementById('fmReset')?.addEventListener('click',async()=>{await Store.del(GHCFG_KEY);closeModal();document.getElementById('btnFile').click();});
+  document.getElementById('ghSave')?.addEventListener('click',async()=>{
+    const t=document.getElementById('ghT')?.value?.trim();
+    const r=document.getElementById('ghR')?.value?.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'');
+    const b=document.getElementById('ghB')?.value?.trim()||'main';
+    const f=document.getElementById('ghF')?.value?.trim()||'wiring';
+    if(!t||!r?.includes('/')){toast('Заповни токен і репозиторій');return;}
+    await Store.set(GHCFG_KEY,JSON.stringify({token:t,repo:r,branch:b,folder:f}));
+    toast('Збережено');closeModal();
+  });
+});
+async function loadGhCfg(){try{const r=await Store.get(GHCFG_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function slug(s){return(s||'shema').toLowerCase().replace(/[^a-z0-9а-яіїє\-]/gi,'-').replace(/^-+|-+$/g,'')||'shema';}
+function downloadJson(){
+  const b=new Blob([JSON.stringify(proj,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=slug(proj.name)+'.json';document.body.appendChild(a);a.click();
+  document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast('Файл завантажено');
 }
-document.getElementById('btnFile').addEventListener('click', openFileModal);
-
-document.getElementById('btnNew').addEventListener('click', ()=>{
-  openModal(`
-    <h2>Нова схема</h2>
-    <div class="miniHelp">Поточну схему вже збережено автоматично — її завжди можна відкрити через «Мої».</div>
-    <div class="btnrow">
-      <button class="btn ghost" id="cancelNew">Скасувати</button>
-      <button class="btn primary" id="confirmNew">Створити нову</button>
-    </div>
-  `);
-  document.getElementById('cancelNew').addEventListener('click', closeModal);
-  document.getElementById('confirmNew').addEventListener('click', async ()=>{ closeModal(); await newProject(); });
+async function pushToGithub(cfg){
+  toast('Зберігаю на GitHub…');
+  try{
+    const path=(cfg.folder?cfg.folder.replace(/^\/+|\/+$/g,'')+'/'+'':'')+slug(proj.name)+'.json';
+    const apiUrl=`https://api.github.com/repos/${cfg.repo}/contents/${path}`;
+    const headers={'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json'};
+    let sha;
+    const g=await fetch(apiUrl+`?ref=${encodeURIComponent(cfg.branch||'main')}`,{headers});
+    if(g.ok)sha=(await g.json()).sha;
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(proj,null,2))));
+    const p=await fetch(apiUrl,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},
+      body:JSON.stringify({message:'Схема: '+proj.name,content,sha,branch:cfg.branch||'main'})});
+    if(!p.ok){const t=await p.text();throw new Error(p.status+': '+t);}
+    toast('Збережено на GitHub ✓');
+  }catch(err){toast('GitHub помилка: '+(err.message||'спробуй знову'));}
+}
+document.getElementById('fileInput').addEventListener('change',e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!Array.isArray(d.nodes)||!Array.isArray(d.wires)){toast('Файл не схема');return;}
+      d.id=d.id||uid();proj=d;
+      document.getElementById('projName').value=proj.name||'Без назви';
+      hist=[];selId=null;selKind=null;inspector.classList.remove('on');
+      renderAll();saveDeferred();toast('Схему відкрито');
+    }catch(e){toast('Помилка читання файлу');}
+  };r.readAsText(f);
 });
 
-document.getElementById('btnProjects').addEventListener('click', async ()=>{
-  const idx = await loadIndex();
-  const rows = idx.length? idx.sort((a,b)=>b.updatedAt-a.updatedAt).map(p=>`
-    <div class="projRow" data-id="${p.id}">
-      <div style="flex:1;">
-        <div class="pname">${escapeXml(p.name)}</div>
-        <div class="pdate">${new Date(p.updatedAt).toLocaleString('uk-UA')}</div>
-      </div>
-      <button class="openP" title="Відкрити">📂</button>
-      <button class="del" title="Видалити">🗑</button>
-    </div>
-  `).join('') : `<div class="miniHelp">Поки що немає збережених схем.</div>`;
-  openModal(`<h2>Мої схеми</h2><div class="projList">${rows}</div>`);
-  modalCard.querySelectorAll('.openP').forEach(b=>{
-    b.addEventListener('click', async (e)=>{
-      const id = e.target.closest('.projRow').dataset.id;
-      closeModal(); await loadProject(id);
-    });
-  });
-  modalCard.querySelectorAll('.del').forEach(b=>{
-    b.addEventListener('click', async (e)=>{
-      const id = e.target.closest('.projRow').dataset.id;
-      await Store.del(projKey(id));
-      let list = await loadIndex();
-      list = list.filter(p=>p.id!==id);
-      await saveIndex(list);
-      toast('Схему видалено');
-      document.getElementById('btnProjects').click();
-    });
-  });
-});
+// ═══════════════════════════════════════════════════════════
+// HELP
+// ═══════════════════════════════════════════════════════════
+function openHelp(){openModal(`<h2>Як користуватись</h2>
+  <div class="help-text">
+    <b>Розмістити прилад</b> — тапни значок зліва, потім торкнись полотна.<br><br>
+    <b>Перемістити</b> — тримай пальцем і тягни.<br><br>
+    <b>Розмір</b> — тапни прилад (з'являться ⇔ ⇕), тягни за стрілки.<br><br>
+    <b>Поворот</b> — тапни прилад, тягни жовту ↻ над ним (фіксує кожні 15°).<br><br>
+    <b>Кабель</b> — натисни «Кабель» внизу, обери кількість жил, торкнись першого приладу, потім другого.<br><br>
+    <b>Розвести жили</b> — тапни провід, тягни синій або помаранчевий кружечок до іншого приладу.<br><br>
+    <b>Пан</b> — два пальці: тягни; зум: зводь/розводь пальці.<br><br>
+    <b>Зберігається автоматично</b>. Кнопка PDF → схема для клієнта.
+  </div>
+  <button class="btn primary" style="width:100%" onclick="document.getElementById('modal-layer').classList.remove('on')">Зрозуміло</button>`);}
 
-document.getElementById('projName').addEventListener('change', saveDebounced);
-document.getElementById('projName').addEventListener('blur', saveDebounced);
-
-/* ============== PDF EXPORT ============== */
+// ═══════════════════════════════════════════════════════════
+// PDF EXPORT
+// ═══════════════════════════════════════════════════════════
 async function exportPdf(){
-  if(!state.nodes.length){ toast('Спочатку додай хоча б один прилад'); return; }
+  if(!proj.nodes.length){toast('Спочатку додай прилади');return;}
   toast('Готую PDF…');
-  const svgEl = board;
-  const bbox = nodesLayer.getBBox();
-  const pad = 60;
-  const x = Math.max(0, bbox.x-pad), y = Math.max(0, bbox.y-pad);
-  const w = bbox.width + pad*2, h = bbox.height + pad*2 + 70;
-
-  const clone = svgEl.cloneNode(true);
-  clone.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
-  clone.setAttribute('width', w);
-  clone.setAttribute('height', h);
-  clone.querySelectorAll('#bgRect').forEach(r=>{ r.setAttribute('fill', '#ffffff'); });
-  clone.querySelectorAll('#emptyHintSvg').forEach(t=>t.remove());
-  clone.querySelectorAll('.handle').forEach(hd=>hd.remove());
-  clone.querySelectorAll('.node-label').forEach(t=>t.setAttribute('fill','#26313b'));
-  clone.querySelectorAll('.wire-label').forEach(t=>t.setAttribute('fill','#1a2128'));
-  clone.querySelectorAll('.wire-label-bg').forEach(r=>{ r.setAttribute('fill','#ffffff'); r.setAttribute('opacity','0.92'); r.setAttribute('stroke','#d9dee3'); });
-  clone.querySelectorAll('.terminal rect').forEach(r=>{ r.setAttribute('fill','#ffffff'); });
-  clone.querySelectorAll('.terminal text').forEach(t=>{ t.setAttribute('fill','#1a2128'); });
-
-  // title block
-  const titleG = document.createElementNS('http://www.w3.org/2000/svg','g');
-  titleG.innerHTML = `<text x="${x+pad/2}" y="${y+34}" font-family="DM Sans" font-weight="700" font-size="22" fill="#11161d">${escapeXml(state.name)}</text>
-    <text x="${x+pad/2}" y="${y+54}" font-family="DM Sans" font-size="12" fill="#5b6b78">Frost Hawk HVAC — ${new Date().toLocaleDateString('uk-UA')}</text>`;
-  clone.appendChild(titleG);
-
-  const xml = new XMLSerializer().serializeToString(clone);
-  const svg64 = btoa(unescape(encodeURIComponent(xml)));
-  const img = new Image();
-  const scale = 2.2;
-  await new Promise((resolve,reject)=>{
-    img.onload = resolve; img.onerror = reject;
-    img.src = 'data:image/svg+xml;base64,'+svg64;
+  // Compute bounding box
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  proj.nodes.forEach(n=>{
+    const{w,h}=nodeDims(n);
+    const pad=h/2+50;
+    minX=Math.min(minX,n.x-w/2-pad);minY=Math.min(minY,n.y-h/2-pad);
+    maxX=Math.max(maxX,n.x+w/2+pad);maxY=Math.max(maxY,n.y+h/2+pad);
   });
-  const canvas = document.createElement('canvas');
-  canvas.width = w*scale; canvas.height = h*scale;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(img,0,0,canvas.width,canvas.height);
-  const dataUrl = canvas.toDataURL('image/png',1.0);
-
-  const { jsPDF } = window.jspdf;
-  const orientation = w>h ? 'landscape':'portrait';
-  const doc = new jsPDF({orientation, unit:'pt', format:'a4'});
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const margin = 24;
-  const availW = pageW-margin*2, availH = pageH-margin*2;
-  const ratio = Math.min(availW/w, availH/h);
-  const imgW = w*ratio, imgH = h*ratio;
-  doc.addImage(dataUrl,'PNG', (pageW-imgW)/2, margin, imgW, imgH);
-
-  // legend of distinct wire colors/labels used
-  const seen = new Map();
-  state.wires.forEach(wr=>{ if(wr.label) seen.set(wr.color+'|'+wr.label, wr); });
+  const bw=maxX-minX, bh=maxY-minY+60;
+  // Render to offscreen SVG
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');
+  svg.setAttribute('viewBox',`${minX} ${minY} ${bw} ${bh}`);
+  svg.setAttribute('width',bw); svg.setAttribute('height',bh);
+  svg.setAttribute('xmlns',svgNS);
+  // White bg
+  const bgr=document.createElementNS(svgNS,'rect');
+  bgr.setAttribute('x',minX-999);bgr.setAttribute('y',minY-999);
+  bgr.setAttribute('width',99999);bgr.setAttribute('height',99999);bgr.setAttribute('fill','#fff');
+  svg.appendChild(bgr);
+  // Wires
+  const wg=document.createElementNS(svgNS,'g');
+  proj.wires.forEach(w=>{
+    const geo=computeWireGeom(w);if(!geo)return;
+    const{p1,p2}=geo;
+    const d=w.bend?`M${p1.x},${p1.y}L${w.bend.x},${w.bend.y}L${p2.x},${p2.y}`:`M${p1.x},${p1.y}L${p2.x},${p2.y}`;
+    const mk=(stroke,sw,op)=>{const e=document.createElementNS(svgNS,'path');e.setAttribute('d',d);e.setAttribute('fill','none');e.setAttribute('stroke',stroke);e.setAttribute('stroke-width',sw);e.setAttribute('stroke-linecap','round');if(op)e.setAttribute('opacity',op);return e;};
+    wg.appendChild(mk('#ccc',5.5,.3));
+    wg.appendChild(mk(w.color,3.2));
+    if(w.label){
+      const mid=w.bend||{x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2};
+      const lw=Math.max(18,w.label.length*6+10);
+      const rb=document.createElementNS(svgNS,'rect');
+      rb.setAttribute('x',mid.x-lw/2);rb.setAttribute('y',mid.y-9);
+      rb.setAttribute('width',lw);rb.setAttribute('height',16);rb.setAttribute('rx',4);
+      rb.setAttribute('fill','#fff');rb.setAttribute('stroke','#ddd');rb.setAttribute('stroke-width',1);
+      wg.appendChild(rb);
+      const lt=document.createElementNS(svgNS,'text');
+      lt.setAttribute('x',mid.x);lt.setAttribute('y',mid.y+3);
+      lt.setAttribute('text-anchor','middle');lt.setAttribute('font-size',10.5);
+      lt.setAttribute('font-family','DM Sans,sans-serif');lt.setAttribute('font-weight',700);
+      lt.setAttribute('fill','#222');lt.textContent=w.label;
+      wg.appendChild(lt);
+    }
+  });
+  svg.appendChild(wg);
+  // Nodes
+  const ng=document.createElementNS(svgNS,'g');
+  proj.nodes.forEach(n=>{
+    const e=EQUIP[n.type];const{w,h}=nodeDims(n);
+    const g=document.createElementNS(svgNS,'g');
+    g.setAttribute('transform',`translate(${n.x},${n.y}) rotate(${n.rotation||0})`);
+    if(n.type==='note'){
+      const r=document.createElementNS(svgNS,'rect');
+      r.setAttribute('x',-w/2);r.setAttribute('y',-14);r.setAttribute('width',w);r.setAttribute('height',28);r.setAttribute('rx',5);r.setAttribute('fill','#f5f5f5');r.setAttribute('stroke','#ccc');
+      g.appendChild(r);
+      const t=document.createElementNS(svgNS,'text');
+      t.setAttribute('x',0);t.setAttribute('y',4);t.setAttribute('text-anchor','middle');
+      t.setAttribute('font-size',12);t.setAttribute('font-family','DM Sans,sans-serif');t.setAttribute('fill','#333');
+      t.textContent=n.label||'Текст';g.appendChild(t);
+    } else {
+      // Shape
+      const fill=e.accent,stroke='#555';
+      let shapeEl;
+      switch(e.shape){
+        case'circle':shapeEl=document.createElementNS(svgNS,'circle');shapeEl.setAttribute('r',w/2);break;
+        case'hex':shapeEl=document.createElementNS(svgNS,'polygon');shapeEl.setAttribute('points',hexPts(w/2,h/2));break;
+        case'diamond':shapeEl=document.createElementNS(svgNS,'polygon');shapeEl.setAttribute('points',`0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0`);break;
+        case'triangle':shapeEl=document.createElementNS(svgNS,'polygon');shapeEl.setAttribute('points',`0,${-h/2} ${w/2},${h/2} ${-w/2},${h/2}`);break;
+        default:shapeEl=document.createElementNS(svgNS,'rect');shapeEl.setAttribute('x',-w/2);shapeEl.setAttribute('y',-h/2);shapeEl.setAttribute('width',w);shapeEl.setAttribute('height',h);shapeEl.setAttribute('rx',6);
+      }
+      shapeEl.setAttribute('fill',fill);shapeEl.setAttribute('stroke',stroke);shapeEl.setAttribute('stroke-width',1.5);
+      g.appendChild(shapeEl);
+      const t=document.createElementNS(svgNS,'text');
+      t.setAttribute('x',0);t.setAttribute('y',n.type==='board'?-h/2+17:0);
+      t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('font-size',Math.min(13,w/3.5));t.setAttribute('font-family','DM Sans,sans-serif');t.setAttribute('font-weight',700);
+      t.setAttribute('fill',n.type==='board'?'#eee':'#111');
+      t.textContent=trunc(n.label||e.abbr,14);g.appendChild(t);
+      // board terminals
+      if(n.type==='board'&&n.terminals){
+        n.terminals.forEach((lbl,i)=>{
+          const cnt=n.terminals.length||1;
+          const lx=-w/2+(w/(cnt+1))*(i+1);
+          const by=h/2;
+          const rb=document.createElementNS(svgNS,'rect');
+          rb.setAttribute('x',lx-9);rb.setAttribute('y',by-7);rb.setAttribute('width',18);rb.setAttribute('height',14);rb.setAttribute('rx',2);rb.setAttribute('fill','#fff');rb.setAttribute('stroke',fill);rb.setAttribute('stroke-width',1.2);
+          g.appendChild(rb);
+          const tb=document.createElementNS(svgNS,'text');
+          tb.setAttribute('x',lx);tb.setAttribute('y',by+1);tb.setAttribute('text-anchor','middle');tb.setAttribute('dominant-baseline','middle');tb.setAttribute('font-size',8);tb.setAttribute('font-family','DM Sans,sans-serif');tb.setAttribute('font-weight',700);tb.setAttribute('fill','#222');tb.textContent=lbl||'·';
+          g.appendChild(tb);
+        });
+      }
+    }
+    ng.appendChild(g);
+  });
+  svg.appendChild(ng);
+  // Title
+  const titleG=document.createElementNS(svgNS,'g');
+  const t1=document.createElementNS(svgNS,'text');
+  t1.setAttribute('x',minX+10);t1.setAttribute('y',maxY+28);
+  t1.setAttribute('font-size',18);t1.setAttribute('font-family','DM Sans,sans-serif');t1.setAttribute('font-weight',700);t1.setAttribute('fill','#111');
+  t1.textContent=proj.name||'Схема';
+  const t2=document.createElementNS(svgNS,'text');
+  t2.setAttribute('x',minX+10);t2.setAttribute('y',maxY+46);
+  t2.setAttribute('font-size',11);t2.setAttribute('font-family','DM Sans,sans-serif');t2.setAttribute('fill','#666');
+  t2.textContent='Frost Hawk HVAC · '+new Date().toLocaleDateString('uk-UA');
+  titleG.appendChild(t1);titleG.appendChild(t2);svg.appendChild(titleG);
+  // Rasterize
+  const xml=new XMLSerializer().serializeToString(svg);
+  const img=new Image();
+  await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(xml)));});
+  const scale=2;
+  const cv=document.createElement('canvas');
+  cv.width=bw*scale;cv.height=bh*scale;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.drawImage(img,0,0,cv.width,cv.height);
+  const dataUrl=cv.toDataURL('image/png',1);
+  const{jsPDF}=window.jspdf;
+  const orientation=bw>bh?'landscape':'portrait';
+  const doc=new jsPDF({orientation,unit:'pt',format:'a4'});
+  const pw=doc.internal.pageSize.getWidth(),ph=doc.internal.pageSize.getHeight();
+  const m=28,aw=pw-m*2,ah=ph-m*2;
+  const r=Math.min(aw/bw,ah/bh);
+  const iw=bw*r,ih=bh*r;
+  doc.addImage(dataUrl,'PNG',(pw-iw)/2,m,iw,ih);
+  // Wire legend
+  const seen=new Map();
+  proj.wires.forEach(w=>{if(w.label)seen.set(w.color+'|'+w.label,w);});
   if(seen.size){
-    let ly = margin+imgH+20;
-    if(ly > pageH-40){ doc.addPage(); ly = margin; }
-    doc.setFontSize(10); doc.setTextColor(60,70,80);
-    doc.text('Легенда проводів:', margin, ly);
-    let lx = margin, col=0;
-    [...seen.values()].forEach((wr,i)=>{
-      const yy = ly+16+Math.floor(col/3)*16;
-      const xx = margin + (col%3)*180;
-      doc.setFillColor(wr.color);
-      doc.circle(xx+4, yy-3, 4, 'F');
-      doc.setTextColor(40,48,56);
-      doc.text(wr.label, xx+14, yy);
-      col++;
+    let ly=m+ih+18;
+    if(ly>ph-30){doc.addPage();ly=m;}
+    doc.setFontSize(9);doc.setTextColor(80,90,100);
+    doc.text('Легенда:',m,ly);ly+=14;
+    [...seen.values()].forEach((w,i)=>{
+      const x=m+(i%3)*180;const y=ly+Math.floor(i/3)*14;
+      doc.setFillColor(w.color);doc.circle(x+4,y-3,4,'F');
+      doc.setTextColor(40,50,60);doc.text(w.label,x+14,y);
     });
   }
-
-  doc.save((state.name||'shema').replace(/[^\wа-яіїєА-ЯІЇЄ \-]/g,'').trim()+'.pdf');
+  doc.save(slug(proj.name)+'.pdf');
   toast('PDF готовий ✓');
 }
 
-/* ============== INIT ============== */
+// ═══════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// KEYBOARD (desktop)
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('keydown',e=>{
+  if(e.key==='Escape')cancelMode();
+  if((e.key==='Delete'||e.key==='Backspace')&&selId&&document.activeElement.tagName!=='INPUT'){
+    e.preventDefault();
+    pushHist();
+    if(selKind==='node')deleteNode(selId);
+    else{proj.wires=proj.wires.filter(w=>w.id!==selId);clearSel();renderAll();saveDeferred();}
+  }
+  if(e.key==='z'&&(e.ctrlKey||e.metaKey)){e.preventDefault();undo();}
+});
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
 async function init(){
   await loadCustomTypes();
   buildPalette();
-  setZoom(2);
-  const lastId = await Store.get('frosthawk-wiring-last');
+  fitView();
+  const lastId=await Store.get(LAST_KEY);
   if(lastId){
-    const raw = await Store.get(projKey(lastId));
-    if(raw){
-      try{
-        state = JSON.parse(raw);
-        state.nodes = state.nodes||[]; state.wires = state.wires||[];
-      }catch(e){ state = blankProject(); }
-    } else { state = blankProject(); }
-  } else {
-    state = blankProject();
-  }
-  document.getElementById('projName').value = state.name;
-  render();
-  refreshToolButtons();
+    const raw=await Store.get(projKey(lastId));
+    if(raw){try{proj=JSON.parse(raw);proj.nodes=proj.nodes||[];proj.wires=proj.wires||[];}catch(e){proj=blankProj();}}
+    else proj=blankProj();
+  } else proj=blankProj();
+  document.getElementById('projName').value=proj.name;
+  renderAll();
+  setVB();updateZoomLabel();
 }
 init();
-
 })();
 </script>
 </body>
