@@ -1,140 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Frost Hawk — Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
-  <style>
-    :root { --bg:#07080f; --bg2:#0d0f1c; --card:#0f1220; --border:rgba(255,255,255,0.08); --orange:#f97316; --blue:#0ea5e9; --txt:#eef0f8; --muted:#6070a0; --dim:#4a5070; --green:#22c55e; --red:#ef4444; }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-    a{color:inherit;text-decoration:none}
-
-    /* LOGIN */
-    #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(circle at 30% 30%,rgba(14,165,233,0.1),transparent 60%),radial-gradient(circle at 70% 70%,rgba(249,115,22,0.07),transparent 60%)}
-    .login-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:36px 32px;width:100%;max-width:370px;box-shadow:0 40px 80px rgba(0,0,0,0.5)}
-    .login-logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:0.08em;text-align:center;margin-bottom:3px}
-    .login-logo span{color:var(--orange)}
-    .login-sub{text-align:center;color:var(--dim);font-size:0.8rem;margin-bottom:24px}
-    .login-box label{display:flex;flex-direction:column;gap:5px;font-size:0.78rem;color:var(--dim)}
-    .login-box input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.15s}
-    .login-box input:focus{border-color:var(--blue)}
-    .login-box button{margin-top:14px;width:100%;padding:13px;background:var(--orange);color:#0a0500;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;border:none;border-radius:9px;cursor:pointer;transition:background 0.15s}
-    .login-box button:hover{background:#fb923c}
-    .login-err{color:var(--red);font-size:0.78rem;text-align:center;margin-top:8px;min-height:18px}
-
-    /* ADMIN */
-    #adminPanel{display:none}
-    .adm-hdr{background:rgba(7,8,15,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:14px;justify-content:space-between;position:sticky;top:0;z-index:50}
-    .adm-logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.08em}
-    .adm-logo span{color:var(--orange)}
-    .adm-nav{display:flex;gap:4px}
-    .adm-tab{padding:7px 16px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.15s}
-    .adm-tab.active{background:var(--orange);color:#0a0500;border-color:var(--orange);font-weight:700}
-    .adm-tab:hover:not(.active){color:var(--txt);border-color:rgba(255,255,255,0.2)}
-    .adm-r{display:flex;align-items:center;gap:12px}
-    .adm-site-link{font-size:0.75rem;color:var(--dim)}
-    .adm-site-link:hover{color:var(--muted)}
-    .adm-logout{background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer}
-    .adm-logout:hover{color:var(--red)}
-
-    .adm-body{max-width:1080px;margin:0 auto;padding:28px 24px}
-
-    /* TABS */
-    .tab-panel{display:none}
-    .tab-panel.active{display:block}
-
-    /* GH BANNER */
-    .gh-banner{background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:16px 18px;margin-bottom:20px}
-    .gh-banner strong{display:block;font-size:0.85rem;margin-bottom:3px}
-    .gh-banner p{font-size:0.75rem;color:var(--dim);margin-bottom:10px}
-    .gh-row{display:flex;gap:8px;flex-wrap:wrap}
-    .gh-input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;flex:1;min-width:160px}
-    .gh-input:focus{border-color:var(--blue)}
-    .gh-status{font-size:0.72rem;margin-top:6px;color:var(--dim)}
-
-    /* BUTTONS */
-    .btn{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;transition:all 0.15s}
-    .btn--orange{background:var(--orange);color:#0a0500}
-    .btn--orange:hover{background:#fb923c}
-    .btn--ghost{background:rgba(255,255,255,0.07);color:var(--txt);border:1px solid var(--border)}
-    .btn--ghost:hover{background:rgba(255,255,255,0.12)}
-    .btn--red{background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25)}
-    .btn--red:hover{background:rgba(239,68,68,0.22)}
-    .btn--blue{background:rgba(14,165,233,0.12);color:var(--blue);border:1px solid rgba(14,165,233,0.25)}
-    .btn--blue:hover{background:rgba(14,165,233,0.22)}
-
-    /* SECTION TITLE */
-    .sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.05em;margin-bottom:4px}
-    .sec-sub{font-size:0.78rem;color:var(--dim);margin-bottom:20px}
-
-    /* ── GALLERY TAB ── */
-    .upload-zone{border:2px dashed rgba(255,255,255,0.1);border-radius:14px;padding:36px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:20px}
-    .upload-zone.drag-over{border-color:var(--orange);background:rgba(249,115,22,0.05)}
-    .upload-zone input{display:none}
-    .upload-icon{font-size:2.2rem;margin-bottom:8px}
-    .upload-zone p{font-size:0.85rem;color:var(--dim)}
-    .upload-zone strong{color:var(--txt)}
-    .upload-queue{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-    .uq-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px}
-    .uq-thumb{width:56px;height:46px;border-radius:7px;background-size:cover;background-position:center;border:1px solid var(--border);flex-shrink:0}
-    .uq-info{flex:1;min-width:0}
-    .uq-name{font-size:0.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .uq-size{font-size:0.68rem;color:var(--dim)}
-    .uq-label-input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:5px 9px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.76rem;width:100%;outline:none;margin-top:3px}
-    .uq-status{font-size:0.72rem;font-weight:600;flex-shrink:0}
-    .uq-status.pending{color:var(--dim)}
-    .uq-status.uploading{color:var(--orange)}
-    .uq-status.done{color:var(--green)}
-    .uq-status.error{color:var(--red)}
-    .uq-remove{background:none;border:none;color:var(--dim);cursor:pointer;font-size:1rem;padding:3px}
-    .uq-remove:hover{color:var(--red)}
-    .upload-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-    .upload-log{font-size:0.72rem;color:var(--dim);margin-left:auto}
-    .gallery-current-title{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--dim);margin:20px 0 10px}
-    .gm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-    .gm-item{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-    .gm-thumb{height:100px;background-size:cover;background-position:center;border-bottom:1px solid var(--border)}
-    .gm-body{padding:7px 9px}
-    .gm-label{font-size:0.68rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
-    .gm-del{width:100%;padding:5px;border-radius:5px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:var(--red);font-size:0.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s}
-    .gm-del:hover{background:rgba(239,68,68,0.2)}
-
-    /* ── CONTENT TAB ── */
-    .content-sections{display:flex;flex-direction:column;gap:16px}
-    .cs-block{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-    .cs-block-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
-    .cs-block-hdr h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;text-transform:uppercase}
-    .cs-block-hdr .cs-arrow{font-size:0.75rem;color:var(--dim);transition:transform 0.2s}
-    .cs-block.open .cs-arrow{transform:rotate(180deg)}
-    .cs-fields{display:none;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
-    .cs-block.open .cs-fields{display:flex}
-    .cs-field{display:flex;flex-direction:column;gap:4px}
-    .cs-field label{font-size:0.7rem;color:var(--dim);font-weight:500;text-transform:uppercase;letter-spacing:0.08em}
-    .cs-input{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.84rem;width:100%;outline:none;transition:border-color 0.15s}
-    .cs-input:focus{border-color:var(--blue)}
-    textarea.cs-input{min-height:70px;resize:vertical}
-    .cs-save-row{padding:12px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .cs-save-status{font-size:0.75rem;color:var(--dim)}
-    .cs-save-status.ok{color:var(--green)}
-    .cs-save-status.err{color:var(--red)}
-
-    /* ALERT */
-    .alert{padding:11px 15px;border-radius:9px;font-size:0.82rem;margin-bottom:14px}
-    .alert--green{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.28);color:var(--green)}
-    .alert--red{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.28);color:var(--red)}
-    .alert--orange{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.28);color:var(--orange)}
-
-    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.15);border-top-color:var(--orange);border-radius:50%;animation:spin 0.7s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .empty{text-align:center;padding:40px 20px;color:var(--dim);font-size:0.85rem}
-    .empty .icon{font-size:2rem;margin-bottom:10px}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Frost Hawk — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#07080f; --bg2:#0d0f1c; --card:#0f1220; --border:rgba(255,255,255,0.08); --orange:#f97316; --blue:#0ea5e9; --txt:#eef0f8; --muted:#6070a0; --dim:#4a5070; --green:#22c55e; --red:#ef4444; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+a{color:inherit;text-decoration:none}
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(circle at 30% 30%,rgba(14,165,233,0.1),transparent 60%),radial-gradient(circle at 70% 70%,rgba(249,115,22,0.07),transparent 60%)}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:36px 32px;width:100%;max-width:370px;box-shadow:0 40px 80px rgba(0,0,0,0.5)}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:0.08em;text-align:center;margin-bottom:3px}
+.login-logo span{color:var(--orange)}
+.login-sub{text-align:center;color:var(--dim);font-size:0.8rem;margin-bottom:24px}
+.login-box label{display:flex;flex-direction:column;gap:5px;font-size:0.78rem;color:var(--dim)}
+.login-box input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.15s}
+.login-box input:focus{border-color:var(--blue)}
+.login-box button{margin-top:14px;width:100%;padding:13px;background:var(--orange);color:#0a0500;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;border:none;border-radius:9px;cursor:pointer;transition:background 0.15s}
+.login-box button:hover{background:#fb923c}
+.login-err{color:var(--red);font-size:0.78rem;text-align:center;margin-top:8px;min-height:18px}
+#adminPanel{display:none}
+.adm-hdr{background:rgba(7,8,15,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:14px;justify-content:space-between;position:sticky;top:0;z-index:50}
+.adm-logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.08em}
+.adm-logo span{color:var(--orange)}
+.adm-nav{display:flex;gap:4px;flex-wrap:wrap}
+.adm-tab{padding:7px 16px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.15s}
+.adm-tab.active{background:var(--orange);color:#0a0500;border-color:var(--orange);font-weight:700}
+.adm-tab:hover:not(.active){color:var(--txt);border-color:rgba(255,255,255,0.2)}
+.adm-r{display:flex;align-items:center;gap:12px}
+.adm-site-link{font-size:0.75rem;color:var(--dim)}
+.adm-site-link:hover{color:var(--muted)}
+.adm-logout{background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer}
+.adm-logout:hover{color:var(--red)}
+.adm-body{max-width:1080px;margin:0 auto;padding:28px 24px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.tab-panel.wiring-active{display:block}
+.gh-banner{background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:16px 18px;margin-bottom:20px}
+.gh-banner strong{display:block;font-size:0.85rem;margin-bottom:3px}
+.gh-banner p{font-size:0.75rem;color:var(--dim);margin-bottom:10px}
+.gh-row{display:flex;gap:8px;flex-wrap:wrap}
+.gh-input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;flex:1;min-width:160px}
+.gh-input:focus{border-color:var(--blue)}
+.gh-status{font-size:0.72rem;margin-top:6px;color:var(--dim)}
+.btn{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;transition:all 0.15s}
+.btn--orange{background:var(--orange);color:#0a0500}
+.btn--orange:hover{background:#fb923c}
+.btn--ghost{background:rgba(255,255,255,0.07);color:var(--txt);border:1px solid var(--border)}
+.btn--ghost:hover{background:rgba(255,255,255,0.12)}
+.btn--red{background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25)}
+.btn--red:hover{background:rgba(239,68,68,0.22)}
+.btn--blue{background:rgba(14,165,233,0.12);color:var(--blue);border:1px solid rgba(14,165,233,0.25)}
+.btn--blue:hover{background:rgba(14,165,233,0.22)}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.05em;margin-bottom:4px}
+.sec-sub{font-size:0.78rem;color:var(--dim);margin-bottom:20px}
+.upload-zone{border:2px dashed rgba(255,255,255,0.1);border-radius:14px;padding:36px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:20px}
+.upload-zone.drag-over{border-color:var(--orange);background:rgba(249,115,22,0.05)}
+.upload-zone input{display:none}
+.upload-icon{font-size:2.2rem;margin-bottom:8px}
+.upload-zone p{font-size:0.85rem;color:var(--dim)}
+.upload-zone strong{color:var(--txt)}
+.upload-queue{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.uq-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px}
+.uq-thumb{width:56px;height:46px;border-radius:7px;background-size:cover;background-position:center;border:1px solid var(--border);flex-shrink:0}
+.uq-info{flex:1;min-width:0}
+.uq-name{font-size:0.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uq-size{font-size:0.68rem;color:var(--dim)}
+.uq-label-input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:5px 9px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.76rem;width:100%;outline:none;margin-top:3px}
+.uq-status{font-size:0.72rem;font-weight:600;flex-shrink:0}
+.uq-status.pending{color:var(--dim)}
+.uq-status.uploading{color:var(--orange)}
+.uq-status.done{color:var(--green)}
+.uq-status.error{color:var(--red)}
+.uq-remove{background:none;border:none;color:var(--dim);cursor:pointer;font-size:1rem;padding:3px}
+.uq-remove:hover{color:var(--red)}
+.upload-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.upload-log{font-size:0.72rem;color:var(--dim);margin-left:auto}
+.gallery-current-title{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--dim);margin:20px 0 10px}
+.gm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.gm-item{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.gm-thumb{height:100px;background-size:cover;background-position:center;border-bottom:1px solid var(--border)}
+.gm-body{padding:7px 9px}
+.gm-label{font-size:0.68rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
+.gm-del{width:100%;padding:5px;border-radius:5px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:var(--red);font-size:0.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s}
+.gm-del:hover{background:rgba(239,68,68,0.2)}
+.content-sections{display:flex;flex-direction:column;gap:16px}
+.cs-block{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.cs-block-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.cs-block-hdr h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;text-transform:uppercase}
+.cs-block-hdr .cs-arrow{font-size:0.75rem;color:var(--dim);transition:transform 0.2s}
+.cs-block.open .cs-arrow{transform:rotate(180deg)}
+.cs-fields{display:none;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.cs-block.open .cs-fields{display:flex}
+.cs-field{display:flex;flex-direction:column;gap:4px}
+.cs-field label{font-size:0.7rem;color:var(--dim);font-weight:500;text-transform:uppercase;letter-spacing:0.08em}
+.cs-input{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:0.84rem;width:100%;outline:none;transition:border-color 0.15s}
+.cs-input:focus{border-color:var(--blue)}
+textarea.cs-input{min-height:70px;resize:vertical}
+.cs-save-row{padding:12px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cs-save-status{font-size:0.75rem;color:var(--dim)}
+.cs-save-status.ok{color:var(--green)}
+.cs-save-status.err{color:var(--red)}
+.alert{padding:11px 15px;border-radius:9px;font-size:0.82rem;margin-bottom:14px}
+.alert--green{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.28);color:var(--green)}
+.alert--red{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.28);color:var(--red)}
+.alert--orange{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.28);color:var(--orange)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.15);border-top-color:var(--orange);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px 20px;color:var(--dim);font-size:0.85rem}
+.empty .icon{font-size:2rem;margin-bottom:10px}
+/* WIRING TAB */
+#tab-wiring { padding: 0; }
+#wiringFrame { width:100%; height:calc(100vh - 58px); border:none; display:block; }
+</style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-logo">FROST <span>HAWK</span></div>
@@ -145,13 +128,13 @@
   </div>
 </div>
 
-<!-- ADMIN -->
 <div id="adminPanel">
   <div class="adm-hdr">
     <div class="adm-logo">FROST <span>HAWK</span> <span style="color:var(--dim);font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:400">Admin</span></div>
     <nav class="adm-nav">
       <button class="adm-tab active" data-tab="gallery">🖼 Gallery</button>
       <button class="adm-tab" data-tab="content">✏️ Content</button>
+      <button class="adm-tab" data-tab="wiring">⚡ Схеми</button>
     </nav>
     <div class="adm-r">
       <a href="index.html" target="_blank" class="adm-site-link">← View Site</a>
@@ -159,9 +142,7 @@
     </div>
   </div>
 
-  <div class="adm-body">
-
-    <!-- GH CONFIG -->
+  <div class="adm-body" id="admBody">
     <div class="gh-banner">
       <strong>⚙️ GitHub API Config</strong>
       <p>Required for all uploads and saves. Enter your token (repo scope) and repo path.</p>
@@ -176,41 +157,33 @@
 
     <div id="alertBox"></div>
 
-    <!-- ══ GALLERY TAB ══ -->
+    <!-- GALLERY TAB -->
     <div class="tab-panel active" id="tab-gallery">
       <div class="sec-title">Gallery</div>
       <div class="sec-sub">Upload new photos — they'll appear on the site automatically.</div>
-
       <div class="upload-zone" id="uploadZone">
         <input type="file" id="fileInput" accept="image/*" multiple>
         <div class="upload-icon">📸</div>
         <p><strong>Click to choose photos</strong> or drag & drop here</p>
         <p style="margin-top:4px;font-size:0.72rem">JPG, PNG, WebP — multiple files OK</p>
       </div>
-
       <div class="upload-queue" id="uploadQueue"></div>
       <div class="upload-actions" id="uploadActions" style="display:none">
         <button class="btn btn--orange" id="uploadAllBtn">⬆ Upload All</button>
         <button class="btn btn--ghost" id="clearQueueBtn">Clear</button>
         <div class="upload-log" id="uploadLog"></div>
       </div>
-
       <div class="gallery-current-title">Current Photos (<span id="photoCount">0</span>)</div>
       <div class="gm-grid" id="galleryMgmt"></div>
     </div>
 
-    <!-- ══ CONTENT TAB ══ -->
+    <!-- CONTENT TAB -->
     <div class="tab-panel" id="tab-content">
       <div class="sec-title">Site Content</div>
       <div class="sec-sub">Edit text on your site. Click Save after each section.</div>
-
       <div class="content-sections" id="contentSections">
-        <!-- Hero -->
         <div class="cs-block open" data-section="hero">
-          <div class="cs-block-hdr">
-            <h3>Hero Section</h3>
-            <span class="cs-arrow">▾</span>
-          </div>
+          <div class="cs-block-hdr"><h3>Hero Section</h3><span class="cs-arrow">▾</span></div>
           <div class="cs-fields">
             <div class="cs-field"><label>Top label</label><input class="cs-input" data-key="hero_eyebrow" placeholder="Same-day HVAC service · Chicago area"></div>
             <div class="cs-field"><label>Headline line 1 (outline)</label><input class="cs-input" data-key="hero_line1" placeholder="Chicago's"></div>
@@ -220,18 +193,10 @@
             <div class="cs-field"><label>Call button text</label><input class="cs-input" data-key="hero_btn_call" placeholder="☎ Call or Text: (773) 647-0598"></div>
             <div class="cs-field"><label>Quote button text</label><input class="cs-input" data-key="hero_btn_quote" placeholder="Get a Free Quote"></div>
           </div>
-          <div class="cs-save-row">
-            <span class="cs-save-status" id="save-status-hero"></span>
-            <button class="btn btn--orange cs-save-btn" data-section="hero">Save Hero</button>
-          </div>
+          <div class="cs-save-row"><span class="cs-save-status" id="save-status-hero"></span><button class="btn btn--orange cs-save-btn" data-section="hero">Save Hero</button></div>
         </div>
-
-        <!-- Stats -->
         <div class="cs-block" data-section="stats">
-          <div class="cs-block-hdr">
-            <h3>Stats Bar</h3>
-            <span class="cs-arrow">▾</span>
-          </div>
+          <div class="cs-block-hdr"><h3>Stats Bar</h3><span class="cs-arrow">▾</span></div>
           <div class="cs-fields" style="display:none">
             <div class="cs-field"><label>Stat 1 number</label><input class="cs-input" data-key="strip_stat1_num" placeholder="24/7"></div>
             <div class="cs-field"><label>Stat 1 label</label><input class="cs-input" data-key="strip_stat1_label" placeholder="Emergency availability"></div>
@@ -240,18 +205,10 @@
             <div class="cs-field"><label>Stat 3 number</label><input class="cs-input" data-key="strip_stat3_num" placeholder="★ 5.0"></div>
             <div class="cs-field"><label>Stat 3 label</label><input class="cs-input" data-key="strip_stat3_label" placeholder="Average customer rating"></div>
           </div>
-          <div class="cs-save-row">
-            <span class="cs-save-status" id="save-status-stats"></span>
-            <button class="btn btn--orange cs-save-btn" data-section="stats">Save Stats</button>
-          </div>
+          <div class="cs-save-row"><span class="cs-save-status" id="save-status-stats"></span><button class="btn btn--orange cs-save-btn" data-section="stats">Save Stats</button></div>
         </div>
-
-        <!-- Contact -->
         <div class="cs-block" data-section="contact">
-          <div class="cs-block-hdr">
-            <h3>Contact Info</h3>
-            <span class="cs-arrow">▾</span>
-          </div>
+          <div class="cs-block-hdr"><h3>Contact Info</h3><span class="cs-arrow">▾</span></div>
           <div class="cs-fields" style="display:none">
             <div class="cs-field"><label>Phone number (display)</label><input class="cs-input" data-key="contact_phone" placeholder="(773) 647-0598"></div>
             <div class="cs-field"><label>Phone href (tel:+1...)</label><input class="cs-input" data-key="contact_phone_href" placeholder="tel:+17736470598"></div>
@@ -259,61 +216,44 @@
             <div class="cs-field"><label>Service area</label><input class="cs-input" data-key="contact_area" placeholder="Chicago, IL & nearby suburbs"></div>
             <div class="cs-field"><label>Contact note</label><textarea class="cs-input" data-key="contact_note"></textarea></div>
           </div>
-          <div class="cs-save-row">
-            <span class="cs-save-status" id="save-status-contact"></span>
-            <button class="btn btn--orange cs-save-btn" data-section="contact">Save Contact</button>
-          </div>
+          <div class="cs-save-row"><span class="cs-save-status" id="save-status-contact"></span><button class="btn btn--orange cs-save-btn" data-section="contact">Save Contact</button></div>
         </div>
-
-        <!-- Why -->
         <div class="cs-block" data-section="why">
-          <div class="cs-block-hdr">
-            <h3>Why Us — Quote</h3>
-            <span class="cs-arrow">▾</span>
-          </div>
+          <div class="cs-block-hdr"><h3>Why Us — Quote</h3><span class="cs-arrow">▾</span></div>
           <div class="cs-fields" style="display:none">
             <div class="cs-field"><label>Quote text</label><textarea class="cs-input" data-key="why_quote"></textarea></div>
             <div class="cs-field"><label>Signature</label><input class="cs-input" data-key="why_sig" placeholder="— Frost Hawk team, Chicago IL"></div>
           </div>
-          <div class="cs-save-row">
-            <span class="cs-save-status" id="save-status-why"></span>
-            <button class="btn btn--orange cs-save-btn" data-section="why">Save Why</button>
-          </div>
+          <div class="cs-save-row"><span class="cs-save-status" id="save-status-why"></span><button class="btn btn--orange cs-save-btn" data-section="why">Save Why</button></div>
         </div>
-
-        <!-- Footer -->
         <div class="cs-block" data-section="footer">
-          <div class="cs-block-hdr">
-            <h3>Footer</h3>
-            <span class="cs-arrow">▾</span>
-          </div>
+          <div class="cs-block-hdr"><h3>Footer</h3><span class="cs-arrow">▾</span></div>
           <div class="cs-fields" style="display:none">
             <div class="cs-field"><label>Copyright text</label><input class="cs-input" data-key="footer_copy" placeholder="Frost Hawk Heating & Cooling. All rights reserved."></div>
           </div>
-          <div class="cs-save-row">
-            <span class="cs-save-status" id="save-status-footer"></span>
-            <button class="btn btn--orange cs-save-btn" data-section="footer">Save Footer</button>
-          </div>
+          <div class="cs-save-row"><span class="cs-save-status" id="save-status-footer"></span><button class="btn btn--orange cs-save-btn" data-section="footer">Save Footer</button></div>
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- WIRING TAB — full-bleed iframe, outside adm-body padding -->
+  <div class="tab-panel" id="tab-wiring">
+    <iframe id="wiringFrame" src="wiring-designer.html" allowfullscreen></iframe>
   </div>
 </div>
 
 <script>
-const PASSWORD    = "So97100812172";
+const PASSWORD = "So97100812172";
 const DEFAULT_REPO = "onyshchenkosviatoslav-cloud/frosthawk-website";
 const GALLERY_FILE = "gallery-data.json";
 const CONTENT_FILE = "site-content.json";
-
 let ghToken = localStorage.getItem("gh_token") || "";
-let ghRepo  = localStorage.getItem("gh_repo")  || DEFAULT_REPO;
+let ghRepo = localStorage.getItem("gh_repo") || DEFAULT_REPO;
 let galleryData = [];
 let uploadQueue = [];
 let siteContent = {};
 
-// ── LOGIN ──
 document.getElementById('loginBtn').addEventListener('click', tryLogin);
 document.getElementById('pwdInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 function tryLogin() {
@@ -332,17 +272,25 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   document.getElementById('pwdInput').value = '';
 });
 
-// ── TABS ──
+// TABS — wiring tab needs special treatment (full-bleed, hide adm-body padding)
 document.querySelectorAll('.adm-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    const tabId = 'tab-' + btn.dataset.tab;
+    document.getElementById(tabId).classList.add('active');
+    // hide/show the padded adm-body wrapper for wiring tab
+    const admBody = document.getElementById('admBody');
+    if (btn.dataset.tab === 'wiring') {
+      admBody.style.display = 'none';
+    } else {
+      admBody.style.display = '';
+      document.getElementById(tabId) && document.getElementById('admBody').appendChild(document.getElementById(tabId));
+    }
   });
 });
 
-// ── ACCORDION ──
 document.querySelectorAll('.cs-block-hdr').forEach(hdr => {
   hdr.addEventListener('click', () => {
     const block = hdr.closest('.cs-block');
@@ -353,34 +301,27 @@ document.querySelectorAll('.cs-block-hdr').forEach(hdr => {
   });
 });
 
-// ── GH CONFIG ──
 function initAdmin() {
   if (ghToken) document.getElementById('ghToken').value = ghToken;
   document.getElementById('ghRepo').value = ghRepo;
-
   document.getElementById('saveGhConfig').addEventListener('click', () => {
     ghToken = document.getElementById('ghToken').value.trim();
-    ghRepo  = document.getElementById('ghRepo').value.trim() || DEFAULT_REPO;
+    ghRepo = document.getElementById('ghRepo').value.trim() || DEFAULT_REPO;
     localStorage.setItem('gh_token', ghToken);
-    localStorage.setItem('gh_repo',  ghRepo);
+    localStorage.setItem('gh_repo', ghRepo);
     setGhStatus('✓ Saved!', 'color:var(--green)');
   });
-
   document.getElementById('testGhConfig').addEventListener('click', async () => {
     ghToken = document.getElementById('ghToken').value.trim();
-    ghRepo  = document.getElementById('ghRepo').value.trim() || DEFAULT_REPO;
+    ghRepo = document.getElementById('ghRepo').value.trim() || DEFAULT_REPO;
     setGhStatus('Testing...', 'color:var(--dim)');
     try {
       const r = await ghGet('repos/' + ghRepo);
       setGhStatus('✓ Connected to ' + r.full_name, 'color:var(--green)');
-    } catch(e) {
-      setGhStatus('✗ ' + e.message, 'color:var(--red)');
-    }
+    } catch(e) { setGhStatus('✗ ' + e.message, 'color:var(--red)'); }
   });
-
-  // Upload zone
   const zone = document.getElementById('uploadZone');
-  const fi   = document.getElementById('fileInput');
+  const fi = document.getElementById('fileInput');
   zone.addEventListener('click', () => fi.click());
   fi.addEventListener('change', () => addFiles(Array.from(fi.files)));
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
@@ -389,15 +330,11 @@ function initAdmin() {
     e.preventDefault(); zone.classList.remove('drag-over');
     addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
   });
-
   document.getElementById('uploadAllBtn').addEventListener('click', uploadAll);
   document.getElementById('clearQueueBtn').addEventListener('click', () => { uploadQueue = []; renderQueue(); });
-
-  // Content save buttons
   document.querySelectorAll('.cs-save-btn').forEach(btn => {
     btn.addEventListener('click', () => saveSection(btn.dataset.section));
   });
-
   loadGalleryData();
   loadContentData();
 }
@@ -407,7 +344,6 @@ function setGhStatus(msg, style) {
   el.textContent = msg; el.style.cssText = style;
 }
 
-// ── GH API ──
 async function ghGet(path) {
   const r = await fetch('https://api.github.com/' + path, {
     headers: { Authorization: 'Bearer ' + ghToken, Accept: 'application/vnd.github+json' }
@@ -452,11 +388,8 @@ function toB64(file) {
     r.readAsDataURL(file);
   });
 }
-function strToB64(str) {
-  return btoa(unescape(encodeURIComponent(str)));
-}
+function strToB64(str) { return btoa(unescape(encodeURIComponent(str))); }
 
-// ── GALLERY DATA ──
 async function loadGalleryData() {
   try {
     const r = await fetch('gallery-data.json?t=' + Date.now());
@@ -466,11 +399,10 @@ async function loadGalleryData() {
 }
 async function saveGalleryData() {
   const b64 = strToB64(JSON.stringify(galleryData, null, 2));
-  const ex  = await ghGetFile(GALLERY_FILE);
+  const ex = await ghGetFile(GALLERY_FILE);
   await ghPutFile(GALLERY_FILE, b64, 'Update gallery-data.json', ex?.sha);
 }
 
-// ── UPLOAD QUEUE ──
 function addFiles(files) {
   files.forEach(file => {
     const url = URL.createObjectURL(file);
@@ -479,7 +411,7 @@ function addFiles(files) {
   renderQueue();
 }
 function renderQueue() {
-  const qEl  = document.getElementById('uploadQueue');
+  const qEl = document.getElementById('uploadQueue');
   const acts = document.getElementById('uploadActions');
   qEl.innerHTML = '';
   if (!uploadQueue.length) { acts.style.display = 'none'; return; }
@@ -492,120 +424,87 @@ function renderQueue() {
       <div class="uq-info">
         <div class="uq-name">${item.file.name}</div>
         <div class="uq-size">${(item.file.size/1024).toFixed(0)} KB</div>
-        <input class="uq-label-input" value="${item.label}" placeholder="Caption (optional)">
+        <input class="uq-label-input" placeholder="Caption (optional)" value="${item.label}">
       </div>
-      <div class="uq-status ${item.status}">${{pending:'Pending',uploading:'Uploading…',done:'✓ Done',error:'✗ Error'}[item.status]}</div>
-      <button class="uq-remove">✕</button>
-    `;
+      <span class="uq-status ${item.status}">${item.status}</span>
+      <button class="uq-remove" data-i="${i}">✕</button>`;
     div.querySelector('.uq-label-input').addEventListener('input', e => { uploadQueue[i].label = e.target.value; });
-    div.querySelector('.uq-remove').addEventListener('click', () => { uploadQueue.splice(i, 1); renderQueue(); });
+    div.querySelector('.uq-remove').addEventListener('click', () => { uploadQueue.splice(i,1); renderQueue(); });
     qEl.appendChild(div);
   });
 }
 async function uploadAll() {
-  if (!ghToken) { showAlert('Please save your GitHub token first!', 'orange'); return; }
   const btn = document.getElementById('uploadAllBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Uploading…';
-  let ok = 0, err = 0;
+  btn.disabled = true;
+  let done = 0, errs = 0;
   for (let i = 0; i < uploadQueue.length; i++) {
     const item = uploadQueue[i];
-    if (item.status === 'done') continue;
+    if (item.status === 'done') { done++; continue; }
     item.status = 'uploading'; renderQueue();
     try {
-      const ext  = item.file.name.split('.').pop().toLowerCase();
-      const slug = item.file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      const name = slug + '_' + Date.now() + '.' + ext;
-      const b64  = await toB64(item.file);
-      await ghPutFile(name, b64, 'Add gallery image: ' + name);
-      galleryData.push({ src: name, label: item.label });
-      item.status = 'done'; ok++;
-    } catch(e) { item.status = 'error'; err++; }
+      const b64 = await toB64(item.file);
+      const fname = 'gallery' + Date.now() + '_' + item.file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      await ghPutFile(fname, b64, 'Upload ' + fname, null);
+      const rawUrl = 'https://raw.githubusercontent.com/' + ghRepo + '/main/' + fname;
+      galleryData.push({ src: rawUrl, label: item.label, date: new Date().toISOString() });
+      await saveGalleryData();
+      item.status = 'done'; done++;
+    } catch(e) { item.status = 'error'; errs++; }
     renderQueue();
   }
-  if (ok > 0) {
-    try { await saveGalleryData(); showAlert('✓ ' + ok + ' photo' + (ok>1?'s':'') + ' uploaded! Site updates in ~30s.', 'green'); renderGalleryMgmt(); }
-    catch(e) { showAlert('Photos uploaded but could not update gallery-data.json: ' + e.message, 'red'); }
-  }
-  if (err > 0) showAlert(err + ' upload' + (err>1?'s':'') + ' failed. Check your GitHub token.', 'red');
-  btn.disabled = false; btn.textContent = '⬆ Upload All';
-  setTimeout(() => { uploadQueue = uploadQueue.filter(i => i.status !== 'done'); renderQueue(); }, 2000);
+  document.getElementById('uploadLog').textContent = done + ' uploaded' + (errs ? ', ' + errs + ' errors' : '');
+  btn.disabled = false;
+  renderGalleryMgmt();
 }
-
 function renderGalleryMgmt() {
-  const grid  = document.getElementById('galleryMgmt');
-  const count = document.getElementById('photoCount');
+  const grid = document.getElementById('galleryMgmt');
+  document.getElementById('photoCount').textContent = galleryData.length;
   grid.innerHTML = '';
-  count.textContent = galleryData.length;
-  if (!galleryData.length) { grid.innerHTML = '<div class="empty"><div class="icon">🖼</div>No photos yet.</div>'; return; }
-  galleryData.forEach((photo, i) => {
+  if (!galleryData.length) { grid.innerHTML = '<div class="empty"><div class="icon">🖼</div>No photos yet</div>'; return; }
+  galleryData.forEach((item, i) => {
     const div = document.createElement('div');
     div.className = 'gm-item';
-    div.innerHTML = `<div class="gm-thumb" style="background-image:url(${photo.src})"></div><div class="gm-body"><div class="gm-label">${photo.label || photo.src}</div><button class="gm-del">🗑 Remove</button></div>`;
-    div.querySelector('.gm-del').addEventListener('click', () => removePhoto(i));
+    div.innerHTML = `<div class="gm-thumb" style="background-image:url(${item.src})"></div>
+      <div class="gm-body"><div class="gm-label">${item.label||item.src.split('/').pop()}</div>
+      <button class="gm-del" data-i="${i}">Delete</button></div>`;
+    div.querySelector('.gm-del').addEventListener('click', async () => {
+      if (!confirm('Delete this photo?')) return;
+      try {
+        const fname = item.src.split('/').pop();
+        const ex = await ghGetFile(fname);
+        if (ex) await ghDeleteFile(fname, ex.sha, 'Delete ' + fname);
+        galleryData.splice(i, 1);
+        await saveGalleryData();
+        renderGalleryMgmt();
+      } catch(e) { alert('Error: ' + e.message); }
+    });
     grid.appendChild(div);
   });
 }
-async function removePhoto(index) {
-  if (!confirm('Remove this photo?')) return;
-  if (!ghToken) { showAlert('Please save your GitHub token first!', 'orange'); return; }
-  const photo = galleryData[index];
-  galleryData.splice(index, 1);
-  try {
-    await saveGalleryData();
-    try { const f = await ghGetFile(photo.src); if (f) await ghDeleteFile(photo.src, f.sha, 'Remove: ' + photo.src); } catch(_){}
-    showAlert('Photo removed. Site updates in ~30s.', 'green');
-  } catch(e) { showAlert('Error: ' + e.message, 'red'); galleryData.splice(index, 0, photo); }
-  renderGalleryMgmt();
-}
 
-// ── CONTENT ──
 async function loadContentData() {
   try {
     const r = await fetch(CONTENT_FILE + '?t=' + Date.now());
     siteContent = r.ok ? await r.json() : {};
   } catch(_) { siteContent = {}; }
-  // Fill inputs
-  document.querySelectorAll('.cs-input[data-key]').forEach(input => {
-    const val = siteContent[input.dataset.key];
-    if (val !== undefined) input.value = val;
+  document.querySelectorAll('.cs-input[data-key]').forEach(el => {
+    if (siteContent[el.dataset.key] !== undefined) el.value = siteContent[el.dataset.key];
   });
 }
-
 async function saveSection(section) {
-  if (!ghToken) { showAlert('Please save your GitHub token first!', 'orange'); return; }
   const statusEl = document.getElementById('save-status-' + section);
-  const btn = document.querySelector('.cs-save-btn[data-section="' + section + '"]');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
-  if (statusEl) { statusEl.className = 'cs-save-status'; statusEl.textContent = 'Saving…'; }
-
-  // Collect fields from this section
-  const block = document.querySelector('.cs-block[data-section="' + section + '"]');
-  block.querySelectorAll('.cs-input[data-key]').forEach(input => {
-    siteContent[input.dataset.key] = input.value;
-  });
-
+  statusEl.textContent = 'Saving…'; statusEl.className = 'cs-save-status';
   try {
-    const json = JSON.stringify(siteContent, null, 2);
-    const b64  = strToB64(json);
-    const ex   = await ghGetFile(CONTENT_FILE);
+    document.querySelectorAll(`[data-section="${section}"] .cs-input[data-key]`).forEach(el => {
+      siteContent[el.dataset.key] = el.value;
+    });
+    const b64 = strToB64(JSON.stringify(siteContent, null, 2));
+    const ex = await ghGetFile(CONTENT_FILE);
     await ghPutFile(CONTENT_FILE, b64, 'Update site content: ' + section, ex?.sha);
-    if (statusEl) { statusEl.className = 'cs-save-status ok'; statusEl.textContent = '✓ Saved! Site updates in ~30s.'; }
-    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 5000);
+    statusEl.textContent = '✓ Saved'; statusEl.className = 'cs-save-status ok';
   } catch(e) {
-    if (statusEl) { statusEl.className = 'cs-save-status err'; statusEl.textContent = '✗ ' + e.message; }
-    showAlert('Error saving: ' + e.message, 'red');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Save ' + section.charAt(0).toUpperCase() + section.slice(1);
+    statusEl.textContent = '✗ ' + e.message; statusEl.className = 'cs-save-status err';
   }
-}
-
-// ── ALERTS ──
-function showAlert(msg, type = 'green') {
-  const box = document.getElementById('alertBox');
-  const cls = { green:'alert--green', red:'alert--red', orange:'alert--orange' };
-  box.innerHTML = '<div class="alert ' + (cls[type]||'alert--green') + '">' + msg + '</div>';
-  setTimeout(() => { box.innerHTML = ''; }, 6000);
 }
 </script>
 </body>
