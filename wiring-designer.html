@@ -2,1725 +2,1082 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Схеми — Frost Hawk HVAC</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root{
-  --bg:#09111a; --panel:#0f1922; --panel2:#16232f; --panel3:#1c2e3e;
-  --line:#1e2f40; --ice:#4fd1ff; --ice2:#1a4d62; --ember:#ff8a4c;
-  --text:#dde8f0; --dim:#6b8499; --danger:#ff5555; --good:#4fdc8f;
-  --sb:env(safe-area-inset-bottom,0px);
-}
+:root{--bg:#08111a;--p:#0f1b26;--p2:#162230;--p3:#1d2e3e;--ln:#1d2e3e;--ice:#4fd1ff;--emb:#ff8a4c;--tx:#dde8f0;--dim:#5e7d95;--ok:#4fdc8f;--err:#ff5555;--sb:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif}
-button,input,select{font-family:inherit;cursor:pointer}
-h1,h2,.bb{font-family:'Bebas Neue',sans-serif;letter-spacing:.04em}
-
-/* ── LAYOUT ── */
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif}
+button,input,select{font-family:inherit}
+/* APP */
 #app{display:flex;flex-direction:column;height:100%;height:100dvh}
-#topbar{
-  flex:0 0 auto;display:flex;align-items:center;gap:6px;
-  padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line);
-  z-index:30;min-height:50px;
-}
-#topbar h1{font-size:18px;color:var(--ice);white-space:nowrap;flex:0 0 auto}
-#projName{
-  background:transparent;border:1px solid transparent;color:var(--text);
-  font-size:13px;font-weight:600;padding:5px 6px;border-radius:7px;
-  flex:1 1 auto;min-width:0;max-width:130px;
-}
-#projName:focus{border-color:var(--ice2);outline:none;background:var(--panel2)}
-.ib{
-  flex:0 0 auto;background:var(--panel2);border:1px solid var(--line);
-  color:var(--text);border-radius:7px;padding:6px 9px;font-size:11px;
-  font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:4px
-}
+/* TOPBAR */
+#top{flex:0 0 auto;display:flex;align-items:center;gap:5px;padding:6px 8px;background:var(--p);border-bottom:1px solid var(--ln);z-index:20;min-height:50px}
+#top h1{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ice);letter-spacing:.05em;flex:0 0 auto}
+#pname{background:transparent;border:1px solid transparent;color:var(--tx);font-size:13px;font-weight:600;padding:5px 6px;border-radius:7px;flex:1 1 auto;min-width:0;max-width:120px}
+#pname:focus{border-color:var(--ice);outline:none;background:var(--p2)}
+#sdot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:0 0 auto;transition:background .2s}
+#sdot.busy{background:var(--emb)}
+.ib{flex:0 0 auto;background:var(--p2);border:1px solid var(--ln);color:var(--tx);border-radius:7px;padding:6px 9px;font-size:11px;font-weight:600;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;cursor:pointer}
 .ib:active{opacity:.7}
-.ib.ghost{background:transparent;border-color:transparent}
-#saveDot{width:7px;height:7px;border-radius:50%;background:var(--good);flex:0 0 auto;transition:background .2s}
-#saveDot.busy{background:var(--ember)}
-
-/* ── WORKSPACE ── */
-#workspace{flex:1 1 auto;display:flex;min-height:0;position:relative}
-
-/* ── PALETTE ── */
-#palette{
-  flex:0 0 72px;background:var(--panel);border-right:1px solid var(--line);
-  overflow-y:auto;overflow-x:hidden;padding:8px 4px;
-}
+.ib.g{background:transparent;border-color:transparent}
+/* WORKSPACE */
+#ws{flex:1 1 auto;display:flex;min-height:0}
+/* PALETTE */
+#pal{flex:0 0 76px;background:var(--p);border-right:1px solid var(--ln);overflow-y:auto;padding:6px 4px}
 .pg{margin-bottom:10px}
-.pg-title{font-size:9px;color:var(--dim);font-weight:700;text-transform:uppercase;
-  letter-spacing:.07em;text-align:center;margin-bottom:4px;padding:0 2px}
-.pi{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  background:var(--panel2);border:1px solid var(--line);border-radius:8px;
-  padding:6px 2px;margin-bottom:4px;width:100%;
-}
-.pi .icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-.pi .lbl{font-size:8px;color:var(--dim);text-align:center;line-height:1.2;font-weight:600}
-.pi.armed{border-color:var(--ice);box-shadow:0 0 0 2px rgba(79,209,255,.2)}
-.pi:active{transform:scale(.95)}
-.pi-add{border-style:dashed;cursor:pointer}
-
-/* ── VIEWPORT ── */
-#viewport{flex:1 1 auto;position:relative;overflow:hidden;background:#080f16}
-#board{
-  position:absolute;inset:0;width:100%;height:100%;
-  touch-action:none; /* CRITICAL for iOS */
-  user-select:none;-webkit-user-select:none;
-  cursor:default;
-}
-#statusBanner{
-  position:absolute;top:10px;left:50%;transform:translateX(-50%);
-  background:var(--panel);border:1px solid var(--ice2);color:var(--ice);
-  padding:7px 12px;border-radius:30px;font-size:12px;font-weight:600;
-  display:none;align-items:center;gap:10px;z-index:20;
-  box-shadow:0 4px 16px rgba(0,0,0,.5);max-width:88%;
-}
-#statusBanner.on{display:flex}
-#statusBanner button{background:rgba(255,85,85,.15);color:var(--danger);
-  border:none;border-radius:14px;padding:4px 10px;font-size:11px;font-weight:700}
-#legendBtn{
-  position:absolute;top:10px;right:10px;z-index:21;
-  width:32px;height:32px;border-radius:50%;background:var(--panel);
-  border:1px solid var(--line);font-size:14px;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.4)
-}
-#legendPanel{
-  position:absolute;top:48px;right:10px;z-index:21;
-  background:var(--panel);border:1px solid var(--line);border-radius:10px;
-  padding:10px 12px;min-width:170px;max-height:55vh;overflow-y:auto;
-  font-size:11px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none
-}
-#legendPanel.on{display:block}
-.leg-group{margin-bottom:7px}
-.leg-t{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-  color:var(--dim);margin-bottom:3px}
-.leg-row{display:flex;align-items:center;gap:6px;padding:2px 0;font-weight:600}
-.leg-sw{width:11px;height:11px;border-radius:2px;flex:0 0 auto;border:1px solid rgba(255,255,255,.18)}
-
-/* ── TOOLBAR ── */
-#toolbar{
-  flex:0 0 auto;display:flex;gap:5px;padding:7px 8px calc(7px + var(--sb));
-  background:var(--panel);border-top:1px solid var(--line);overflow-x:auto;z-index:25
-}
-.tb{
-  flex:0 0 auto;min-width:52px;background:var(--panel2);border:1px solid var(--line);
-  color:var(--dim);border-radius:8px;padding:7px 5px;
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  font-size:9px;font-weight:700;text-transform:uppercase
-}
-.tb svg{width:18px;height:18px}
-.tb.on{border-color:var(--ice);color:var(--ice);background:rgba(79,209,255,.07)}
-.tb.danger{color:var(--danger)}
-.tb:disabled{opacity:.35}
-#zoomLabel{font-size:9px;color:var(--dim);align-self:center;min-width:32px;text-align:center}
-
-/* ── INSPECTOR ── */
-#inspector{
-  position:fixed;left:0;right:0;bottom:0;background:var(--panel);
-  border-top:1px solid var(--line);border-radius:14px 14px 0 0;
-  padding:14px 16px calc(14px + var(--sb));
-  transform:translateY(110%);transition:transform .22s ease;
-  z-index:50;box-shadow:0 -8px 30px rgba(0,0,0,.6);
-  max-height:62vh;overflow-y:auto
-}
-#inspector.on{transform:translateY(0)}
-#insp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-#insp-title{font-size:18px;font-family:'Bebas Neue',sans-serif;color:var(--ice)}
-.row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
-.col{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
-.lbl{font-size:10px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-.fi{
-  width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);
-  border-radius:8px;padding:9px 10px;font-size:14px
-}
-.fi:focus{outline:none;border-color:var(--ice2)}
-.btn-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
-.btn{
-  flex:1 1 auto;background:var(--panel2);border:1px solid var(--line);
-  color:var(--text);border-radius:8px;padding:9px 12px;
-  font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px
-}
-.btn:active{opacity:.75}
-.btn.primary{background:var(--ice);border-color:var(--ice);color:#04222b}
-.btn.danger{background:rgba(255,85,85,.12);border-color:rgba(255,85,85,.35);color:var(--danger)}
-.btn.ghost{background:transparent}
-.swatch-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.sw{width:28px;height:28px;border-radius:50%;border:2px solid transparent;flex:0 0 auto}
-.sw.sel{border-color:var(--ice)}
-input[type=color].sw{padding:0;cursor:pointer}
-
-/* ── MODAL ── */
-#modal-layer{
-  position:fixed;inset:0;background:rgba(4,8,12,.75);
-  display:none;align-items:flex-end;justify-content:center;z-index:60;
-  backdrop-filter:blur(3px)
-}
-#modal-layer.on{display:flex}
-.modal-card{
-  background:var(--panel);border-radius:16px 16px 0 0;width:100%;max-width:480px;
-  max-height:88vh;overflow-y:auto;padding:18px 18px calc(18px + var(--sb));
-  border-top:1px solid var(--line)
-}
-@media(min-width:600px){#modal-layer{align-items:center}.modal-card{border-radius:16px}}
-.modal-card h2{font-size:22px;margin-bottom:12px;color:var(--ice);font-family:'Bebas Neue',sans-serif;letter-spacing:.04em}
-.help-text{font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:10px}
-.count-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.count-btn{
-  background:var(--panel2);border:1px solid var(--line);border-radius:9px;
-  padding:9px 4px;display:flex;flex-direction:column;align-items:center;gap:5px
-}
-.count-btn:active{transform:scale(.95)}
-.count-btn .n{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text)}
-.dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;max-width:50px}
+.pg-h{font-size:8.5px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.07em;text-align:center;margin-bottom:4px}
+.pi{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--p2);border:1px solid var(--ln);border-radius:8px;padding:6px 2px;margin-bottom:4px;width:100%;cursor:pointer}
+.pi:active{transform:scale(.94)}
+.pi.arm{border-color:var(--ice);box-shadow:0 0 0 2px rgba(79,209,255,.18)}
+.pi svg,.pi .ico{width:36px;height:36px;flex:0 0 auto}
+.pi .lbl{font-size:7.5px;color:var(--dim);text-align:center;line-height:1.2;font-weight:600}
+/* STAGE */
+#stage{flex:1 1 auto;position:relative;overflow:hidden;background:#07101a}
+#cvs{position:absolute;inset:0;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none;display:block;cursor:crosshair}
+/* STATUS */
+#sb{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--p);border:1px solid var(--ice);color:var(--ice);padding:7px 14px;border-radius:30px;font-size:12px;font-weight:600;display:none;align-items:center;gap:10px;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,.5);max-width:86%;pointer-events:auto}
+#sb.on{display:flex}
+#sb button{background:rgba(255,85,85,.15);color:var(--err);border:none;border-radius:14px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer}
+/* LEGEND */
+#lgbtn{position:absolute;top:10px;right:10px;z-index:10;width:32px;height:32px;border-radius:50%;background:var(--p);border:1px solid var(--ln);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#lg{position:absolute;top:48px;right:10px;z-index:10;background:var(--p);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;min-width:165px;max-height:54vh;overflow-y:auto;font-size:11px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none}
+#lg.on{display:block}
+.lg-g{margin-bottom:7px}.lg-t{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:3px}
+.lg-r{display:flex;align-items:center;gap:6px;padding:2px 0;font-weight:600}
+.lg-s{width:11px;height:11px;border-radius:2px;flex:0 0 auto;border:1px solid rgba(255,255,255,.15)}
+/* TOOLBAR */
+#tb{flex:0 0 auto;display:flex;gap:5px;padding:7px 8px calc(7px + var(--sb));background:var(--p);border-top:1px solid var(--ln);overflow-x:auto;z-index:20}
+.tbtn{flex:0 0 auto;min-width:50px;background:var(--p2);border:1px solid var(--ln);color:var(--dim);border-radius:8px;padding:7px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8.5px;font-weight:700;text-transform:uppercase;cursor:pointer}
+.tbtn svg{width:18px;height:18px;flex:0 0 auto}
+.tbtn.on{border-color:var(--ice);color:var(--ice);background:rgba(79,209,255,.07)}
+.tbtn.d{color:var(--err)}
+.tbtn:disabled{opacity:.3;cursor:default}
+#zlbl{font-size:9px;color:var(--dim);align-self:center;min-width:30px;text-align:center}
+/* INSPECTOR */
+#ins{position:fixed;left:0;right:0;bottom:0;background:var(--p);border-top:1px solid var(--ln);border-radius:14px 14px 0 0;padding:14px 16px calc(14px + var(--sb));transform:translateY(110%);transition:transform .2s ease;z-index:40;box-shadow:0 -8px 30px rgba(0,0,0,.6);max-height:60vh;overflow-y:auto}
+#ins.on{transform:translateY(0)}
+#ins-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+#ins-ti{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--ice);letter-spacing:.04em}
+.fc{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.fl{font-size:9.5px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.fi{width:100%;background:var(--p2);border:1px solid var(--ln);color:var(--tx);border-radius:8px;padding:9px 10px;font-size:14px}
+.fi:focus{outline:none;border-color:var(--ice)}
+.brow{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
+.btn{flex:1 1 auto;background:var(--p2);border:1px solid var(--ln);color:var(--tx);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn:active{opacity:.7}
+.btn.pr{background:var(--ice);border-color:var(--ice);color:#03202c}
+.btn.dr{background:rgba(255,85,85,.1);border-color:rgba(255,85,85,.3);color:var(--err)}
+.btn.gh{background:transparent}
+.sw-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid transparent;flex:0 0 auto;cursor:pointer}
+.sw.on{border-color:var(--ice)}
+/* MODAL */
+#ml{position:fixed;inset:0;background:rgba(4,8,14,.75);display:none;align-items:flex-end;justify-content:center;z-index:60;backdrop-filter:blur(3px)}
+#ml.on{display:flex}
+.mc{background:var(--p);border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding:18px 18px calc(18px + var(--sb));border-top:1px solid var(--ln)}
+@media(min-width:600px){#ml{align-items:center}.mc{border-radius:16px}}
+.mc h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--ice);margin-bottom:12px}
+.ht{font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:10px}
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.cbtn{background:var(--p2);border:1px solid var(--ln);border-radius:9px;padding:9px 4px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.cbtn:active{transform:scale(.94)}
+.cbtn .n{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--tx)}
+.dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;max-width:48px}
 .dots i{width:6px;height:6px;border-radius:50%;display:inline-block}
-.proj-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
-.proj-row{
-  display:flex;align-items:center;gap:8px;background:var(--panel2);
-  border:1px solid var(--line);border-radius:9px;padding:10px
-}
-.proj-row .pname{flex:1 1 auto;font-size:14px;font-weight:600}
-.proj-row .pdate{font-size:10px;color:var(--dim)}
-.proj-row button{background:none;border:none;color:var(--dim);padding:4px 7px}
-.proj-row .del-proj{color:var(--danger)}
-.shape-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
-.shape-btn{
-  background:var(--panel2);border:1px solid var(--line);border-radius:8px;
-  padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;color:var(--dim)
-}
-.shape-btn.sel{border-color:var(--ice);color:var(--ice)}
-.terms-list{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
-.term-row{display:flex;gap:6px;align-items:center}
-.term-inp{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:7px 9px;font-size:13px}
-.term-del{background:none;border:none;color:var(--danger);font-size:16px;padding:4px 7px}
-
-/* ── TOAST ── */
-#toast{
-  position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(16px);
-  background:var(--panel3);border:1px solid var(--line);color:var(--text);
-  padding:8px 16px;border-radius:30px;font-size:12px;font-weight:600;z-index:80;
-  opacity:0;transition:opacity .2s,transform .2s;pointer-events:none
-}
+.pl{display:flex;flex-direction:column;gap:6px}
+.pr-row{display:flex;align-items:center;gap:8px;background:var(--p2);border:1px solid var(--ln);border-radius:9px;padding:10px}
+.pr-row .nm{flex:1;font-size:14px;font-weight:600}
+.pr-row .dt{font-size:10px;color:var(--dim)}
+.pr-row button{background:none;border:none;cursor:pointer;padding:4px 7px}
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.sb2{background:var(--p2);border:1px solid var(--ln);border-radius:8px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8px;color:var(--dim);cursor:pointer}
+.sb2.on{border-color:var(--ice);color:var(--ice)}
+.tl{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+.tr{display:flex;gap:6px;align-items:center}
+.ti{flex:1;background:var(--p2);border:1px solid var(--ln);color:var(--tx);border-radius:7px;padding:7px 9px;font-size:13px}
+/* TOAST */
+#toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%) translateY(14px);background:var(--p3);border:1px solid var(--ln);color:var(--tx);padding:8px 16px;border-radius:30px;font-size:12px;font-weight:600;z-index:80;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── SVG helpers ── */
-.node-txt{font-family:'DM Sans',sans-serif;font-weight:700;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
-.wire-label-bg{fill:#08111a;opacity:.9}
-.wire-label-txt{fill:#c8d8e4;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;text-anchor:middle}
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-thumb{background:#1e3040;border-radius:6px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:#1d3040;border-radius:5px}
 </style>
 </head>
 <body>
 <div id="app">
-
-<div id="topbar">
-  <a href="admin.html" class="ib ghost" style="color:var(--dim);font-size:12px">← Admin</a>
+<div id="top">
+  <a href="admin.html" class="ib g" style="color:var(--dim);font-size:11px">← Admin</a>
   <h1>СХЕМИ</h1>
-  <input id="projName" value="Нова схема" maxlength="60">
-  <div id="saveDot"></div>
-  <div style="display:flex;gap:4px;flex:0 0 auto;margin-left:auto">
-    <button class="ib ghost" id="btnProjects">📁</button>
-    <button class="ib ghost" id="btnNew">＋</button>
-    <button class="ib ghost" id="btnFile">⇅</button>
+  <input id="pname" value="Нова схема" maxlength="60">
+  <div id="sdot"></div>
+  <div style="display:flex;gap:4px;margin-left:auto;flex:0 0 auto">
+    <button class="ib g" id="bPrj">📁</button>
+    <button class="ib g" id="bNew">＋</button>
+    <button class="ib g" id="bFile">⇅</button>
   </div>
 </div>
-
-<div id="workspace">
-  <div id="palette"></div>
-  <div id="viewport">
-    <svg id="board" xmlns="http://www.w3.org/2000/svg">
+<div id="ws">
+  <div id="pal"></div>
+  <div id="stage">
+    <svg id="cvs" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern id="g1" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M40 0H0V40" fill="none" stroke="#0e1a24" stroke-width="1"/>
-        </pattern>
-        <pattern id="g2" width="200" height="200" patternUnits="userSpaceOnUse">
-          <rect width="200" height="200" fill="url(#g1)"/>
-          <path d="M200 0H0V200" fill="none" stroke="#132030" stroke-width="1.4"/>
-        </pattern>
+        <pattern id="g1" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#0d1920" stroke-width="1"/></pattern>
+        <pattern id="g2" width="200" height="200" patternUnits="userSpaceOnUse"><rect width="200" height="200" fill="url(#g1)"/><path d="M200 0H0V200" fill="none" stroke="#12222e" stroke-width="1.4"/></pattern>
       </defs>
-      <rect id="bg" x="-9999" y="-9999" width="99999" height="99999" fill="url(#g2)"/>
-      <text id="emptyHint" x="1200" y="800" text-anchor="middle" fill="#2a4055" font-size="22" font-family="DM Sans">Обери прилад зліва, потім торкнись полотна</text>
-      <g id="wiresLayer"></g>
-      <g id="nodesLayer"></g>
-      <g id="handlesLayer"></g>
+      <rect id="gbg" x="-99999" y="-99999" width="199999" height="199999" fill="url(#g2)"/>
+      <text id="hint" x="800" y="500" text-anchor="middle" fill="#1a3045" font-size="20" font-family="DM Sans">Оберіть прилад зліва → торкніться полотна</text>
+      <g id="wL"></g>
+      <g id="nL"></g>
+      <g id="hL"></g>
     </svg>
-    <div id="statusBanner"><span id="statusText"></span><button id="statusCancel">✕</button></div>
-    <button id="legendBtn">ℹ️</button>
-    <div id="legendPanel"></div>
+    <div id="sb"><span id="sbt"></span><button id="sbx">✕</button></div>
+    <button id="lgbtn">ℹ️</button>
+    <div id="lg"></div>
   </div>
 </div>
-
-<div id="toolbar">
-  <button class="tb on" id="tSel" title="Вибір">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M5 3l5.5 16 2-6.5L19 10 5 3z" fill="currentColor"/></svg>
-    Вибір
-  </button>
-  <button class="tb" id="tCable" title="Кабель">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="6" r="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="18" r="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 7.5l10 10" stroke="currentColor" stroke-width="1.6"/></svg>
-    Кабель
-  </button>
-  <button class="tb danger" id="tDel" disabled title="Видалити">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.6"/></svg>
-    Видал.
-  </button>
-  <button class="tb" id="tUndo" title="Скасувати">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M7 7L3 11l4 4M3 11h11a6 6 0 010 12h-2" stroke="currentColor" stroke-width="1.6"/></svg>
-    Назад
-  </button>
-  <button class="tb" id="tZoomOut">－</button>
-  <div id="zoomLabel">100%</div>
-  <button class="tb" id="tZoomIn">＋</button>
-  <button class="tb" id="tFit">⤢ Вид</button>
-  <button class="tb" id="tPdf">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M6 2h9l5 5v15H6V2z" stroke="currentColor" stroke-width="1.5"/><path d="M9 12h6M9 15h6M9 9h2" stroke="currentColor" stroke-width="1.5"/></svg>
-    PDF
-  </button>
-  <button class="tb" id="tHelp">？ Допом.</button>
+<div id="tb">
+  <button class="tbtn on" id="tSel"><svg viewBox="0 0 24 24" fill="none"><path d="M5 3l5.5 16 2-6.5L19 10 5 3z" fill="currentColor"/></svg>Вибір</button>
+  <button class="tbtn" id="tCab"><svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="6" r="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="18" r="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 7.5l10 10" stroke="currentColor" stroke-width="1.6"/></svg>Кабель</button>
+  <button class="tbtn d" id="tDel" disabled><svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.6"/></svg>Видал.</button>
+  <button class="tbtn" id="tUndo"><svg viewBox="0 0 24 24" fill="none"><path d="M7 7L3 11l4 4M3 11h11a6 6 0 010 12h-2" stroke="currentColor" stroke-width="1.6"/></svg>Назад</button>
+  <button class="tbtn" id="tZm">－</button>
+  <div id="zlbl">100%</div>
+  <button class="tbtn" id="tZp">＋</button>
+  <button class="tbtn" id="tFit">⤢ Вид</button>
+  <button class="tbtn" id="tPdf"><svg viewBox="0 0 24 24" fill="none"><path d="M6 2h9l5 5v15H6V2z" stroke="currentColor" stroke-width="1.5"/><path d="M9 12h6M9 15h6M9 9h2" stroke="currentColor" stroke-width="1.5"/></svg>PDF</button>
+  <button class="tbtn" id="tHelp">？ Допом.</button>
 </div>
-
-<div id="inspector">
-  <div id="insp-head">
-    <div id="insp-title">Прилад</div>
-    <button class="ib ghost" id="inspClose">✕</button>
-  </div>
-  <div id="insp-body"></div>
+<div id="ins">
+  <div id="ins-hd"><div id="ins-ti">Прилад</div><button class="ib g" id="insCl">✕</button></div>
+  <div id="ins-bd"></div>
 </div>
-
 </div>
-<div id="modal-layer"><div class="modal-card" id="modal-card"></div></div>
+<div id="ml"><div class="mc" id="mc"></div></div>
 <div id="toast"></div>
-<input type="file" id="fileInput" accept=".json" style="display:none">
-
+<input type="file" id="fi" accept=".json" style="display:none">
 <script>
 (function(){'use strict';
-
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // CONSTANTS
-// ═══════════════════════════════════════════════════════════
-const WIRE_COLORS=[
-  {hex:'#e03030',label:'R · 24В'},
-  {hex:'#f0ede4',label:'W · Нагрів'},
-  {hex:'#f4c430',label:'Y · Холод'},
-  {hex:'#3a8f3e',label:'G · Вент.'},
-  {hex:'#2a65b0',label:'C · Спільн.'},
-  {hex:'#7a4a26',label:'Зона / 2-й'},
-  {hex:'#e07830',label:'O/B · Реверс'},
-  {hex:'#404448',label:'Допом.'},
+// ─────────────────────────────────────────────────────────────
+const WC=[
+  {hex:'#e03030',lbl:'R · 24В'},
+  {hex:'#f0ede4',lbl:'W · Нагрів'},
+  {hex:'#f4c430',lbl:'Y · Холод'},
+  {hex:'#3a8f3e',lbl:'G · Вент.'},
+  {hex:'#2a65b0',lbl:'C · Спільн.'},
+  {hex:'#7a4a26',lbl:'Зона/2-й'},
+  {hex:'#e07830',lbl:'O/B · Реверс'},
+  {hex:'#404448',lbl:'Допом.'},
 ];
-const EQUIP={
-  furnace:      {abbr:'ПІЧ', label:'Піч / повітронагрівач',accent:'#ff8a4c',shape:'rect',    bw:90, bh:60},
-  ac:           {abbr:'AC',  label:'Кондиціонер (AC)',      accent:'#4fd1ff',shape:'rect',    bw:90, bh:60},
-  coil:         {abbr:'КОЙЛ',label:'Койл',                  accent:'#4fd1ff',shape:'rect',    bw:80, bh:54},
-  thermostat:   {abbr:'T',   label:'Термостат',             accent:'#e9eef3',shape:'circle',  bw:64, bh:64},
-  zoneboard:    {abbr:'ZB',  label:'Зонна коробка',         accent:'#b07bff',shape:'hex',     bw:100,bh:70},
-  humidistat:   {abbr:'HSTAT',label:'Гумідистат',           accent:'#ff6f91',shape:'circle',  bw:54, bh:54},
-  transformer:  {abbr:'TR',  label:'Трансформатор',         accent:'#ffd24f',shape:'triangle',bw:64, bh:64},
-  relay:        {abbr:'REL', label:'Реле',                  accent:'#ffd24f',shape:'rect',    bw:58, bh:58},
-  humidifier:   {abbr:'HUM', label:'Зволожувач',            accent:'#4fd1ff',shape:'diamond', bw:64, bh:64},
-  damper:       {abbr:'DMP', label:'Демпфер',               accent:'#2bd1a0',shape:'rectRot', bw:70, bh:40},
-  sensor:       {abbr:'S',   label:'Сенсор зони',           accent:'#5fd96a',shape:'circle',  bw:40, bh:40},
-  outdoorsensor:{abbr:'OAS', label:'Зовн. сенсор',          accent:'#5fe0e0',shape:'circleDash',bw:40,bh:40},
-  board:        {abbr:'ПЛАТА',label:'Плата з клемами',      accent:'#9bd17f',shape:'board',   bw:140,bh:70},
-  custom:       {abbr:'?',   label:'Свій блок',             accent:'#9aa7b3',shape:'rectDash',bw:88, bh:58},
-  note:         {abbr:'',    label:'Нотатка',               accent:'#9aa7b3',shape:'none',    bw:130,bh:28},
+const EQ={
+  furnace:      {ab:'ПІЧ', lb:'Піч / повітронагрівач',ac:'#ff8a4c',sh:'rect',    bw:90,bh:60},
+  ac:           {ab:'AC',  lb:'Кондиціонер (AC)',      ac:'#4fd1ff',sh:'rect',    bw:90,bh:60},
+  coil:         {ab:'КОЙЛ',lb:'Койл',                  ac:'#4fd1ff',sh:'rect',    bw:80,bh:54},
+  thermostat:   {ab:'T',   lb:'Термостат',             ac:'#e9eef3',sh:'circle',  bw:64,bh:64},
+  zoneboard:    {ab:'ZB',  lb:'Зонна коробка',         ac:'#b07bff',sh:'hex',     bw:100,bh:70},
+  humidistat:   {ab:'HSTAT',lb:'Гумідистат',           ac:'#ff6f91',sh:'circle',  bw:54,bh:54},
+  transformer:  {ab:'TR',  lb:'Трансформатор',         ac:'#ffd24f',sh:'tri',     bw:64,bh:64},
+  relay:        {ab:'REL', lb:'Реле',                  ac:'#ffd24f',sh:'rect',    bw:58,bh:58},
+  humidifier:   {ab:'HUM', lb:'Зволожувач',            ac:'#4fd1ff',sh:'diamond', bw:64,bh:64},
+  damper:       {ab:'DMP', lb:'Демпфер',               ac:'#2bd1a0',sh:'rectR',   bw:70,bh:40},
+  sensor:       {ab:'S',   lb:'Сенсор зони',           ac:'#5fd96a',sh:'circle',  bw:40,bh:40},
+  outsensor:    {ab:'OAS', lb:'Зовн. сенсор',          ac:'#5fe0e0',sh:'circleD', bw:40,bh:40},
+  board:        {ab:'ПЛАТА',lb:'Плата з клемами',      ac:'#9bd17f',sh:'board',   bw:140,bh:70},
+  custom:       {ab:'?',   lb:'Свій блок',             ac:'#9aa7b3',sh:'rectD',   bw:88,bh:58},
+  note:         {ab:'',    lb:'Нотатка',               ac:'#9aa7b3',sh:'none',    bw:130,bh:28},
 };
-const PALETTE_GROUPS=[
-  {title:'Обладнання',items:['furnace','ac','coil']},
-  {title:'Контроль',  items:['thermostat','zoneboard','transformer','relay','humidistat']},
-  {title:'Сенсори',   items:['sensor','outdoorsensor']},
-  {title:'Плати',     items:['board']},
-  {title:'Інше',      items:['humidifier','damper','custom','note']},
+const PG=[
+  {t:'Обладнання',k:['furnace','ac','coil']},
+  {t:'Контроль',  k:['thermostat','zoneboard','transformer','relay','humidistat']},
+  {t:'Сенсори',   k:['sensor','outsensor']},
+  {t:'Плати',     k:['board']},
+  {t:'Інше',      k:['humidifier','damper','custom','note']},
 ];
-const CUSTOM_SHAPES=[
-  {key:'rect',label:'Прямок.'},
-  {key:'circle',label:'Коло'},
-  {key:'diamond',label:'Ромб'},
-  {key:'triangle',label:'Трикут.'},
-  {key:'hex',label:'Шестик.'},
+const SH_NAMES=[
+  {k:'rect',l:'Прямок.'},
+  {k:'circle',l:'Коло'},
+  {k:'diamond',l:'Ромб'},
+  {k:'tri',l:'Трикут.'},
+  {k:'hex',l:'Шестик.'},
 ];
+const NS='http://www.w3.org/2000/svg';
 
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // STATE
-// ═══════════════════════════════════════════════════════════
-let proj=null;      // {id,name,nodes[],wires[]}
-let hist=[];        // undo snapshots
-let customTypes=[]; // [{key,abbr,label,accent,shape,bw,bh}]
-let selId=null, selKind=null; // 'node'|'wire'
-let toolMode='select'; // 'select'|'place'|'cable-from'|'cable-to'
-let armType=null;       // type key being placed
-let pendingCable=null;  // {colors:[{hex,label}]}
-let cableFromId=null;
-let saveTimer=null;
+// ─────────────────────────────────────────────────────────────
+let P=null;         // project {id,name,nodes[],wires[]}
+let H=[];           // undo history
+let CT=[];          // custom types
+let sel=null;       // {kind:'node'|'wire', id}
+let mode='sel';     // 'sel'|'place'|'cfrom'|'cto'
+let armT=null;      // type being placed
+let pCable=null;    // {colors:[]} pending cable
+let cfromId=null;   // cable from node id
+let saveT=null;
 
-// Viewport — SVG viewBox
-// board element fills its container, viewBox controls what's shown
-const board=document.getElementById('board');
-const viewport=document.getElementById('viewport');
-let vb={x:0,y:0,w:1600,h:1000}; // current viewBox
-function setVB(){board.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`)}
-function toSVG(cx,cy){
-  const r=board.getBoundingClientRect();
-  return{x:vb.x+(cx-r.left)/r.width*vb.w, y:vb.y+(cy-r.top)/r.height*vb.h};
+// ─────────────────────────────────────────────────────────────
+// VIEWPORT (SVG viewBox)
+// vb = {x,y,w,h} — the SVG coordinate area shown on screen
+// ─────────────────────────────────────────────────────────────
+const cvs=document.getElementById('cvs');
+const stg=document.getElementById('stage');
+let vb={x:0,y:0,w:1600,h:900};
+
+function applyVB(){cvs.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);}
+function vbR(){return cvs.getBoundingClientRect();}
+
+// Convert client pixels → SVG coordinates
+function c2s(cx,cy){const r=vbR();return{x:vb.x+(cx-r.left)/r.width*vb.w,y:vb.y+(cy-r.top)/r.height*vb.h};}
+// Convert client-pixel delta → SVG-unit delta (using CURRENT vb — correct for incremental moves)
+function d2s(dcx,dcy){const r=vbR();return{dx:dcx/r.width*vb.w,dy:dcy/r.height*vb.h};}
+// SVG units per CSS pixel
+function spx(){return vb.w/vbR().width;}
+
+function fitView(){
+  const r=vbR();
+  const asp=r.height/r.width||0.5625;
+  vb={x:0,y:0,w:1600,h:1600*asp};
+  applyVB();updateZlbl();
 }
-function svgPx(){// how many SVG units = 1 CSS pixel
-  return vb.w/board.getBoundingClientRect().width;
+function updateZlbl(){document.getElementById('zlbl').textContent=Math.round(1600/vb.w*100)+'%';}
+function doZoom(factor){
+  const cx=vb.x+vb.w/2,cy=vb.y+vb.h/2;
+  const nw=Math.max(350,Math.min(5000,vb.w*factor));
+  const nh=Math.max(200,Math.min(4000,vb.h*factor));
+  vb={x:cx-nw/2,y:cy-nh/2,w:nw,h:nh};
+  applyVB();updateZlbl();
 }
 
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // STORAGE
-// ═══════════════════════════════════════════════════════════
-const Store={
-  async get(k){
-    try{if(window.storage?.get){const r=await window.storage.get(k,false);return r?.value||null}}catch(e){}
-    try{return localStorage.getItem(k)}catch(e){return null}
-  },
-  async set(k,v){
-    try{if(window.storage?.set){await window.storage.set(k,v,false);return}}catch(e){}
-    try{localStorage.setItem(k,v)}catch(e){}
-  },
-  async del(k){
-    try{if(window.storage?.delete){await window.storage.delete(k,false)}}catch(e){}
-    try{localStorage.removeItem(k)}catch(e){}
-  },
-};
-const IDX_KEY='fh-wiring-idx', LAST_KEY='fh-wiring-last', CT_KEY='fh-wiring-ct';
-function projKey(id){return'fh-wiring-p-'+id}
-function uid(){return'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-function blankProj(name){
-  return{id:uid(),name:name||'Нова схема',updatedAt:Date.now(),nodes:[],wires:[]};
-}
-async function loadIdx(){try{const r=await Store.get(IDX_KEY);return r?JSON.parse(r):[]}catch(e){return[]}}
-async function saveIdx(list){await Store.set(IDX_KEY,JSON.stringify(list))}
-async function loadCustomTypes(){
-  try{const r=await Store.get(CT_KEY);customTypes=r?JSON.parse(r):[];}catch(e){customTypes=[];}
-  customTypes.forEach(c=>{EQUIP[c.key]={abbr:c.abbr,label:c.label,accent:c.accent,shape:c.shape,bw:c.bw,bh:c.bh};});
-}
-async function saveCustomTypes(){await Store.set(CT_KEY,JSON.stringify(customTypes))}
+// ─────────────────────────────────────────────────────────────
+const K={idx:'fh-wi',last:'fh-wl',ct:'fh-wct'};
+function pk(id){return'fh-w-'+id;}
+async function sg(k){try{if(window.storage?.get){const r=await window.storage.get(k,false);return r?.value||null;}}catch(e){}try{return localStorage.getItem(k);}catch(e){return null;}}
+async function ss(k,v){try{if(window.storage?.set){await window.storage.set(k,v,false);return;}}catch(e){}try{localStorage.setItem(k,v);}catch(e){}}
+async function sd(k){try{if(window.storage?.delete)await window.storage.delete(k,false);}catch(e){}try{localStorage.removeItem(k);}catch(e){}}
+async function ldIdx(){try{const r=await sg(K.idx);return r?JSON.parse(r):[];}catch(e){return[];}}
+async function svIdx(l){await ss(K.idx,JSON.stringify(l));}
+function uid(){return'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function blank(nm){return{id:uid(),name:nm||'Нова схема',updatedAt:Date.now(),nodes:[],wires:[]};}
+function gn(id){return P.nodes.find(n=>n.id===id);}
+function gw(id){return P.wires.find(w=>w.id===id);}
 
-function getNode(id){return proj.nodes.find(n=>n.id===id)}
-function getWire(id){return proj.wires.find(w=>w.id===id)}
-
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // GEOMETRY
-// ═══════════════════════════════════════════════════════════
-function nodeDims(n){
-  const e=EQUIP[n.type];
+// ─────────────────────────────────────────────────────────────
+function ndim(n){
+  const e=EQ[n.type];
   const w=n.nodeW!=null?n.nodeW:(n.type==='board'?Math.max(120,(n.terminals||[]).length*34+20):e.bw);
   const h=n.nodeH!=null?n.nodeH:e.bh;
   return{w:Math.max(20,w),h:Math.max(14,h)};
 }
-function rot(lx,ly,rad){return{x:lx*Math.cos(rad)-ly*Math.sin(rad),y:lx*Math.sin(rad)+ly*Math.cos(rad)}}
-function nodeTransform(n){return`translate(${n.x},${n.y}) rotate(${n.rotation||0})`}
+function rot(lx,ly,rad){return{x:lx*Math.cos(rad)-ly*Math.sin(rad),y:lx*Math.sin(rad)+ly*Math.cos(rad)};}
+function ntx(n){return`translate(${n.x},${n.y}) rotate(${n.rotation||0})`;}
 
-function pointOnBoundary(n,tx,ty){
-  const{w,h}=nodeDims(n);
-  const rx=w/2+8, ry=h/2+8;
+function bndry(n,tx,ty){
+  const{w,h}=ndim(n),rx=w/2+9,ry=h/2+9;
   const rad=-((n.rotation||0)*Math.PI/180);
-  let dx=tx-n.x, dy=ty-n.y;
-  // rotate into local frame
+  let dx=tx-n.x,dy=ty-n.y;
   const lx=dx*Math.cos(rad)-dy*Math.sin(rad);
   const ly=dx*Math.sin(rad)+dy*Math.cos(rad);
-  let fx=lx,fy=ly;
-  if(Math.abs(lx)<.001&&Math.abs(ly)<.001){fx=1;fy=0;}
+  let fx=lx||1,fy=ly;
   const d=Math.sqrt((fx*fx)/(rx*rx)+(fy*fy)/(ry*ry))||1;
-  const t=1/d;
-  const bxl=fx*t, byl=fy*t;
-  // rotate back
-  const radfwd=(n.rotation||0)*Math.PI/180;
-  const br=rot(bxl,byl,radfwd);
-  return{x:n.x+br.x,y:n.y+br.y};
-}
-function terminalPoint(n,idx){
-  const{w,h}=nodeDims(n);
-  const terms=(n.terminals||[]);
-  const cnt=terms.length||1;
-  const lx=-w/2+(w/(cnt+1))*(idx+1);
-  const ly=h/2;
-  const rad=(n.rotation||0)*Math.PI/180;
-  const r=rot(lx,ly,rad);
+  const r=rot(fx/d,fy/d,(n.rotation||0)*Math.PI/180);
   return{x:n.x+r.x,y:n.y+r.y};
 }
-function wireEndPoint(w,end){
-  const id=w[end+'Id'];
-  if(id){
-    const n=getNode(id); if(!n)return null;
-    const term=w[end+'Term'];
-    if(n.type==='board'&&term!=null&&n.terminals?.[term]!=null){
-      const tp=terminalPoint(n,term);
-      return{x:tp.x,y:tp.y,node:n,isTerminal:true};
-    }
-    return{x:n.x,y:n.y,node:n,isTerminal:false};
-  }
-  const p=w[end+'Point'];
-  return p?{x:p.x,y:p.y,node:null}:null;
+function termPt(n,i){
+  const{w,h}=ndim(n),c=(n.terminals||[]).length||1;
+  const lx=-w/2+(w/(c+1))*(i+1),ly=h/2;
+  const r=rot(lx,ly,(n.rotation||0)*Math.PI/180);
+  return{x:n.x+r.x,y:n.y+r.y};
 }
-function computeWireGeom(w){
-  const A=wireEndPoint(w,'from'), B=wireEndPoint(w,'to');
-  if(!A||!B)return null;
-  const dir=w.bend||B;
-  const dirA=w.bend||A;
-  let p1=A.isTerminal?{x:A.x,y:A.y}:pointOnBoundary(A.node,dir.x,dir.y);
-  let p2=B.isTerminal?{x:B.x,y:B.y}:pointOnBoundary(B.node,dirA.x,dirA.y);
-  // parallel offset for bundle
-  if(!w.bend&&w.fromId&&w.toId&&!A.isTerminal&&!B.isTerminal){
-    const sibs=proj.wires.filter(s=>s.fromId===w.fromId&&s.toId===w.toId&&!s.bend&&s.fromTerm==null&&s.toTerm==null);
-    const idx=sibs.findIndex(s=>s.id===w.id);
-    const off=(idx-(sibs.length-1)/2)*6;
-    if(off){
-      const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.hypot(dx,dy)||1;
-      const nx=-dy/len,ny=dx/len;
-      p1={x:p1.x+nx*off,y:p1.y+ny*off};
-      p2={x:p2.x+nx*off,y:p2.y+ny*off};
-    }
+function wep(w,end){
+  const id=w[end+'Id'];
+  if(id){const n=gn(id);if(!n)return null;const t=w[end+'Term'];if(n.type==='board'&&t!=null&&n.terminals?.[t]!=null){const p=termPt(n,t);return{x:p.x,y:p.y,n,isTerm:true};}return{x:n.x,y:n.y,n,isTerm:false};}
+  const p=w[end+'Point'];return p?{x:p.x,y:p.y,n:null}:null;
+}
+function wgeom(w){
+  const A=wep(w,'from'),B=wep(w,'to');if(!A||!B)return null;
+  const dir=w.bend||B,dirA=w.bend||A;
+  let p1=A.isTerm?{x:A.x,y:A.y}:bndry(A.n,dir.x,dir.y);
+  let p2=B.isTerm?{x:B.x,y:B.y}:bndry(B.n,dirA.x,dirA.y);
+  if(!w.bend&&w.fromId&&w.toId&&!A.isTerm&&!B.isTerm){
+    const sb=P.wires.filter(s=>s.fromId===w.fromId&&s.toId===w.toId&&!s.bend&&s.fromTerm==null&&s.toTerm==null);
+    const idx=sb.findIndex(s=>s.id===w.id),n=sb.length,off=(idx-(n-1)/2)*6;
+    if(off){const dx=p2.x-p1.x,dy=p2.y-p1.y,l=Math.hypot(dx,dy)||1;p1={x:p1.x-dy/l*off,y:p1.y+dx/l*off};p2={x:p2.x-dy/l*off,y:p2.y+dx/l*off};}
   }
   return{p1,p2,mid:w.bend||{x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2}};
 }
-function ptSegDist(px,py,ax,ay,bx,by){
-  const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
-  if(!l2)return Math.hypot(px-ax,py-ay);
-  const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l2));
-  return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));
-}
+function psd(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy;if(!l)return Math.hypot(px-ax,py-ay);const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));}
 
-// ═══════════════════════════════════════════════════════════
-// HIT TESTING  (all in SVG coordinates)
-// ═══════════════════════════════════════════════════════════
-function hitNode(sx,sy){
-  const margin=svgPx()*14;
-  for(let i=proj.nodes.length-1;i>=0;i--){
-    const n=proj.nodes[i];
-    if(n.type==='note'){
-      const{w}=nodeDims(n);
-      if(Math.abs(sx-n.x)<=w/2+margin&&Math.abs(sy-n.y)<=16+margin)return n;
-      continue;
-    }
-    const{w,h}=nodeDims(n);
-    const rad=-((n.rotation||0)*Math.PI/180);
+// ─────────────────────────────────────────────────────────────
+// HIT TESTING
+// ─────────────────────────────────────────────────────────────
+function hitN(sx,sy){
+  const m=spx()*14;
+  for(let i=P.nodes.length-1;i>=0;i--){
+    const n=P.nodes[i];
+    if(n.type==='note'){const{w}=ndim(n);if(Math.abs(sx-n.x)<=w/2+m&&Math.abs(sy-n.y)<=16+m)return n;continue;}
+    const{w,h}=ndim(n),rad=-((n.rotation||0)*Math.PI/180);
     const dx=sx-n.x,dy=sy-n.y;
-    const lx=dx*Math.cos(rad)-dy*Math.sin(rad);
-    const ly=dx*Math.sin(rad)+dy*Math.cos(rad);
-    if(Math.abs(lx)<=w/2+margin&&Math.abs(ly)<=h/2+margin)return n;
+    const lx=dx*Math.cos(rad)-dy*Math.sin(rad),ly=dx*Math.sin(rad)+dy*Math.cos(rad);
+    if(Math.abs(lx)<=w/2+m&&Math.abs(ly)<=h/2+m)return n;
   }
   return null;
 }
-function hitWire(sx,sy){
-  const thr=svgPx()*16;
-  for(const w of proj.wires){
-    const g=computeWireGeom(w); if(!g)continue;
-    const d=w.bend
-      ?Math.min(ptSegDist(sx,sy,g.p1.x,g.p1.y,w.bend.x,w.bend.y),
-                ptSegDist(sx,sy,w.bend.x,w.bend.y,g.p2.x,g.p2.y))
-      :ptSegDist(sx,sy,g.p1.x,g.p1.y,g.p2.x,g.p2.y);
-    if(d<thr)return w;
+function hitW(sx,sy){
+  const thr=spx()*16;
+  for(const w of P.wires){const g=wgeom(w);if(!g)continue;const d=w.bend?Math.min(psd(sx,sy,g.p1.x,g.p1.y,w.bend.x,w.bend.y),psd(sx,sy,w.bend.x,w.bend.y,g.p2.x,g.p2.y)):psd(sx,sy,g.p1.x,g.p1.y,g.p2.x,g.p2.y);if(d<thr)return w;}
+  return null;
+}
+// Returns handle info or null
+function hitH(sx,sy){
+  const thr=spx()*26;
+  if(sel?.kind==='node'){
+    const n=gn(sel.id);if(!n)return null;
+    const{w,h}=ndim(n),rad=(n.rotation||0)*Math.PI/180;
+    // resize edges
+    const edges=[{t:'rr',lx:w/2,ly:0},{t:'rl',lx:-w/2,ly:0},{t:'rb',lx:0,ly:h/2},{t:'rt',lx:0,ly:-h/2}];
+    for(const e of edges){const r=rot(e.lx,e.ly,rad);if(Math.hypot(sx-n.x-r.x,sy-n.y-r.y)<thr)return{t:e.t,n};}
+    // rotate
+    const rh=rot(0,-(h/2+42),rad);if(Math.hypot(sx-n.x-rh.x,sy-n.y-rh.y)<thr)return{t:'ro',n};
+  }
+  if(sel?.kind==='wire'){
+    const w=gw(sel.id);if(!w)return null;
+    const g=wgeom(w);if(!g)return null;
+    if(Math.hypot(sx-g.p1.x,sy-g.p1.y)<thr)return{t:'wf',w,g};
+    if(Math.hypot(sx-g.p2.x,sy-g.p2.y)<thr)return{t:'wt',w,g};
+    if(Math.hypot(sx-g.mid.x,sy-g.mid.y)<thr)return{t:'wb',w,g};
   }
   return null;
 }
-// Returns {type,data} or null
-// types: 'resize-right','resize-left','resize-top','resize-bottom','rotate','wire-from','wire-to','wire-bend'
-function hitHandle(sx,sy){
-  const thr=svgPx()*24; // generous hit area for fingers
-  if(selKind==='node'){
-    const n=getNode(selId); if(!n)return null;
-    const{w,h}=nodeDims(n);
-    const rad=(n.rotation||0)*Math.PI/180;
-    // edge handles
-    const edges=[
-      {type:'resize-right', lx:w/2, ly:0},
-      {type:'resize-left',  lx:-w/2,ly:0},
-      {type:'resize-bottom',lx:0,   ly:h/2},
-      {type:'resize-top',   lx:0,   ly:-h/2},
-    ];
-    for(const e of edges){
-      const r=rot(e.lx,e.ly,rad);
-      if(Math.hypot(sx-n.x-r.x,sy-n.y-r.y)<thr)return{type:e.type,node:n};
-    }
-    // rotate handle: above the node
-    const{h:nh}=nodeDims(n);
-    const arm=nh/2+40;
-    const rr=rot(0,-arm,rad);
-    if(Math.hypot(sx-n.x-rr.x,sy-n.y-rr.y)<thr)return{type:'rotate',node:n};
-  }
-  if(selKind==='wire'){
-    const w=getWire(selId); if(!w)return null;
-    const g=computeWireGeom(w); if(!g)return null;
-    if(Math.hypot(sx-g.p1.x,sy-g.p1.y)<thr)return{type:'wire-from',wire:w,geom:g};
-    if(Math.hypot(sx-g.p2.x,sy-g.p2.y)<thr)return{type:'wire-to',  wire:w,geom:g};
-    if(Math.hypot(sx-g.mid.x,sy-g.mid.y)<thr)return{type:'wire-bend',wire:w,geom:g};
-  }
-  return null;
-}
-function findNodeNear(sx,sy,exceptId){
-  const thr=svgPx()*32;
-  let best=null,bestD=Infinity;
-  proj.nodes.forEach(n=>{
-    if(n.id===exceptId||n.type==='note')return;
-    const d=Math.hypot(sx-n.x,sy-n.y);
-    if(d<thr&&d<bestD){bestD=d;best=n;}
-  });
+function nearN(sx,sy,excl){
+  const thr=spx()*36;let best=null,bd=Infinity;
+  P.nodes.forEach(n=>{if(n.id===excl||n.type==='note')return;const d=Math.hypot(sx-n.x,sy-n.y);if(d<thr&&d<bd){bd=d;best=n;}});
   if(!best)return null;
   let term=null;
-  if(best.type==='board'&&best.terminals?.length){
-    let td=Infinity;
-    best.terminals.forEach((_,i)=>{
-      const tp=terminalPoint(best,i);
-      const dd=Math.hypot(sx-tp.x,sy-tp.y);
-      if(dd<td&&dd<thr){td=dd;term=i;}
-    });
-  }
-  return{node:best,term};
+  if(best.type==='board'&&best.terminals?.length){let td=Infinity;best.terminals.forEach((_,i)=>{const tp=termPt(best,i);const dd=Math.hypot(sx-tp.x,sy-tp.y);if(dd<td&&dd<thr){td=dd;term=i;}});}
+  return{n:best,term};
 }
 
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // RENDER
-// ═══════════════════════════════════════════════════════════
-const nodesLayer=document.getElementById('nodesLayer');
-const wiresLayer=document.getElementById('wiresLayer');
-const handlesLayer=document.getElementById('handlesLayer');
-const emptyHint=document.getElementById('emptyHint');
-const SVG='http://www.w3.org/2000/svg';
-function el(tag,attrs={}){
-  const e=document.createElementNS(SVG,tag);
-  for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);
-  return e;
-}
-function txt(s){return document.createTextNode(s)}
+// ─────────────────────────────────────────────────────────────
+const wL=document.getElementById('wL');
+const nL=document.getElementById('nL');
+const hL=document.getElementById('hL');
 
-function hexPts(rx,ry){
-  const pts=[];
-  for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-30);pts.push(`${(rx*Math.cos(a)).toFixed(1)},${(ry*Math.sin(a)).toFixed(1)}`);}
-  return pts.join(' ');
-}
+function mke(tag,a={}){const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e;}
+function hxPts(rx,ry){return Array.from({length:6},(_,i)=>{const a=Math.PI/180*(60*i-30);return`${(rx*Math.cos(a)).toFixed(1)},${(ry*Math.sin(a)).toFixed(1)}`;}).join(' ');}
 
-function nodeShape(n){
-  const e=EQUIP[n.type],{w,h}=nodeDims(n),c=e.accent;
-  switch(e.shape){
-    case'circle':   return[el('circle',{r:w/2,fill:c,stroke:'#05101a','stroke-width':2})];
-    case'circleDash':return[el('circle',{r:w/2,fill:'none',stroke:c,'stroke-width':2.2,'stroke-dasharray':'4,3'})];
-    case'hex':      return[el('polygon',{points:hexPts(w/2,h/2),fill:c,stroke:'#05101a','stroke-width':2})];
-    case'diamond':  return[el('polygon',{points:`0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0`,fill:c,stroke:'#05101a','stroke-width':2})];
-    case'triangle': return[el('polygon',{points:`0,${-h/2} ${w/2},${h/2} ${-w/2},${h/2}`,fill:c,stroke:'#05101a','stroke-width':2})];
-    case'rectRot':  {const r=el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:4,fill:c,stroke:'#05101a','stroke-width':2,transform:'rotate(18)'});return[r];}
-    case'rectDash': return[el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:7,fill:'none',stroke:c,'stroke-width':2.2,'stroke-dasharray':'5,4'})];
-    case'board':    return buildBoardShape(n);
-    case'none':     return[];
-    default:        return[el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:8,fill:c,stroke:'#05101a','stroke-width':2})];
+function drawShape(n){
+  const e=EQ[n.type],{w,h}=ndim(n),c=e.ac;
+  switch(e.sh){
+    case'circle': return[mke('circle',{r:w/2,fill:c,stroke:'#050e18','stroke-width':2})];
+    case'circleD':return[mke('circle',{r:w/2,fill:'none',stroke:c,'stroke-width':2.2,'stroke-dasharray':'4,3'})];
+    case'hex':    return[mke('polygon',{points:hxPts(w/2,h/2),fill:c,stroke:'#050e18','stroke-width':2})];
+    case'diamond':return[mke('polygon',{points:`0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0`,fill:c,stroke:'#050e18','stroke-width':2})];
+    case'tri':    return[mke('polygon',{points:`0,${-h/2} ${w/2},${h/2} ${-w/2},${h/2}`,fill:c,stroke:'#050e18','stroke-width':2})];
+    case'rectR':  return[mke('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:4,fill:c,stroke:'#050e18','stroke-width':2,transform:'rotate(18)'})];
+    case'rectD':  return[mke('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:7,fill:'none',stroke:c,'stroke-width':2.2,'stroke-dasharray':'5,4'})];
+    case'board':  return drawBoard(n);
+    case'none':   return[];
+    default:      return[mke('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:8,fill:c,stroke:'#050e18','stroke-width':2})];
   }
 }
-function buildBoardShape(n){
-  const e=EQUIP[n.type]||EQUIP.board,{w,h}=nodeDims(n),c=e.accent;
+function drawBoard(n){
+  const e=EQ[n.type],{w,h}=ndim(n),c=e.ac;
   const parts=[
-    el('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:6,fill:'#141e2a',stroke:c,'stroke-width':2}),
-    el('rect',{x:-w/2+5,y:-h/2+5,width:w-10,height:14,rx:3,fill:c,opacity:.2}),
+    mke('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:6,fill:'#131f2c',stroke:c,'stroke-width':2}),
+    mke('rect',{x:-w/2+5,y:-h/2+5,width:w-10,height:14,rx:3,fill:c,opacity:.18}),
   ];
-  (n.terminals||[]).forEach((lbl,i)=>{
-    const{w:tw}=nodeDims(n);
-    const cnt=(n.terminals||[]).length||1;
-    const lx=-tw/2+(tw/(cnt+1))*(i+1);
-    const by=h/2;
-    const bg=el('rect',{x:lx-9,y:by-7,width:18,height:14,rx:2,fill:'#0e1a24',stroke:c,'stroke-width':1.4});
-    const t=el('text',{x:lx,y:by+1,'text-anchor':'middle','dominant-baseline':'middle','font-size':8.5,'font-family':'DM Sans','font-weight':700,fill:'#cce0ea','pointer-events':'none'});
-    t.textContent=lbl||'·';
-    parts.push(bg,t);
+  (n.terminals||[]).forEach((lb,i)=>{
+    const c2=(n.terminals||[]).length||1,lx=-w/2+(w/(c2+1))*(i+1),by=h/2;
+    const bg=mke('rect',{x:lx-9,y:by-7,width:18,height:14,rx:2,fill:'#0c1820',stroke:c,'stroke-width':1.4});
+    const t=mke('text',{x:lx,y:by+1,'text-anchor':'middle','dominant-baseline':'middle','font-size':8.5,'font-family':'DM Sans','font-weight':700,fill:'#cce0ea','pointer-events':'none'});
+    t.textContent=lb||'·';parts.push(bg,t);
   });
   return parts;
 }
-
-function buildNodeEl(n){
-  const g=el('g',{transform:nodeTransform(n),'data-id':n.id,class:'nd'+(selId===n.id&&selKind==='node'?' sel':'')});
-  const e=EQUIP[n.type],{w,h}=nodeDims(n);
+function mkNodeEl(n){
+  const e=EQ[n.type],{w,h}=ndim(n);
+  const g=mke('g',{transform:ntx(n),'data-id':n.id});
   if(n.type==='note'){
-    g.appendChild(el('rect',{x:-w/2,y:-14,width:w,height:28,rx:6,fill:'#09111a',stroke:'#2a3f50','stroke-dasharray':'3,3',opacity:.9}));
-    const t=el('text',{x:0,y:4,'text-anchor':'middle','dominant-baseline':'middle','font-size':12.5,'font-family':'DM Sans',fill:'#c0d4e0','pointer-events':'none'});
-    t.textContent=n.label||'Текст…';
-    g.appendChild(t);
-  } else {
-    nodeShape(n).forEach(s=>g.appendChild(s));
-    // abbreviation text
-    const t=el('text',{x:0,y:n.type==='board'?-h/2+21:0,'text-anchor':'middle','dominant-baseline':'middle',fill:n.type==='board'?'#dde8f0':'#04222b','font-size':13,'font-family':'DM Sans','font-weight':700,'pointer-events':'none'});
-    t.textContent=trunc(n.label||e.abbr,16);
-    g.appendChild(t);
+    g.appendChild(mke('rect',{x:-w/2,y:-14,width:w,height:28,rx:6,fill:'#08111a',stroke:'#253a4d','stroke-dasharray':'3,3',opacity:.9}));
+    const t=mke('text',{x:0,y:4,'text-anchor':'middle','dominant-baseline':'middle','font-size':12.5,'font-family':'DM Sans',fill:'#bed4e0','pointer-events':'none'});
+    t.textContent=n.label||'Текст…';g.appendChild(t);
+  }else{
+    drawShape(n).forEach(s=>g.appendChild(s));
+    const t=mke('text',{x:0,y:n.type==='board'?-h/2+20:0,'text-anchor':'middle','dominant-baseline':'middle','font-size':Math.min(13,w/4),'font-family':'DM Sans','font-weight':700,fill:n.type==='board'?'#dde8f0':'#04202c','pointer-events':'none'});
+    t.textContent=trunc(n.label||e.ab,16);g.appendChild(t);
+  }
+  if(sel?.kind==='node'&&sel.id===n.id){
+    const hl=mke('rect',{x:-w/2-6,y:n.type==='note'?-20:-h/2-6,width:w+12,height:n.type==='note'?40:h+12,rx:10,fill:'none',stroke:'var(--ice)','stroke-width':2,opacity:.7,'stroke-dasharray':'5,3'});
+    g.appendChild(hl);
   }
   return g;
 }
-
-function buildWireEl(w){
-  const g=el('g',{'data-id':w.id,class:'wr'+(selId===w.id&&selKind==='wire'?' sel':'')});
-  const geo=computeWireGeom(w); if(!geo)return g;
-  const{p1,p2,mid}=geo;
-  const isSel=selId===w.id&&selKind==='wire';
+function mkWireEl(w){
+  const g=mke('g',{'data-wid':w.id});
+  const geo=wgeom(w);if(!geo)return g;
+  const{p1,p2,mid}=geo,isSel=sel?.kind==='wire'&&sel.id===w.id;
   const d=w.bend?`M${p1.x},${p1.y}L${w.bend.x},${w.bend.y}L${p2.x},${p2.y}`:`M${p1.x},${p1.y}L${p2.x},${p2.y}`;
-  const attrs={'fill':'none','stroke-linecap':'round','stroke-linejoin':'round'};
-  if(isSel){g.appendChild(el('path',{...attrs,d,stroke:'var(--ice)','stroke-width':10,opacity:.25}));}
-  g.appendChild(el('path',{...attrs,d,stroke:'#000','stroke-width':5.5,opacity:.4}));
-  g.appendChild(el('path',{...attrs,d,stroke:w.color,'stroke-width':3.2}));
-  // wide invisible hit area
-  g.appendChild(el('path',{...attrs,d,stroke:'transparent','stroke-width':24,class:'whit'}));
-  // label only when selected
+  const a={'fill':'none','stroke-linecap':'round','stroke-linejoin':'round'};
+  if(isSel)g.appendChild(mke('path',{...a,d,stroke:'var(--ice)','stroke-width':11,opacity:.22}));
+  g.appendChild(mke('path',{...a,d,stroke:'#000','stroke-width':5.5,opacity:.4}));
+  g.appendChild(mke('path',{...a,d,stroke:w.color,'stroke-width':3.2}));
+  g.appendChild(mke('path',{...a,d,stroke:'transparent','stroke-width':26}));
   if(isSel&&w.label){
-    const lw=Math.max(18,w.label.length*6.3+10);
-    g.appendChild(el('rect',{class:'wire-label-bg',x:mid.x-lw/2,y:mid.y-9,width:lw,height:16,rx:4}));
-    const lt=el('text',{class:'wire-label-txt',x:mid.x,y:mid.y+3});
-    lt.textContent=w.label;
-    g.appendChild(lt);
+    const lw=Math.max(20,w.label.length*6.2+10);
+    g.appendChild(mke('rect',{x:mid.x-lw/2,y:mid.y-9,width:lw,height:16,rx:4,fill:'#07101a',opacity:.92}));
+    const t=mke('text',{x:mid.x,y:mid.y+3,'text-anchor':'middle','font-size':11,'font-family':'DM Sans','font-weight':700,fill:'#c0d4e0','pointer-events':'none'});
+    t.textContent=w.label;g.appendChild(t);
   }
   return g;
 }
-
-function buildHandles(){
-  handlesLayer.innerHTML='';
-  if(selKind==='node'){
-    const n=getNode(selId); if(!n)return;
-    buildNodeHandles(n);
-  } else if(selKind==='wire'){
-    const w=getWire(selId); if(!w)return;
-    buildWireHandles(w);
+function mkHandles(){
+  hL.innerHTML='';
+  if(!sel)return;
+  if(sel.kind==='node'){
+    const n=gn(sel.id);if(!n)return;
+    const{w,h}=ndim(n),rad=(n.rotation||0)*Math.PI/180;
+    // 4 resize handles
+    [{lx:w/2,ly:0,ic:'⇔'},{lx:-w/2,ly:0,ic:'⇔'},{lx:0,ly:h/2,ic:'⇕'},{lx:0,ly:-h/2,ic:'⇕'}].forEach(({lx,ly,ic})=>{
+      const r=rot(lx,ly,rad);const hx=n.x+r.x,hy=n.y+r.y;
+      const c=mke('circle',{cx:hx,cy:hy,r:15,fill:'#162230',stroke:'var(--ice)','stroke-width':2,class:'hdl'});
+      const t=mke('text',{x:hx,y:hy,'text-anchor':'middle','dominant-baseline':'middle','font-size':13,fill:'var(--ice)','pointer-events':'none'});
+      t.textContent=ic;hL.appendChild(c);hL.appendChild(t);
+    });
+    // rotate handle
+    const ar=rot(0,-(h/2+42),rad);const hx=n.x+ar.x,hy=n.y+ar.y;
+    const el=rot(0,-h/2,rad);
+    hL.appendChild(mke('line',{x1:n.x+el.x,y1:n.y+el.y,x2:hx,y2:hy,stroke:'#ffd24f','stroke-width':2,'stroke-dasharray':'4,3','pointer-events':'none'}));
+    const rc=mke('circle',{cx:hx,cy:hy,r:16,fill:'#ffd24f',stroke:'#04202c','stroke-width':2,class:'hdl'});
+    const rt=mke('text',{x:hx,y:hy,'text-anchor':'middle','dominant-baseline':'middle','font-size':17,fill:'#04202c','pointer-events':'none','font-weight':'bold'});
+    rt.textContent='↻';hL.appendChild(rc);hL.appendChild(rt);
+  }else if(sel.kind==='wire'){
+    const w=gw(sel.id);if(!w)return;const g=wgeom(w);if(!g)return;
+    const mk=(x,y,fill)=>{const c=mke('circle',{cx:x,cy:y,r:13,fill,stroke:'#04202c','stroke-width':2,class:'hdl'});hL.appendChild(c);};
+    mk(g.p1.x,g.p1.y,'var(--ice)');mk(g.p2.x,g.p2.y,'var(--emb)');mk(g.mid.x,g.mid.y,'#ffd24f');
   }
 }
-function makeHandleCircle(x,y,r,fill,cls=''){
-  const c=el('circle',{cx:x,cy:y,r,fill,stroke:'#04222b','stroke-width':2,class:'handle'+' '+cls});
-  handlesLayer.appendChild(c);
-  return c;
-}
-function makeHandleRect(x,y,w,h,fill){
-  const r=el('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:4,fill,stroke:'#04222b','stroke-width':2,class:'handle'});
-  handlesLayer.appendChild(r);
-  return r;
-}
-function buildNodeHandles(n){
-  const{w,h}=nodeDims(n);
-  const rad=(n.rotation||0)*Math.PI/180;
-  const R=14;
-  // 4 edge handles
-  [{lx:w/2,ly:0},{lx:-w/2,ly:0},{lx:0,ly:h/2},{lx:0,ly:-h/2}].forEach(({lx,ly})=>{
-    const r=rot(lx,ly,rad);
-    makeHandleCircle(n.x+r.x,n.y+r.y,R,'#1c2d3a');
-    // icon
-    const t=el('text',{x:n.x+r.x,y:n.y+r.y,'text-anchor':'middle','dominant-baseline':'middle',
-      'font-size':13,fill:'#4fd1ff','pointer-events':'none'});
-    t.textContent=Math.abs(lx)>Math.abs(ly)?'⇔':'⇕';
-    handlesLayer.appendChild(t);
-  });
-  // rotate handle (arm + circle)
-  const arm=h/2+38;
-  const rr=rot(0,-arm,rad);
-  const hx=n.x+rr.x, hy=n.y+rr.y;
-  const edge=rot(0,-h/2,rad);
-  const ln=el('line',{x1:n.x+edge.x,y1:n.y+edge.y,x2:hx,y2:hy,stroke:'#ffd24f','stroke-width':2,'stroke-dasharray':'4,3','pointer-events':'none'});
-  handlesLayer.appendChild(ln);
-  makeHandleCircle(hx,hy,R,'#ffd24f');
-  const t=el('text',{x:hx,y:hy,'text-anchor':'middle','dominant-baseline':'middle',
-    'font-size':16,fill:'#05101a','pointer-events':'none','font-weight':'bold'});
-  t.textContent='↻';
-  handlesLayer.appendChild(t);
-}
-function buildWireHandles(w){
-  const g=computeWireGeom(w); if(!g)return;
-  const R=13;
-  makeHandleCircle(g.p1.x,g.p1.y,R,'#4fd1ff');
-  makeHandleCircle(g.p2.x,g.p2.y,R,'#ff8a4c');
-  makeHandleCircle(g.mid.x,g.mid.y,10,'#ffd24f');
-}
-
 function renderAll(){
-  nodesLayer.innerHTML='';
-  wiresLayer.innerHTML='';
-  handlesLayer.innerHTML='';
-  proj.wires.forEach(w=>wiresLayer.appendChild(buildWireEl(w)));
-  proj.nodes.forEach(n=>nodesLayer.appendChild(buildNodeEl(n)));
-  buildHandles();
-  emptyHint.style.display=proj.nodes.length?'none':'block';
+  nL.innerHTML='';wL.innerHTML='';hL.innerHTML='';
+  P.wires.forEach(w=>wL.appendChild(mkWireEl(w)));
+  P.nodes.forEach(n=>nL.appendChild(mkNodeEl(n)));
+  mkHandles();
+  document.getElementById('hint').style.display=P.nodes.length?'none':'block';
   buildLegend();
+  document.getElementById('tDel').disabled=!sel;
 }
-// Fast update of a single node's SVG element (used during drag/resize)
-function updateNodeInPlace(n){
-  const old=nodesLayer.querySelector(`[data-id="${n.id}"]`);
-  if(!old)return;
-  const neo=buildNodeEl(n);
-  nodesLayer.replaceChild(neo,old);
-}
-// Fast update of wires connected to a node (used during drag)
-function updateWiresFor(nodeId){
-  proj.wires.forEach(w=>{
-    if(w.fromId!==nodeId&&w.toId!==nodeId)return;
-    const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);
-    if(!old)return;
-    wiresLayer.replaceChild(buildWireEl(w),old);
-  });
-}
+function updN(n){const o=nL.querySelector(`[data-id="${n.id}"]`);if(o)nL.replaceChild(mkNodeEl(n),o);}
+function updWsOf(nid){P.wires.forEach(w=>{if(w.fromId!==nid&&w.toId!==nid)return;const o=wL.querySelector(`[data-wid="${w.id}"]`);if(o)wL.replaceChild(mkWireEl(w),o);});}
 
-// ═══════════════════════════════════════════════════════════
-// POINTER EVENT HANDLING (THE KEY PART)
-// All touch/mouse events go to the board SVG, no child listeners.
-// This is the only reliable way on iOS Safari.
-// ═══════════════════════════════════════════════════════════
-let drag=null;
-let ptrMap=new Map(); // pointerId → {x,y}
+// ─────────────────────────────────────────────────────────────
+// POINTER EVENTS — everything goes through the SVG root
+// touch-action:none → browser hands all touches to us
+// ─────────────────────────────────────────────────────────────
+let ptrs=new Map();   // pointerId → {cx,cy}
+let op=null;          // active operation
 
-board.addEventListener('pointerdown',onDown,{passive:false});
-board.addEventListener('pointermove',onMove,{passive:false});
-board.addEventListener('pointerup',  onUp);
-board.addEventListener('pointercancel',onUp);
+cvs.addEventListener('pointerdown',onDn,{passive:false});
+cvs.addEventListener('pointermove',onMv,{passive:false});
+cvs.addEventListener('pointerup',  onUp);
+cvs.addEventListener('pointercancel',onUp);
 
-function onDown(e){
+function onDn(e){
   e.preventDefault();
-  board.setPointerCapture(e.pointerId);
-  ptrMap.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  
-  if(ptrMap.size===2){
-    // Switch to pan/pinch mode
-    const pts=[...ptrMap.values()];
-    drag={type:'pinch',
-      startDist:Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y),
-      startMidC:{x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2},
-      startVB:{...vb}};
+  cvs.setPointerCapture(e.pointerId);
+  ptrs.set(e.pointerId,{cx:e.clientX,cy:e.clientY});
+
+  // 2+ fingers → pan+pinch
+  if(ptrs.size>=2){
+    const arr=[...ptrs.values()];
+    op={t:'pinch',d0:dist2(arr[0],arr[1]),m0:mid2(arr[0],arr[1]),vb0:{...vb}};
     return;
   }
 
-  const s=toSVG(e.clientX,e.clientY);
+  const s=c2s(e.clientX,e.clientY);
 
-  // 1. Place mode
-  if(toolMode==='place'&&armType){
-    pushHist();
-    const n={id:uid(),type:armType,x:Math.round(s.x),y:Math.round(s.y),
-      label:'', rotation:0};
-    if(armType==='board')n.terminals=['R','C','G','Y','W','O/B'];
-    proj.nodes.push(n);
-    disarm();
-    selId=n.id; selKind='node';
-    renderAll(); saveDeferred();
-    openInspNode(n);
+  if(mode==='place'&&armT){
+    phist();
+    const n={id:uid(),type:armT,x:Math.round(s.x),y:Math.round(s.y),label:'',rotation:0};
+    if(armT==='board')n.terminals=['R','C','G','Y','W','O/B'];
+    P.nodes.push(n);setMode('sel');
+    sel={kind:'node',id:n.id};renderAll();openInsN(n);saveDef();
     return;
   }
+  if(mode==='cfrom'){const n=hitN(s.x,s.y);if(n){cfromId=n.id;setMode('cto');setSt('Тепер торкнись приладу-призначення (2/2)');}return;}
+  if(mode==='cto'){const n=hitN(s.x,s.y);if(n&&n.id!==cfromId){mkCable(cfromId,n.id);setMode('sel');}return;}
 
-  // 2. Cable-from mode: tap a node
-  if(toolMode==='cable-from'){
-    const n=hitNode(s.x,s.y);
-    if(n){cableFromId=n.id; toolMode='cable-to'; setStatus('Тепер торкнись приладу-призначення (2/2)');}
-    return;
-  }
-  // 3. Cable-to mode: tap destination
-  if(toolMode==='cable-to'){
-    const n=hitNode(s.x,s.y);
-    if(n&&n.id!==cableFromId){
-      createCable(cableFromId,n.id);
-      cancelMode();
-    }
-    return;
-  }
+  // select mode: handle → node → wire → pan
+  const h=hitH(s.x,s.y);
+  if(h){phist();op={t:h.t,cx0:e.clientX,cy0:e.clientY,...h};return;}
 
-  // 4. Select mode: hit test handles → nodes → wires → pan
-  const h=hitHandle(s.x,s.y);
-  if(h){
-    drag={type:h.type,s0:s,...h,vb0:{...vb}};
-    if(h.type==='wire-from'||h.type==='wire-to'||h.type==='wire-bend'){
-      const orig={fromId:h.wire.fromId,fromPoint:h.wire.fromPoint,fromTerm:h.wire.fromTerm,
-        toId:h.wire.toId,toPoint:h.wire.toPoint,toTerm:h.wire.toTerm,bend:h.wire.bend};
-      drag.orig=orig;
-    }
-    pushHist();
-    return;
-  }
-
-  const n=hitNode(s.x,s.y);
+  const n=hitN(s.x,s.y);
   if(n){
-    if(selId!==n.id||selKind!=='node'){selId=n.id;selKind='node';renderAll();openInspNode(n);}
-    drag={type:'node',node:n,s0:s,ox:n.x,oy:n.y,moved:false};
+    if(!sel||sel.id!==n.id||sel.kind!=='node'){sel={kind:'node',id:n.id};renderAll();openInsN(n);}
+    op={t:'nd',n,cx0:e.clientX,cy0:e.clientY,ox:n.x,oy:n.y,mv:false};
     return;
   }
+  const w=hitW(s.x,s.y);
+  if(w){if(!sel||sel.id!==w.id||sel.kind!=='wire'){sel={kind:'wire',id:w.id};renderAll();openInsW(w);}op={t:'wsel'};return;}
 
-  const w=hitWire(s.x,s.y);
-  if(w){
-    if(selId!==w.id||selKind!=='wire'){selId=w.id;selKind='wire';renderAll();openInspWire(w);}
-    drag={type:'wire-sel'};
-    return;
-  }
-
-  // Empty space → deselect + start pan
-  clearSel();
-  drag={type:'pan',s0:s,vb0:{...vb}};
+  // empty → desel + pan
+  if(sel){sel=null;closeIns();renderAll();}
+  op={t:'pan'};
 }
 
-function onMove(e){
+function onMv(e){
   e.preventDefault();
-  const prev=ptrMap.get(e.pointerId)||{x:e.clientX,y:e.clientY};
-  ptrMap.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const prev=ptrs.get(e.pointerId)||{cx:e.clientX,cy:e.clientY};
+  ptrs.set(e.pointerId,{cx:e.clientX,cy:e.clientY});
 
-  if(ptrMap.size===2&&drag?.type==='pinch'){
-    const pts=[...ptrMap.values()];
-    const dist=Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y);
-    const midC={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
-    const vb0=drag.startVB;
-    const scale=drag.startDist/dist;
-    const newW=Math.max(400,Math.min(4000,vb0.w*scale));
-    const newH=newW*(vb0.h/vb0.w);
-    // keep the pinch midpoint stationary in SVG space
-    const midSVG={x:vb0.x+(drag.startMidC.x-board.getBoundingClientRect().left)/board.getBoundingClientRect().width*vb0.w,
-                  y:vb0.y+(drag.startMidC.y-board.getBoundingClientRect().top)/board.getBoundingClientRect().height*vb0.h};
-    const r=board.getBoundingClientRect();
-    const fx=(midC.x-r.left)/r.width;
-    const fy=(midC.y-r.top)/r.height;
-    vb={x:midSVG.x-fx*newW,y:midSVG.y-fy*newH,w:newW,h:newH};
-    setVB(); updateZoomLabel();
+  // pinch
+  if(ptrs.size>=2&&op?.t==='pinch'){
+    const arr=[...ptrs.values()];
+    const d1=dist2(arr[0],arr[1]),m1=mid2(arr[0],arr[1]);
+    const sc=op.d0/Math.max(d1,1);
+    const nw=Math.max(300,Math.min(5200,op.vb0.w*sc)),nh=nw*(op.vb0.h/op.vb0.w);
+    // SVG coord of initial midpoint
+    const r=vbR();
+    const svmx=op.vb0.x+(op.m0.cx-r.left)/r.width*op.vb0.w;
+    const svmy=op.vb0.y+(op.m0.cy-r.top)/r.height*op.vb0.h;
+    const fx=(m1.cx-r.left)/r.width,fy=(m1.cy-r.top)/r.height;
+    vb={x:svmx-fx*nw,y:svmy-fy*nh,w:nw,h:nh};
+    applyVB();updateZlbl();
     return;
   }
+  if(!op)return;
 
-  if(!drag)return;
-  const s=toSVG(e.clientX,e.clientY);
+  // incremental delta in CSS pixels
+  const dcx=e.clientX-prev.cx,dcy=e.clientY-prev.cy;
+  const ds=d2s(dcx,dcy);
 
-  if(drag.type==='pan'){
-    const ds=drag.s0, vb0=drag.vb0;
-    vb.x=vb0.x-(s.x-ds.x);
-    vb.y=vb0.y-(s.y-ds.y);
-    // recalculate s because vb just changed - use client delta instead
-    const r=board.getBoundingClientRect();
-    const dCx=e.clientX-prev.x, dCy=e.clientY-prev.y;
-    const svgPerPxX=vb.w/r.width, svgPerPxY=vb.h/r.height;
-    vb.x-=dCx*svgPerPxX; vb.y-=dCy*svgPerPxY;
-    setVB(); return;
-  }
+  if(op.t==='pan'){vb.x-=ds.dx;vb.y-=ds.dy;applyVB();return;}
 
-  if(drag.type==='node'){
-    const{node:n,s0,ox,oy}=drag;
-    const dx=s.x-s0.x,dy=s.y-s0.y;
-    if(!drag.moved&&Math.hypot(dx,dy)>svgPx()*5)drag.moved=true;
-    if(drag.moved){
-      n.x=ox+dx; n.y=oy+dy;
-      const g=nodesLayer.querySelector(`[data-id="${n.id}"]`);
-      if(g)g.setAttribute('transform',nodeTransform(n));
-      updateWiresFor(n.id);
-      buildHandles();
+  if(op.t==='nd'){
+    const moved=op.mv||(Math.hypot(e.clientX-op.cx0,e.clientY-op.cy0)>4);
+    if(moved&&!op.mv){op.mv=true;phist();}
+    if(op.mv){
+      op.n.x+=ds.dx;op.n.y+=ds.dy;
+      const ge=nL.querySelector(`[data-id="${op.n.id}"]`);
+      if(ge)ge.setAttribute('transform',ntx(op.n));
+      updWsOf(op.n.id);mkHandles();
     }
     return;
   }
 
-  // Resize handles
-  if(drag.type.startsWith('resize-')){
-    const n=drag.node;
-    if(n.nodeW==null){const d=nodeDims(n);n.nodeW=d.w;n.nodeH=d.h;}
-    const rad=(n.rotation||0)*Math.PI/180;
-    const r=board.getBoundingClientRect();
-    const dCx=e.clientX-prev.x,dCy=e.clientY-prev.y;
-    const spx=vb.w/r.width, spy=vb.h/r.height;
-    const dlx=dCx*spx, dly=dCy*spy;
-    // project delta onto handle axis in local frame
-    const axis=drag.type==='resize-right'?{lx:1,ly:0}
-              :drag.type==='resize-left'? {lx:-1,ly:0}
-              :drag.type==='resize-bottom'?{lx:0,ly:1}:{lx:0,ly:-1};
-    const axS=rot(axis.lx,axis.ly,rad);
-    const delta=(dlx*axS.x+dly*axS.y)*2;
-    if(drag.type.includes('right')||drag.type.includes('left'))
-      n.nodeW=Math.max(24,n.nodeW+delta);
-    else
-      n.nodeH=Math.max(16,n.nodeH+delta);
-    updateNodeInPlace(n);
-    updateWiresFor(n.id);
-    buildHandles();
+  // resize handles
+  if(op.t==='rr'||op.t==='rl'||op.t==='rb'||op.t==='rt'){
+    const n=op.n,rad=(n.rotation||0)*Math.PI/180;
+    if(n.nodeW==null){const d=ndim(n);n.nodeW=d.w;n.nodeH=d.h;}
+    const axis=(op.t==='rr'||op.t==='rl')?{lx:op.t==='rr'?1:-1,ly:0}:{lx:0,ly:op.t==='rb'?1:-1};
+    const aS=rot(axis.lx,axis.ly,rad);
+    const proj=(dcx*aS.x+dcy*aS.y)*(vb.w/vbR().width)*2;
+    if(op.t==='rr'||op.t==='rl')n.nodeW=Math.max(24,n.nodeW+proj);
+    else n.nodeH=Math.max(16,n.nodeH+proj);
+    updN(n);updWsOf(n.id);mkHandles();
     return;
   }
 
-  // Rotate handle
-  if(drag.type==='rotate'){
-    const n=drag.node;
-    const ang=Math.atan2(s.y-n.y,s.x-n.x)*180/Math.PI+90;
-    n.rotation=((Math.round(ang/15)*15)%360+360)%360;
-    const g=nodesLayer.querySelector(`[data-id="${n.id}"]`);
-    if(g)g.setAttribute('transform',nodeTransform(n));
-    updateWiresFor(n.id);
-    buildHandles();
+  // rotate
+  if(op.t==='ro'){
+    const n=op.n,r=vbR();
+    const ncx=r.left+(n.x-vb.x)/vb.w*r.width,ncy=r.top+(n.y-vb.y)/vb.h*r.height;
+    const a0=Math.atan2(prev.cy-ncy,prev.cx-ncx),a1=Math.atan2(e.clientY-ncy,e.clientX-ncx);
+    let da=(a1-a0)*180/Math.PI;
+    n.rotation=(((n.rotation||0)+da)%360+360)%360;
+    n.rotation=Math.round(n.rotation/15)*15; // snap 15°
+    const ge=nL.querySelector(`[data-id="${n.id}"]`);
+    if(ge)ge.setAttribute('transform',ntx(n));
+    updWsOf(n.id);mkHandles();
     return;
   }
 
-  // Wire endpoint drag
-  if(drag.type==='wire-from'||drag.type==='wire-to'){
-    const w=drag.wire;
-    const end=drag.type==='wire-from'?'from':'to';
-    w[end+'Id']=null; w[end+'Point']={x:s.x,y:s.y}; w[end+'Term']=null;
-    w.bend=null;
-    const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);
-    if(old)wiresLayer.replaceChild(buildWireEl(w),old);
-    buildHandles();
+  // wire endpoint drag
+  if(op.t==='wf'||op.t==='wt'){
+    const s=c2s(e.clientX,e.clientY),end=op.t==='wf'?'from':'to';
+    op.w[end+'Id']=null;op.w[end+'Point']={x:s.x,y:s.y};op.w[end+'Term']=null;op.w.bend=null;
+    const o=wL.querySelector(`[data-wid="${op.w.id}"]`);if(o)wL.replaceChild(mkWireEl(op.w),o);mkHandles();
     return;
   }
-
-  // Wire bend drag
-  if(drag.type==='wire-bend'){
-    drag.wire.bend={x:s.x,y:s.y};
-    const old=wiresLayer.querySelector(`[data-id="${drag.wire.id}"]`);
-    if(old)wiresLayer.replaceChild(buildWireEl(drag.wire),old);
-    buildHandles();
+  if(op.t==='wb'){
+    const s=c2s(e.clientX,e.clientY);op.w.bend={x:s.x,y:s.y};
+    const o=wL.querySelector(`[data-wid="${op.w.id}"]`);if(o)wL.replaceChild(mkWireEl(op.w),o);mkHandles();
     return;
   }
 }
 
 function onUp(e){
-  ptrMap.delete(e.pointerId);
-
-  if(ptrMap.size<2&&drag?.type==='pinch'){
-    drag=null; return;
-  }
-
-  if(!drag){return;}
-  const dt=drag;
-  drag=null;
-
-  if(dt.type==='node'&&dt.moved){saveDeferred();}
-
-  if(dt.type==='wire-from'||dt.type==='wire-to'){
-    const w=dt.wire, end=dt.type==='wire-from'?'from':'to';
-    const s=toSVG(e.clientX,e.clientY);
-    const hit=findNodeNear(s.x,s.y,null);
-    if(hit){
-      w[end+'Id']=hit.node.id; delete w[end+'Point'];
-      w[end+'Term']=hit.term!=null?hit.term:null;
+  ptrs.delete(e.pointerId);
+  if(ptrs.size<2&&op?.t==='pinch'){op=null;return;}
+  if(!op){return;}
+  const ot=op.t;op=null;
+  if(ot==='nd'&&op===null){/* already saved op */}
+  if(ot==='wf'||ot==='wt'){
+    const w=ot==='wf'?P.wires.find(x=>x.id===sel?.id):P.wires.find(x=>x.id===sel?.id);
+    // we need to access the wire from our drag state — rebuild from current sel
+    const cw=sel?.kind==='wire'?gw(sel.id):null;
+    if(cw){
+      const end=ot==='wf'?'from':'to',s=c2s(e.clientX,e.clientY);
+      const hit=nearN(s.x,s.y,null);
+      if(hit){cw[end+'Id']=hit.n.id;delete cw[end+'Point'];cw[end+'Term']=hit.term??null;}
+      cw.bend=null;
     }
-    w.bend=null;
-    renderAll(); saveDeferred();
+    renderAll();saveDef();
   }
-
-  if(dt.type==='wire-bend'){renderAll(); saveDeferred();}
-  if(dt.type.startsWith('resize-')||dt.type==='rotate'){renderAll(); saveDeferred();}
+  if(ot==='ro'||ot.startsWith('r')||ot==='wb'){saveDef();}
+  if(ot==='nd'){saveDef();}
 }
 
-// ═══════════════════════════════════════════════════════════
-// SELECTION & INSPECTOR
-// ═══════════════════════════════════════════════════════════
-const inspector=document.getElementById('inspector');
-const inspBody=document.getElementById('insp-body');
-const inspTitle=document.getElementById('insp-title');
-document.getElementById('inspClose').addEventListener('click',clearSel);
+// Fix for wire endpoint drag: track the wire in op properly
+cvs.addEventListener('pointerup',e2=>{
+  // handled above
+},true);
 
-function clearSel(){selId=null;selKind=null;inspector.classList.remove('on');renderAll();}
-function openInspNode(n){
-  inspTitle.textContent=n.type==='note'?'Нотатка':'Прилад';
-  const e=EQUIP[n.type];
-  let typeOpts=Object.keys(EQUIP).filter(t=>t!=='note').map(t=>`<option value="${t}"${t===n.type?' selected':''}>${EQUIP[t].label}</option>`).join('');
-  let termsHtml='';
+function dist2(a,b){return Math.hypot(b.cx-a.cx,b.cy-a.cy);}
+function mid2(a,b){return{cx:(a.cx+b.cx)/2,cy:(a.cy+b.cy)/2};}
+
+// ─────────────────────────────────────────────────────────────
+// UNDO
+// ─────────────────────────────────────────────────────────────
+function phist(){H.push(JSON.stringify({nodes:P.nodes,wires:P.wires}));if(H.length>40)H.shift();}
+function undo(){
+  if(!H.length){toast('Нічого скасовувати');return;}
+  const s=JSON.parse(H.pop());P.nodes=s.nodes;P.wires=s.wires;
+  sel=null;closeIns();renderAll();saveDef();
+}
+
+// ─────────────────────────────────────────────────────────────
+// INSPECTOR
+// ─────────────────────────────────────────────────────────────
+const ins=document.getElementById('ins');
+const insbd=document.getElementById('ins-bd');
+function closeIns(){ins.classList.remove('on');}
+document.getElementById('insCl').addEventListener('click',()=>{sel=null;closeIns();renderAll();});
+
+function openInsN(n){
+  document.getElementById('ins-ti').textContent=n.type==='note'?'Нотатка':'Прилад';
+  const e=EQ[n.type];
+  const topts=Object.keys(EQ).filter(t=>t!=='note').map(t=>`<option value="${t}"${t===n.type?' selected':''}>${EQ[t].lb}</option>`).join('');
+  let termsH='';
   if(n.type==='board'){
-    const rows=(n.terminals||[]).map((t,i)=>`
-      <div class="term-row">
-        <input class="term-inp t-inp" data-i="${i}" value="${escX(t)}" placeholder="Клема ${i+1}">
-        <button class="term-del" data-i="${i}">✕</button>
-      </div>`).join('');
-    termsHtml=`<div class="col"><div class="lbl">Клеми</div><div class="terms-list">${rows}</div>
-      <button class="btn ghost t-add" style="width:100%">＋ Клема</button></div>`;
+    const rows=(n.terminals||[]).map((t,i)=>`<div class="tr"><input class="ti ti-in" data-i="${i}" value="${xe(t)}" placeholder="Клема ${i+1}"><button class="td" data-i="${i}" style="background:none;border:none;color:var(--err);font-size:15px;cursor:pointer">✕</button></div>`).join('');
+    termsH=`<div class="fc"><div class="fl">Клеми</div><div class="tl">${rows}</div><button class="btn gh ta" style="width:100%">＋ Клема</button></div>`;
   }
-  inspBody.innerHTML=`
-    <div class="col"><div class="lbl">Підпис</div>
-      <input class="fi" id="fLabel" value="${escX(n.label||'')}" placeholder="${e.label}"></div>
-    ${n.type!=='note'?`<div class="col"><div class="lbl">Тип</div>
-      <select class="fi" id="fType">${typeOpts}</select></div>`:''}
-    ${termsHtml}
-    <div class="col"><div class="lbl">Шар</div>
-      <div class="btn-row">
-        <button class="btn ghost" id="fFront">⬆ Наперед</button>
-        <button class="btn ghost" id="fBack">⬇ Назад</button>
-      </div></div>
-    <div class="btn-row">
-      <button class="btn ghost" id="fDup">⎘ Дублювати</button>
-      <button class="btn danger" id="fDel">🗑 Видалити</button>
-    </div>`;
-  inspector.classList.add('on');
-  document.getElementById('fLabel').addEventListener('input',ev=>{n.label=ev.target.value;updateNodeInPlace(n);saveDeferred();buildLegend();});
-  const fType=document.getElementById('fType');
-  if(fType)fType.addEventListener('change',()=>{
-    n.type=fType.value;
-    if(n.type==='board'&&!n.terminals)n.terminals=['R','C','G','Y','W','O/B'];
-    pushHist();renderAll();openInspNode(n);saveDeferred();
+  insbd.innerHTML=`
+    <div class="fc"><div class="fl">Підпис</div><input class="fi" id="fL" value="${xe(n.label||'')}" placeholder="${e.lb}"></div>
+    ${n.type!=='note'?`<div class="fc"><div class="fl">Тип</div><select class="fi" id="fT">${topts}</select></div>`:''}
+    ${termsH}
+    <div class="fc"><div class="fl">Шар</div><div class="brow"><button class="btn gh fFr">⬆ Наперед</button><button class="btn gh fBk">⬇ Назад</button></div></div>
+    <div class="brow"><button class="btn gh fDp">⎘ Дублювати</button><button class="btn dr fDl">🗑 Видалити</button></div>`;
+  ins.classList.add('on');
+  document.getElementById('fL').addEventListener('input',ev=>{n.label=ev.target.value;updN(n);saveDef();buildLegend();});
+  document.getElementById('fT')?.addEventListener('change',ev=>{n.type=ev.target.value;if(n.type==='board'&&!n.terminals)n.terminals=['R','C','G','Y','W','O/B'];phist();renderAll();openInsN(n);saveDef();});
+  insbd.addEventListener('input',ev=>{if(ev.target.classList.contains('ti-in')){const i=+ev.target.dataset.i;if(n.terminals)n.terminals[i]=ev.target.value;updN(n);saveDef();}});
+  insbd.addEventListener('click',ev=>{
+    const t=ev.target;
+    if(t.classList.contains('td')){const i=+t.dataset.i;phist();n.terminals?.splice(i,1);renderAll();openInsN(n);saveDef();}
+    if(t.classList.contains('ta')){phist();(n.terminals=n.terminals||[]).push('');renderAll();openInsN(n);saveDef();}
+    if(t.classList.contains('fFr')){phist();P.nodes=P.nodes.filter(x=>x.id!==n.id);P.nodes.push(n);renderAll();saveDef();}
+    if(t.classList.contains('fBk')){phist();P.nodes=P.nodes.filter(x=>x.id!==n.id);P.nodes.unshift(n);renderAll();saveDef();}
+    if(t.classList.contains('fDp')){const cp=JSON.parse(JSON.stringify(n));cp.id=uid();cp.x+=30;cp.y+=30;phist();P.nodes.push(cp);sel={kind:'node',id:cp.id};renderAll();openInsN(cp);saveDef();}
+    if(t.classList.contains('fDl')){phist();delN(n.id);}
   });
-  // Terms events via delegation
-  inspBody.addEventListener('input',ev=>{
-    if(ev.target.classList.contains('t-inp')){
-      const i=+ev.target.dataset.i;
-      if(n.terminals)n.terminals[i]=ev.target.value;
-      updateNodeInPlace(n);saveDeferred();
-    }
-  });
-  inspBody.addEventListener('click',ev=>{
-    if(ev.target.classList.contains('term-del')){
-      const i=+ev.target.dataset.i;
-      pushHist();n.terminals?.splice(i,1);
-      renderAll();openInspNode(n);saveDeferred();
-    }
-    if(ev.target.classList.contains('t-add')){
-      pushHist();(n.terminals=n.terminals||[]).push('');
-      renderAll();openInspNode(n);saveDeferred();
-    }
-    if(ev.target.id==='fFront'){
-      pushHist();proj.nodes=proj.nodes.filter(x=>x.id!==n.id);
-      proj.nodes.push(n);renderAll();saveDeferred();
-    }
-    if(ev.target.id==='fBack'){
-      pushHist();proj.nodes=proj.nodes.filter(x=>x.id!==n.id);
-      proj.nodes.unshift(n);renderAll();saveDeferred();
-    }
-    if(ev.target.id==='fDup'){
-      const cp=JSON.parse(JSON.stringify(n));
-      cp.id=uid();cp.x+=30;cp.y+=30;
-      pushHist();proj.nodes.push(cp);
-      selId=cp.id;selKind='node';
-      renderAll();openInspNode(cp);saveDeferred();
-    }
-    if(ev.target.id==='fDel'){pushHist();deleteNode(n.id);}
-  });
-  if(n.type==='note')setTimeout(()=>document.getElementById('fLabel')?.focus(),60);
-  updateDeleteBtn();
+  if(n.type==='note')setTimeout(()=>document.getElementById('fL')?.focus(),60);
+  document.getElementById('tDel').disabled=false;
 }
-function openInspWire(w){
-  inspTitle.textContent='Провід';
-  const swatches=WIRE_COLORS.map(c=>`<div class="sw${c.hex===w.color?' sel':''}" data-hex="${c.hex}" data-lbl="${c.label}" style="background:${c.hex}" title="${c.label}"></div>`).join('');
-  inspBody.innerHTML=`
-    <div class="col"><div class="lbl">Колір</div>
-      <div class="swatch-row">${swatches}
-        <input type="color" class="sw" id="fCustomC" value="${w.color}" style="width:28px;height:28px;padding:0;border:2px solid var(--line)">
-      </div></div>
-    <div class="col"><div class="lbl">Підпис</div>
-      <input class="fi" id="fWlbl" value="${escX(w.label||'')}" placeholder="напр. R · 24В"></div>
-    <div class="help-text" style="margin-bottom:8px">Синій і помаранчевий кружечки на проводах — тягни до іншого приладу, щоб перенаправити жилу.</div>
-    <div class="btn-row">
-      <button class="btn ghost" id="fStraight">／ Прибрати вигин</button>
-      <button class="btn danger" id="fWdel">🗑 Видалити</button>
-    </div>`;
-  inspector.classList.add('on');
-  inspBody.querySelectorAll('.sw[data-hex]').forEach(d=>{
-    d.addEventListener('click',()=>{
-      w.color=d.dataset.hex;if(!w.label)w.label=d.dataset.lbl;
-      renderAll();openInspWire(w);saveDeferred();
-    });
+function openInsW(w){
+  document.getElementById('ins-ti').textContent='Провід';
+  const sws=WC.map(c=>`<div class="sw${c.hex===w.color?' on':''}" data-h="${c.hex}" data-l="${c.lbl}" style="background:${c.hex}" title="${c.lbl}"></div>`).join('');
+  insbd.innerHTML=`
+    <div class="fc"><div class="fl">Колір</div><div class="sw-row">${sws}<input type="color" class="sw" id="fCC" value="${w.color}" style="width:28px;height:28px;padding:0;border:2px solid var(--ln)"></div></div>
+    <div class="fc"><div class="fl">Підпис</div><input class="fi" id="fWL" value="${xe(w.label||'')}" placeholder="напр. R · 24В"></div>
+    <p class="ht" style="margin-bottom:8px">Синій/помаранчевий кружечок — тягни до іншого приладу, щоб перенаправити жилу.</p>
+    <div class="brow"><button class="btn gh fSt">／ Прибрати вигин</button><button class="btn dr fWD">🗑 Видалити</button></div>`;
+  ins.classList.add('on');
+  insbd.querySelectorAll('.sw[data-h]').forEach(d=>d.addEventListener('click',()=>{w.color=d.dataset.h;if(!w.label)w.label=d.dataset.l;renderAll();openInsW(w);saveDef();}));
+  document.getElementById('fCC').addEventListener('input',ev=>{w.color=ev.target.value;const o=wL.querySelector(`[data-wid="${w.id}"]`);if(o)wL.replaceChild(mkWireEl(w),o);saveDef();});
+  document.getElementById('fWL').addEventListener('input',ev=>{w.label=ev.target.value;const o=wL.querySelector(`[data-wid="${w.id}"]`);if(o)wL.replaceChild(mkWireEl(w),o);saveDef();buildLegend();});
+  insbd.addEventListener('click',ev=>{
+    if(ev.target.classList.contains('fSt')){w.bend=null;phist();renderAll();saveDef();}
+    if(ev.target.classList.contains('fWD')){phist();P.wires=P.wires.filter(x=>x.id!==w.id);sel=null;closeIns();renderAll();saveDef();}
   });
-  document.getElementById('fCustomC').addEventListener('input',ev=>{w.color=ev.target.value;const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);if(old)wiresLayer.replaceChild(buildWireEl(w),old);saveDeferred();});
-  document.getElementById('fWlbl').addEventListener('input',ev=>{w.label=ev.target.value;const old=wiresLayer.querySelector(`[data-id="${w.id}"]`);if(old)wiresLayer.replaceChild(buildWireEl(w),old);saveDeferred();buildLegend();});
-  document.getElementById('fStraight').addEventListener('click',()=>{w.bend=null;pushHist();renderAll();saveDeferred();});
-  document.getElementById('fWdel').addEventListener('click',()=>{pushHist();proj.wires=proj.wires.filter(x=>x.id!==w.id);clearSel();saveDeferred();});
-  updateDeleteBtn();
+  document.getElementById('tDel').disabled=false;
 }
-function updateDeleteBtn(){document.getElementById('tDel').disabled=!selId;}
-function deleteNode(id){
-  const n=getNode(id);
-  proj.wires.forEach(w=>{
-    if(w.fromId===id){w.fromId=null;w.fromPoint={x:n.x,y:n.y};}
-    if(w.toId===id){w.toId=null;w.toPoint={x:n.x,y:n.y};}
+function delN(id){
+  const n=gn(id);
+  P.wires.forEach(w=>{if(w.fromId===id){w.fromId=null;w.fromPoint={x:n.x,y:n.y};}if(w.toId===id){w.toId=null;w.toPoint={x:n.x,y:n.y};}});
+  P.nodes=P.nodes.filter(x=>x.id!==id);sel=null;closeIns();renderAll();saveDef();
+}
+function xe(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function trunc(s,n){s=String(s);return s.length>n?s.slice(0,n-1)+'…':s;}
+
+// ─────────────────────────────────────────────────────────────
+// CABLE
+// ─────────────────────────────────────────────────────────────
+function mkCable(fid,tid,fterm,tterm){
+  phist();const cid=uid();
+  pCable.colors.forEach((c,i)=>{P.wires.push({id:uid(),cid,slot:i,color:c.hex,label:c.lbl,fromId:fid,toId:tid,fromTerm:fterm??null,toTerm:tterm??null,bend:null});});
+  toast(pCable.colors.length+'-жильний кабель додано');renderAll();saveDef();
+}
+function openCabMod(){
+  const grid=WC.slice(0,8).map((_,n)=>{const dots=WC.slice(0,n+1).map(c=>`<i style="background:${c.hex}"></i>`).join('');return`<button class="cbtn" data-n="${n+1}"><span class="n">${n+1}</span><span class="dots">${dots}</span></button>`;}).join('');
+  openMod(`<h2>Новий кабель</h2><p class="ht">Оберіть кількість жил, потім торкніться двох приладів.</p>
+    <div class="cgrid">${grid}</div>
+    <button class="btn gh" id="cwT">🎨 Один провід свого кольору</button>
+    <div id="cwC" style="display:none;margin-top:10px">
+      <div style="display:flex;gap:10px;margin-bottom:8px"><input type="color" id="cwCo" value="#4fd1ff" style="width:46px;height:38px;border-radius:7px;border:1px solid var(--ln)"><input class="fi" id="cwLb" placeholder="Підпис"></div>
+      <button class="btn pr" id="cwCr" style="width:100%">Створити провід</button>
+    </div>`);
+  document.getElementById('cwT').addEventListener('click',()=>{const d=document.getElementById('cwC');d.style.display=d.style.display==='none'?'block':'none';});
+  document.querySelectorAll('.cbtn').forEach(b=>b.addEventListener('click',()=>{
+    pCable={colors:WC.slice(0,+b.dataset.n).map(c=>({hex:c.hex,lbl:c.lbl}))};
+    closeMod();setMode('cfrom');setSt('Торкнись приладу-джерела (1/2)');
+  }));
+  document.getElementById('cwCr')?.addEventListener('click',()=>{
+    pCable={colors:[{hex:document.getElementById('cwCo').value,lbl:document.getElementById('cwLb').value||'Провід'}]};
+    closeMod();setMode('cfrom');setSt('Торкнись приладу-джерела (1/2)');
   });
-  proj.nodes=proj.nodes.filter(x=>x.id!==id);
-  clearSel();renderAll();saveDeferred();
 }
 
-// ═══════════════════════════════════════════════════════════
-// TOOLBAR & TOOLS
-// ═══════════════════════════════════════════════════════════
-document.getElementById('tSel').addEventListener('click',cancelMode);
-document.getElementById('tCable').addEventListener('click',openCableModal);
+// ─────────────────────────────────────────────────────────────
+// MODE / STATUS
+// ─────────────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;armT=null;
+  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('arm'));
+  document.getElementById('tSel').classList.toggle('on',m==='sel');
+  document.getElementById('tCab').classList.toggle('on',m==='cfrom'||m==='cto');
+  if(m==='sel'){clearSt();pCable=null;cfromId=null;}
+}
+function setSt(txt){document.getElementById('sbt').textContent=txt;document.getElementById('sb').classList.add('on');}
+function clearSt(){document.getElementById('sb').classList.remove('on');}
+document.getElementById('sbx').addEventListener('click',()=>setMode('sel'));
+function armPlace(type,el){
+  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('arm'));
+  if(mode==='place'&&armT===type){setMode('sel');return;}
+  el.classList.add('arm');armT=type;mode='place';
+  document.getElementById('tSel').classList.remove('on');
+  setSt('Торкнись полотна, щоб розмістити: '+EQ[type].lb);
+}
+
+// ─────────────────────────────────────────────────────────────
+// PALETTE
+// ─────────────────────────────────────────────────────────────
+function miniSVG(sh,c){
+  switch(sh){
+    case'circle': return`<svg viewBox="-18 -18 36 36"><circle r="13" fill="${c}"/></svg>`;
+    case'circleD':return`<svg viewBox="-18 -18 36 36"><circle r="13" fill="none" stroke="${c}" stroke-width="2.2" stroke-dasharray="4,3"/></svg>`;
+    case'hex':    return`<svg viewBox="-18 -18 36 36"><polygon points="${hxPts(14,10)}" fill="${c}"/></svg>`;
+    case'diamond':return`<svg viewBox="-18 -18 36 36"><polygon points="0,-14 14,0 0,14 -14,0" fill="${c}"/></svg>`;
+    case'tri':    return`<svg viewBox="-18 -18 36 36"><polygon points="0,-14 13,12 -13,12" fill="${c}"/></svg>`;
+    case'rectR':  return`<svg viewBox="-18 -18 36 36"><rect x="-14" y="-7" width="28" height="14" rx="2" fill="${c}" transform="rotate(20)"/></svg>`;
+    case'rectD':  return`<svg viewBox="-18 -18 36 36"><rect x="-13" y="-9" width="26" height="18" rx="4" fill="none" stroke="${c}" stroke-width="2.2" stroke-dasharray="5,4"/></svg>`;
+    case'board':  return`<svg viewBox="-18 -18 36 36"><rect x="-14" y="-9" width="28" height="18" rx="2" fill="${c}"/><circle cx="-7" cy="9" r="2.5" fill="${c}"/><circle cy="9" r="2.5" fill="${c}"/><circle cx="7" cy="9" r="2.5" fill="${c}"/></svg>`;
+    case'none':   return`<svg viewBox="-18 -18 36 36"><text y="6" text-anchor="middle" font-size="20" fill="${c}" font-family="DM Sans">Aa</text></svg>`;
+    case'add':    return`<svg viewBox="-18 -18 36 36"><circle r="13" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="3,3"/><path d="M0 -7V7M-7 0H7" stroke="${c}" stroke-width="2"/></svg>`;
+    default:      return`<svg viewBox="-18 -18 36 36"><rect x="-14" y="-10" width="28" height="20" rx="3" fill="${c}"/></svg>`;
+  }
+}
+function buildPal(){
+  const pal=document.getElementById('pal');pal.innerHTML='';
+  PG.forEach(g=>{
+    const s=document.createElement('div');s.className='pg';
+    s.innerHTML=`<div class="pg-h">${g.t}</div>`;
+    g.k.forEach(k=>s.appendChild(mkPI(k)));
+    pal.appendChild(s);
+  });
+  const cg=document.createElement('div');cg.className='pg';cg.innerHTML='<div class="pg-h">Свої</div>';
+  CT.forEach(c=>cg.appendChild(mkPI(c.key)));
+  const ab=document.createElement('div');ab.className='pi';
+  ab.innerHTML=`<div class="ico">${miniSVG('add','var(--ice)')}</div><div class="lbl">Додати</div>`;
+  ab.addEventListener('click',openCTMod);cg.appendChild(ab);pal.appendChild(cg);
+}
+function mkPI(k){
+  const e=EQ[k];if(!e)return document.createElement('div');
+  const d=document.createElement('div');d.className='pi';
+  d.innerHTML=`<div class="ico">${miniSVG(e.sh,e.ac)}</div><div class="lbl">${e.lb}</div>`;
+  d.addEventListener('click',()=>armPlace(k,d));return d;
+}
+
+// ─────────────────────────────────────────────────────────────
+// CUSTOM TYPES
+// ─────────────────────────────────────────────────────────────
+function nextAc(){
+  const used=[...Object.values(EQ),...CT].map(e=>hexHue(e.ac));
+  let best=0,bsc=-1;
+  for(let i=0;i<36;i++){const h=(i*137.5+17)%360;const sc=used.length?Math.min(...used.map(u=>{const d=Math.abs(h-u)%360;return d>180?360-d:d;})):999;if(sc>bsc){bsc=sc;best=h;}}
+  return hsl2hex(best,63,54);
+}
+function hexHue(hex){let r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0;if(mx!==mn){const d=mx-mn;h=mx===r?((g-b)/d+6)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;}return h;}
+function hsl2hex(h,s,l){s/=100;l/=100;const f=n=>{const k=(n+h/30)%12,a=s*Math.min(l,1-l);return Math.round(255*(l-a*Math.max(-1,Math.min(k-3,9-k,1))));};return'#'+[f(0),f(8),f(4)].map(v=>v.toString(16).padStart(2,'0')).join('');}
+function openCTMod(){
+  const sg=SH_NAMES.map(s=>`<button class="sb2" data-s="${s.k}">${miniSVG(s.k,'var(--ice)')}<span>${s.l}</span></button>`).join('');
+  openMod(`<h2>Новий елемент</h2><p class="ht">Введи назву — колір підбереться автоматично.</p>
+    <div class="fc"><div class="fl">Назва</div><input class="fi" id="ctN" placeholder="напр. Насос конденсату"></div>
+    <div class="fl" style="margin-bottom:6px">Форма</div>
+    <div class="sg">${sg}</div>
+    <button class="btn pr" id="ctC" style="width:100%">Створити</button>`);
+  let cs='rect';document.querySelector('.sb2[data-s="rect"]')?.classList.add('on');
+  document.querySelectorAll('.sb2').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.sb2').forEach(x=>x.classList.remove('on'));b.classList.add('on');cs=b.dataset.s;}));
+  document.getElementById('ctC').addEventListener('click',()=>{
+    const nm=document.getElementById('ctN').value.trim();if(!nm){toast('Введи назву');return;}
+    const k='ct_'+uid(),ac=nextAc(),ab=nm.slice(0,6).toUpperCase();
+    CT.push({key:k,ab,lb:nm,ac,sh:cs,bw:86,bh:58});
+    EQ[k]={ab,lb:nm,ac,sh:cs,bw:86,bh:58};
+    saveCtypes();buildPal();closeMod();toast('Додано: '+nm);
+    const pi=document.querySelector(`.pi[data-k="${k}"]`)||document.querySelectorAll('.pi')[document.querySelectorAll('.pi').length-2];
+    if(pi)armPlace(k,pi);
+  });
+}
+async function saveCtypes(){await ss(K.ct,JSON.stringify(CT));}
+async function ldCtypes(){try{const r=await sg(K.ct);CT=r?JSON.parse(r):[];CT.forEach(c=>{EQ[c.key]={ab:c.ab,lb:c.lb,ac:c.ac,sh:c.sh,bw:c.bw,bh:c.bh};});}catch(e){CT=[];}}
+
+// ─────────────────────────────────────────────────────────────
+// LEGEND
+// ─────────────────────────────────────────────────────────────
+document.getElementById('lgbtn').addEventListener('click',()=>document.getElementById('lg').classList.toggle('on'));
+function buildLegend(){
+  const el=document.getElementById('lg');
+  const types=new Map(),colors=new Map();
+  P.nodes.forEach(n=>{if(n.type!=='note')types.set(n.type,EQ[n.type]);});
+  P.wires.forEach(w=>{if(w.label)colors.set(w.color,w.label);});
+  let h='';
+  if(types.size){h+=`<div class="lg-g"><div class="lg-t">Обладнання</div>`;types.forEach((e,k)=>h+=`<div class="lg-r"><span class="lg-s" style="background:${e.ac}"></span>${xe(e.lb)}</div>`);h+='</div>';}
+  if(colors.size){h+=`<div class="lg-g"><div class="lg-t">Проводи</div>`;colors.forEach((lb,hx)=>h+=`<div class="lg-r"><span class="lg-s" style="background:${hx}"></span>${xe(lb)}</div>`);h+='</div>';}
+  el.innerHTML=h||`<div style="color:var(--dim);font-size:11px">Легенда з'явиться автоматично</div>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// TOOLBAR
+// ─────────────────────────────────────────────────────────────
+document.getElementById('tSel').addEventListener('click',()=>setMode('sel'));
+document.getElementById('tCab').addEventListener('click',openCabMod);
 document.getElementById('tDel').addEventListener('click',()=>{
-  if(!selId)return;
-  pushHist();
-  if(selKind==='node')deleteNode(selId);
-  else{proj.wires=proj.wires.filter(w=>w.id!==selId);clearSel();renderAll();saveDeferred();}
+  if(!sel)return;phist();
+  if(sel.kind==='node')delN(sel.id);
+  else{P.wires=P.wires.filter(w=>w.id!==sel.id);sel=null;closeIns();renderAll();saveDef();}
 });
 document.getElementById('tUndo').addEventListener('click',undo);
-document.getElementById('tZoomOut').addEventListener('click',()=>zoom(1.3));
-document.getElementById('tZoomIn').addEventListener('click',()=>zoom(0.77));
+document.getElementById('tZm').addEventListener('click',()=>doZoom(1.3));
+document.getElementById('tZp').addEventListener('click',()=>doZoom(0.77));
 document.getElementById('tFit').addEventListener('click',fitView);
-document.getElementById('tPdf').addEventListener('click',exportPdf);
-document.getElementById('tHelp').addEventListener('click',openHelp);
+document.getElementById('tPdf').addEventListener('click',exportPDF);
+document.getElementById('tHelp').addEventListener('click',()=>openMod(`<h2>Як користуватись</h2>
+  <div class="ht">
+  <b>Розмістити прилад</b> — тапни іконку зліва, потім торкнись полотна.<br><br>
+  <b>Перемістити</b> — тримай пальцем і тягни будь-який прилад.<br><br>
+  <b>Розмір</b> — тапни прилад, тягни стрілки ⇔ ⇕ по краях.<br><br>
+  <b>Поворот</b> — тягни жовту кнопку ↻ над приладом (кратно 15°).<br><br>
+  <b>Кабель</b> — кнопка «Кабель» → обери кількість жил → торкнись двох приладів.<br><br>
+  <b>Розвести жили</b> — тапни провід, тягни синій або помаранчевий кружечок до іншого приладу.<br><br>
+  <b>Пан / зум</b> — два пальці: тягни або зводь/розводь.<br><br>
+  <b>Автозбереження</b> — схема зберігається сама. Кнопка PDF — схема для клієнта.
+  </div>
+  <button class="btn pr" onclick="document.getElementById('ml').classList.remove('on')" style="width:100%">Зрозуміло</button>`));
 
-function zoom(factor){
-  const cx=vb.x+vb.w/2, cy=vb.y+vb.h/2;
-  const nw=Math.max(400,Math.min(4200,vb.w*factor));
-  const nh=Math.max(250,Math.min(3000,vb.h*factor));
-  vb={x:cx-nw/2,y:cy-nh/2,w:nw,h:nh};
-  setVB();updateZoomLabel();
-}
-function updateZoomLabel(){
-  // "zoom" is how much bigger than default (1600 wide = 100%)
-  const pct=Math.round(1600/vb.w*100);
-  document.getElementById('zoomLabel').textContent=pct+'%';
-}
-function fitView(){
-  const r=board.getBoundingClientRect();
-  const aspect=r.height/r.width;
-  vb={x:0,y:0,w:1600,h:1600*aspect};
-  setVB();updateZoomLabel();
-}
-function setStatus(txt,noCancel){
-  const b=document.getElementById('statusBanner');
-  document.getElementById('statusText').textContent=txt;
-  document.getElementById('statusCancel').style.display=noCancel?'none':'inline-block';
-  b.classList.add('on');
-}
-function clearStatus(){document.getElementById('statusBanner').classList.remove('on');}
-document.getElementById('statusCancel').addEventListener('click',cancelMode);
-function cancelMode(){
-  toolMode='select';armType=null;pendingCable=null;cableFromId=null;
-  clearStatus();
-  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('armed'));
-  document.getElementById('tSel').classList.add('on');
-  document.getElementById('tCable').classList.remove('on');
-}
-function disarm(){
-  toolMode='select';armType=null;
-  clearStatus();
-  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('armed'));
-}
-function armPlace(type,itemEl){
-  document.querySelectorAll('.pi').forEach(p=>p.classList.remove('armed'));
-  if(toolMode==='place'&&armType===type){cancelMode();return;}
-  itemEl.classList.add('armed');
-  toolMode='place';armType=type;
-  setStatus('Торкнись полотна, щоб розмістити: '+EQUIP[type].label,true);
-  document.getElementById('tSel').classList.remove('on');
-}
-
-// ═══════════════════════════════════════════════════════════
-// PALETTE
-// ═══════════════════════════════════════════════════════════
-function buildPalette(){
-  const pal=document.getElementById('palette');
-  pal.innerHTML='';
-  PALETTE_GROUPS.forEach(g=>{
-    const sec=document.createElement('div');sec.className='pg';
-    sec.innerHTML=`<div class="pg-title">${g.title}</div>`;
-    g.items.forEach(type=>sec.appendChild(makePaletteItem(type)));
-    pal.appendChild(sec);
-  });
-  // Custom types
-  const cg=document.createElement('div');cg.className='pg';
-  cg.innerHTML=`<div class="pg-title">Свої</div>`;
-  customTypes.forEach(c=>cg.appendChild(makePaletteItem(c.key)));
-  const addBtn=document.createElement('div');
-  addBtn.className='pi pi-add';
-  addBtn.innerHTML=`<div class="icon">${miniSVG('add','#4fd1ff')}</div><div class="lbl">Додати</div>`;
-  addBtn.addEventListener('click',openCustomTypeModal);
-  cg.appendChild(addBtn);
-  pal.appendChild(cg);
-}
-function makePaletteItem(type){
-  const e=EQUIP[type]; if(!e)return document.createElement('div');
-  const item=document.createElement('div');item.className='pi';
-  item.innerHTML=`<div class="icon">${miniSVG(e.shape,e.accent)}</div><div class="lbl">${e.label}</div>`;
-  item.addEventListener('click',()=>armPlace(type,item));
-  return item;
-}
-function miniSVG(shape,c){
-  switch(shape){
-    case'circle':    return`<svg viewBox="-17 -17 34 34" width="34" height="34"><circle cx="0" cy="0" r="13" fill="${c}"/></svg>`;
-    case'circleDash':return`<svg viewBox="-17 -17 34 34" width="34" height="34"><circle cx="0" cy="0" r="13" fill="none" stroke="${c}" stroke-width="2.2" stroke-dasharray="3,3"/></svg>`;
-    case'hex':       return`<svg viewBox="-17 -17 34 34" width="34" height="34"><polygon points="${hexPts(14,10)}" fill="${c}"/></svg>`;
-    case'diamond':   return`<svg viewBox="-17 -17 34 34" width="34" height="34"><polygon points="0,-14 14,0 0,14 -14,0" fill="${c}"/></svg>`;
-    case'triangle':  return`<svg viewBox="-17 -17 34 34" width="34" height="34"><polygon points="0,-14 13,12 -13,12" fill="${c}"/></svg>`;
-    case'rectRot':   return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-14" y="-7" width="28" height="14" rx="2" fill="${c}" transform="rotate(20)"/></svg>`;
-    case'rectDash':  return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-13" y="-9" width="26" height="18" rx="3" fill="none" stroke="${c}" stroke-width="2.2" stroke-dasharray="4,3"/></svg>`;
-    case'board':     return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-14" y="-9" width="28" height="18" rx="2" fill="${c}"/><circle cx="-7" cy="9" r="2.5" fill="${c}"/><circle cx="0" cy="9" r="2.5" fill="${c}"/><circle cx="7" cy="9" r="2.5" fill="${c}"/></svg>`;
-    case'none':      return`<svg viewBox="-17 -17 34 34" width="34" height="34"><text x="0" y="6" text-anchor="middle" font-size="20" fill="${c}" font-family="DM Sans">Aa</text></svg>`;
-    case'add':       return`<svg viewBox="-17 -17 34 34" width="34" height="34"><circle cx="0" cy="0" r="13" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="3,3"/><path d="M0 -6V6M-6 0H6" stroke="${c}" stroke-width="2"/></svg>`;
-    default:         return`<svg viewBox="-17 -17 34 34" width="34" height="34"><rect x="-14" y="-10" width="28" height="20" rx="3" fill="${c}"/></svg>`;
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// CABLE CREATION
-// ═══════════════════════════════════════════════════════════
-function createCable(fromId,toId,fromTerm,toTerm){
-  pushHist();
-  const cid=uid();
-  pendingCable.colors.forEach((c,i)=>{
-    proj.wires.push({id:uid(),cableId:cid,slot:i,color:c.hex,label:c.label,
-      fromId,toId,fromTerm:fromTerm??null,toTerm:toTerm??null,bend:null});
-  });
-  toast(pendingCable.colors.length+'-жильний кабель додано');
-  renderAll();saveDeferred();
-}
-function openCableModal(){
-  const grid=WIRE_COLORS.slice(0,8).map((_,n)=>{
-    const dots=WIRE_COLORS.slice(0,n+1).map(c=>`<i style="background:${c.hex}"></i>`).join('');
-    return`<button class="count-btn" data-n="${n+1}"><span class="n">${n+1}</span><span class="dots">${dots}</span></button>`;
-  }).join('');
-  openModal(`<h2>Новий кабель</h2>
-    <p class="help-text">Обери кількість жил. Потім торкнись джерела, потім призначення.</p>
-    <div class="count-grid">${grid}</div>
-    <button class="btn ghost" id="cwToggle">🎨 Один провід свого кольору</button>
-    <div id="cwCustom" style="display:none;margin-top:10px">
-      <div class="row" style="gap:10px">
-        <input type="color" id="cwColor" value="#4fd1ff" style="width:46px;height:38px;border-radius:7px;border:1px solid var(--line);background:var(--panel2)">
-        <input class="fi" id="cwLbl" placeholder="Підпис" style="flex:1">
-      </div>
-      <button class="btn primary" id="cwCreate" style="width:100%;margin-top:8px">Створити</button>
-    </div>`);
-  document.getElementById('cwToggle').addEventListener('click',()=>{
-    const d=document.getElementById('cwCustom');
-    d.style.display=d.style.display==='none'?'block':'none';
-  });
-  document.querySelectorAll('.count-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const n=+btn.dataset.n;
-      pendingCable={colors:WIRE_COLORS.slice(0,n).map(c=>({hex:c.hex,label:c.label}))};
-      closeModal();toolMode='cable-from';cableFromId=null;
-      document.getElementById('tCable').classList.add('on');
-      setStatus('Торкнись приладу-джерела (1/2)');
-    });
-  });
-  document.getElementById('cwCreate')?.addEventListener('click',()=>{
-    const hex=document.getElementById('cwColor').value;
-    const lbl=document.getElementById('cwLbl').value||'Провід';
-    pendingCable={colors:[{hex,label:lbl}]};
-    closeModal();toolMode='cable-from';cableFromId=null;
-    setStatus('Торкнись приладу-джерела (1/2)');
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// CUSTOM TYPE CREATOR
-// ═══════════════════════════════════════════════════════════
-function hue2hex(h){
-  const s=65,l=55;
-  const f=n=>{const k=(n+h/30)%12;const a=s/100*Math.min(l/100,1-l/100);return Math.round(255*(l/100-a*Math.max(-1,Math.min(k-3,9-k,1))));}
-  return '#'+[f(0),f(8),f(4)].map(v=>v.toString(16).padStart(2,'0')).join('');
-}
-function nextAccent(){
-  const used=Object.values(EQUIP).map(e=>e.accent).concat(customTypes.map(c=>c.accent));
-  const hueOf=h=>{let r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255;const max=Math.max(r,g,b),min=Math.min(r,g,b);let hv=0;if(max!==min){const d=max-min;if(max===r)hv=((g-b)/d)%6;else if(max===g)hv=(b-r)/d+2;else hv=(r-g)/d+4;hv*=60;if(hv<0)hv+=360;}return hv;};
-  const usedH=used.map(hueOf);
-  let best=0,bestScore=-1;
-  for(let i=0;i<36;i++){
-    const h=(i*137.508+17)%360;
-    const score=usedH.length?Math.min(...usedH.map(u=>{const d=Math.abs(h-u)%360;return d>180?360-d:d;})):999;
-    if(score>bestScore){bestScore=score;best=h;}
-  }
-  return hue2hex(best);
-}
-function openCustomTypeModal(){
-  const shapeGrid=CUSTOM_SHAPES.map(s=>`<button class="shape-btn" data-s="${s.key}">${miniSVG(s.shape,'#4fd1ff')}<span>${s.label}</span></button>`).join('');
-  openModal(`<h2>Новий елемент</h2>
-    <p class="help-text">Введи назву — колір підбереться автоматично, щоб не збігатися з рештою.</p>
-    <div class="col"><div class="lbl">Назва</div><input class="fi" id="ctName" placeholder="напр. Насос конденсату"></div>
-    <div class="lbl" style="margin-bottom:6px">Форма</div>
-    <div class="shape-grid">${shapeGrid}</div>
-    <button class="btn primary" id="ctCreate" style="width:100%">Створити</button>`);
-  let chosenShape='rect';
-  document.querySelector('.shape-btn[data-s="rect"]')?.classList.add('sel');
-  document.querySelectorAll('.shape-btn').forEach(b=>{
-    b.addEventListener('click',()=>{
-      document.querySelectorAll('.shape-btn').forEach(x=>x.classList.remove('sel'));
-      b.classList.add('sel');chosenShape=b.dataset.s;
-    });
-  });
-  document.getElementById('ctCreate').addEventListener('click',()=>{
-    const name=document.getElementById('ctName').value.trim();
-    if(!name){toast('Введи назву');return;}
-    const key='ct_'+uid();
-    const accent=nextAccent();
-    const abbr=name.slice(0,6).toUpperCase();
-    const entry={key,abbr,label:name,accent,shape:chosenShape,bw:86,bh:58};
-    customTypes.push(entry);
-    EQUIP[key]={abbr,label:name,accent,shape:chosenShape,bw:86,bh:58};
-    saveCustomTypes();buildPalette();closeModal();
-    toast('Додано: '+name);
-    const newItem=document.querySelector(`.pi[data-type="${key}"]`);
-    if(newItem)armPlace(key,newItem);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// LEGEND
-// ═══════════════════════════════════════════════════════════
-document.getElementById('legendBtn').addEventListener('click',()=>{
-  document.getElementById('legendPanel').classList.toggle('on');
+// keyboard
+window.addEventListener('keydown',e=>{
+  if(e.key==='Escape')setMode('sel');
+  if((e.key==='Delete'||e.key==='Backspace')&&sel&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){e.preventDefault();document.getElementById('tDel').click();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
 });
-function buildLegend(){
-  const panel=document.getElementById('legendPanel');
-  const types=new Map(),colors=new Map();
-  proj.nodes.forEach(n=>{if(n.type!=='note')types.set(n.type,EQUIP[n.type]);});
-  proj.wires.forEach(w=>{if(w.label)colors.set(w.color,w.label);});
-  let h='';
-  if(types.size){
-    h+=`<div class="leg-group"><div class="leg-t">Обладнання</div>`;
-    types.forEach((e,k)=>h+=`<div class="leg-row"><span class="leg-sw" style="background:${e.accent}"></span>${escX(e.label)}</div>`);
-    h+=`</div>`;
-  }
-  if(colors.size){
-    h+=`<div class="leg-group"><div class="leg-t">Проводи</div>`;
-    colors.forEach((lbl,hex)=>h+=`<div class="leg-row"><span class="leg-sw" style="background:${hex}"></span>${escX(lbl)}</div>`);
-    h+=`</div>`;
-  }
-  panel.innerHTML=h||`<div style="color:var(--dim);font-size:11px">Тут з'явиться легенда</div>`;
-}
 
-// ═══════════════════════════════════════════════════════════
-// UNDO
-// ═══════════════════════════════════════════════════════════
-function pushHist(){
-  hist.push(JSON.stringify({nodes:proj.nodes,wires:proj.wires}));
-  if(hist.length>40)hist.shift();
-}
-function undo(){
-  if(!hist.length){toast('Нічого скасовувати');return;}
-  const snap=JSON.parse(hist.pop());
-  proj.nodes=snap.nodes;proj.wires=snap.wires;
-  selId=null;selKind=null;inspector.classList.remove('on');
-  renderAll();saveDeferred();
-}
-
-// ═══════════════════════════════════════════════════════════
-// SAVE / LOAD
-// ═══════════════════════════════════════════════════════════
-const SAVE_DOT=document.getElementById('saveDot');
-function setSaveDot(s){SAVE_DOT.classList.toggle('busy',s==='busy');}
-function saveDeferred(){
-  setSaveDot('busy');clearTimeout(saveTimer);
-  saveTimer=setTimeout(saveNow,900);
-}
-async function saveNow(){
-  proj.name=document.getElementById('projName').value||'Без назви';
-  proj.updatedAt=Date.now();
-  await Store.set(projKey(proj.id),JSON.stringify(proj));
-  let idx=await loadIdx();
-  idx=idx.filter(p=>p.id!==proj.id);
-  idx.unshift({id:proj.id,name:proj.name,updatedAt:proj.updatedAt});
-  await saveIdx(idx);
-  await Store.set(LAST_KEY,proj.id);
-  setSaveDot('ok');
-}
-async function loadProject(id){
-  const raw=await Store.get(projKey(id)); if(!raw)return;
-  try{
-    proj=JSON.parse(raw);
-    proj.nodes=proj.nodes||[];proj.wires=proj.wires||[];
-    document.getElementById('projName').value=proj.name||'Без назви';
-    hist=[];selId=null;selKind=null;inspector.classList.remove('on');
-    renderAll();await Store.set(LAST_KEY,proj.id);
-  }catch(e){toast('Помилка завантаження');}
-}
-async function newProject(){
-  proj=blankProj('Нова схема '+new Date().toLocaleDateString('uk-UA'));
-  document.getElementById('projName').value=proj.name;
-  hist=[];selId=null;selKind=null;inspector.classList.remove('on');
-  renderAll();await saveNow();
-}
-document.getElementById('projName').addEventListener('change',saveDeferred);
-
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // MODALS
-// ═══════════════════════════════════════════════════════════
-const ml=document.getElementById('modal-layer');
-const mc=document.getElementById('modal-card');
-function openModal(html){mc.innerHTML=html;ml.classList.add('on');}
-function closeModal(){ml.classList.remove('on');mc.innerHTML='';}
-ml.addEventListener('click',e=>{if(e.target===ml)closeModal();});
+// ─────────────────────────────────────────────────────────────
+const ml=document.getElementById('ml'),mc=document.getElementById('mc');
+function openMod(h){mc.innerHTML=h;ml.classList.add('on');}
+function closeMod(){ml.classList.remove('on');mc.innerHTML='';}
+ml.addEventListener('click',e=>{if(e.target===ml)closeMod();});
 
-document.getElementById('btnNew').addEventListener('click',()=>openModal(`<h2>Нова схема</h2>
-  <p class="help-text">Поточна схема вже збережена. Продовжити?</p>
-  <div class="btn-row"><button class="btn ghost" id="ncCancel">Скасувати</button>
-    <button class="btn primary" id="ncOk">Створити</button></div>`));
-mc.addEventListener('click',async e=>{
-  if(e.target.id==='ncCancel')closeModal();
-  if(e.target.id==='ncOk'){closeModal();await newProject();}
-});
+document.getElementById('bNew').addEventListener('click',()=>openMod(`<h2>Нова схема</h2><p class="ht">Поточну вже збережено. Продовжити?</p><div class="brow"><button class="btn gh" onclick="document.getElementById('ml').classList.remove('on')">Скасувати</button><button class="btn pr ncOk">Створити</button></div>`));
+mc.addEventListener('click',async e=>{if(e.target.classList.contains('ncOk')){closeMod();await newProj();}});
 
-document.getElementById('btnProjects').addEventListener('click',async()=>{
-  const idx=(await loadIdx()).sort((a,b)=>b.updatedAt-a.updatedAt);
-  const rows=idx.map(p=>`<div class="proj-row">
-    <div><div class="pname">${escX(p.name)}</div><div class="pdate">${new Date(p.updatedAt).toLocaleString('uk-UA')}</div></div>
-    <button class="ib ghost open-proj" data-id="${p.id}">📂</button>
-    <button class="ib ghost del-proj danger" data-id="${p.id}" style="color:var(--danger)">🗑</button>
-  </div>`).join('');
-  openModal(`<h2>Мої схеми</h2><div class="proj-list">${rows||'<div class="help-text">Ще немає схем</div>'}</div>`);
+document.getElementById('bPrj').addEventListener('click',async()=>{
+  const idx=(await ldIdx()).sort((a,b)=>b.updatedAt-a.updatedAt);
+  const rows=idx.map(p=>`<div class="pr-row"><div><div class="nm">${xe(p.name)}</div><div class="dt">${new Date(p.updatedAt).toLocaleString('uk-UA')}</div></div><button class="ib g op" data-id="${p.id}">📂</button><button class="ib g dl" data-id="${p.id}" style="color:var(--err)">🗑</button></div>`).join('');
+  openMod(`<h2>Мої схеми</h2><div class="pl">${rows||'<div class="ht">Ще немає збережених схем</div>'}</div>`);
   mc.addEventListener('click',async ev=>{
-    if(ev.target.classList.contains('open-proj')){closeModal();await loadProject(ev.target.dataset.id);}
-    if(ev.target.classList.contains('del-proj')){
-      const id=ev.target.dataset.id;
-      await Store.del(projKey(id));
-      let idx2=await loadIdx();idx2=idx2.filter(p=>p.id!==id);await saveIdx(idx2);
-      toast('Видалено');closeModal();
-    }
+    if(ev.target.classList.contains('op')){closeMod();await ldProj(ev.target.dataset.id);}
+    if(ev.target.classList.contains('dl')){const id=ev.target.dataset.id;await sd(pk(id));let ix=await ldIdx();ix=ix.filter(p=>p.id!==id);await svIdx(ix);toast('Видалено');closeMod();}
   });
 });
 
-// File button
-const GHCFG_KEY='fh-wiring-ghcfg';
-document.getElementById('btnFile').addEventListener('click',async()=>{
-  const cfg=await loadGhCfg();
-  const hasCfg=cfg?.token&&cfg?.repo;
-  openModal(`<h2>Файл</h2>
-    <div class="btn-row" style="margin-bottom:16px">
-      <button class="btn" id="fmDown">⬇ Завантажити .json</button>
-      <button class="btn ghost" id="fmOpen">📂 Відкрити файл</button>
+const GHKEY='fh-ghcfg';
+document.getElementById('bFile').addEventListener('click',async()=>{
+  const cfg=await lgcfg();const hc=cfg?.token&&cfg?.repo;
+  openMod(`<h2>Файл</h2>
+    <div class="brow" style="margin-bottom:16px">
+      <button class="btn" id="fmD">⬇ Завантажити .json</button>
+      <button class="btn gh" id="fmO">📂 Відкрити файл</button>
     </div>
-    <div style="border-top:1px solid var(--line);padding-top:14px">
-      <h2 style="font-size:18px;margin-bottom:8px">GitHub</h2>
-      ${hasCfg?`<p class="help-text">Репо: <b>${escX(cfg.repo)}</b> · ${escX(cfg.branch||'main')} · /${escX(cfg.folder||'wiring')}</p>
-        <button class="btn primary" id="fmPush" style="width:100%;margin-bottom:7px">☁️ Зберегти на GitHub</button>
-        <button class="btn ghost" id="fmReset" style="width:100%">⚙️ Змінити налаштування</button>`
-      :`<p class="help-text">Введи токен і репозиторій — далі одна кнопка "Зберегти".</p>
-        <div class="col"><div class="lbl">Personal Access Token</div><input class="fi" id="ghT" placeholder="ghp_…" type="password"></div>
-        <div class="col"><div class="lbl">Репозиторій (власник/назва)</div><input class="fi" id="ghR" placeholder="username/frosthawk-website"></div>
-        <div class="col"><div class="lbl">Гілка</div><input class="fi" id="ghB" value="main"></div>
-        <div class="col"><div class="lbl">Папка</div><input class="fi" id="ghF" value="wiring"></div>
-        <button class="btn primary" id="ghSave" style="width:100%">Зберегти налаштування</button>`}
+    <div style="border-top:1px solid var(--ln);padding-top:14px">
+    <h2 style="font-size:18px;margin-bottom:8px">GitHub</h2>
+    ${hc?`<p class="ht">Репо: <b>${xe(cfg.repo)}</b> · ${xe(cfg.branch||'main')} · /${xe(cfg.folder||'wiring')}</p>
+      <button class="btn pr" id="fmP" style="width:100%;margin-bottom:7px">☁️ Зберегти на GitHub</button>
+      <button class="btn gh" id="fmR" style="width:100%">⚙️ Змінити налаштування</button>`
+    :`<p class="ht">Введи одноразово — токен зберігається тільки в браузері.</p>
+      <div class="fc"><div class="fl">Personal Access Token</div><input class="fi" id="ghT" type="password" placeholder="ghp_…"></div>
+      <div class="fc"><div class="fl">Репозиторій (власник/назва)</div><input class="fi" id="ghR" placeholder="username/frosthawk-website"></div>
+      <div class="fc"><div class="fl">Гілка</div><input class="fi" id="ghB" value="main"></div>
+      <div class="fc"><div class="fl">Папка</div><input class="fi" id="ghF" value="wiring"></div>
+      <button class="btn pr" id="ghS" style="width:100%">Зберегти</button>`}
     </div>`);
-  document.getElementById('fmDown')?.addEventListener('click',()=>{downloadJson();closeModal();});
-  document.getElementById('fmOpen')?.addEventListener('click',()=>{closeModal();document.getElementById('fileInput').click();});
-  document.getElementById('fmPush')?.addEventListener('click',async()=>{closeModal();await pushToGithub(cfg);});
-  document.getElementById('fmReset')?.addEventListener('click',async()=>{await Store.del(GHCFG_KEY);closeModal();document.getElementById('btnFile').click();});
-  document.getElementById('ghSave')?.addEventListener('click',async()=>{
-    const t=document.getElementById('ghT')?.value?.trim();
-    const r=document.getElementById('ghR')?.value?.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'');
-    const b=document.getElementById('ghB')?.value?.trim()||'main';
-    const f=document.getElementById('ghF')?.value?.trim()||'wiring';
+  document.getElementById('fmD')?.addEventListener('click',()=>{dlJson();closeMod();});
+  document.getElementById('fmO')?.addEventListener('click',()=>{closeMod();document.getElementById('fi').click();});
+  document.getElementById('fmP')?.addEventListener('click',async()=>{closeMod();await pushGH(cfg);});
+  document.getElementById('fmR')?.addEventListener('click',async()=>{await sd(GHKEY);closeMod();document.getElementById('bFile').click();});
+  document.getElementById('ghS')?.addEventListener('click',async()=>{
+    const t=document.getElementById('ghT')?.value?.trim(),r=document.getElementById('ghR')?.value?.trim()?.replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'');
+    const b=document.getElementById('ghB')?.value?.trim()||'main',f=document.getElementById('ghF')?.value?.trim()||'wiring';
     if(!t||!r?.includes('/')){toast('Заповни токен і репозиторій');return;}
-    await Store.set(GHCFG_KEY,JSON.stringify({token:t,repo:r,branch:b,folder:f}));
-    toast('Збережено');closeModal();
+    await ss(GHKEY,JSON.stringify({token:t,repo:r,branch:b,folder:f}));toast('Збережено');closeMod();
   });
 });
-async function loadGhCfg(){try{const r=await Store.get(GHCFG_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+async function lgcfg(){try{const r=await sg(GHKEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function slug(s){return(s||'shema').toLowerCase().replace(/[^a-z0-9а-яіїє\-]/gi,'-').replace(/^-+|-+$/g,'')||'shema';}
-function downloadJson(){
-  const b=new Blob([JSON.stringify(proj,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);
-  a.download=slug(proj.name)+'.json';document.body.appendChild(a);a.click();
-  document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  toast('Файл завантажено');
-}
-async function pushToGithub(cfg){
+function dlJson(){const b=new Blob([JSON.stringify(P,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=slug(P.name)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(a.href),1e3);toast('Файл завантажено');}
+async function pushGH(cfg){
   toast('Зберігаю на GitHub…');
   try{
-    const path=(cfg.folder?cfg.folder.replace(/^\/+|\/+$/g,'')+'/'+'':'')+slug(proj.name)+'.json';
-    const apiUrl=`https://api.github.com/repos/${cfg.repo}/contents/${path}`;
-    const headers={'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json'};
-    let sha;
-    const g=await fetch(apiUrl+`?ref=${encodeURIComponent(cfg.branch||'main')}`,{headers});
-    if(g.ok)sha=(await g.json()).sha;
-    const content=btoa(unescape(encodeURIComponent(JSON.stringify(proj,null,2))));
-    const p=await fetch(apiUrl,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},
-      body:JSON.stringify({message:'Схема: '+proj.name,content,sha,branch:cfg.branch||'main'})});
-    if(!p.ok){const t=await p.text();throw new Error(p.status+': '+t);}
+    const path=(cfg.folder?cfg.folder.replace(/^\/|\/$/g,'')+'/':'')+slug(P.name)+'.json';
+    const url=`https://api.github.com/repos/${cfg.repo}/contents/${path}`;
+    const hd={'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json'};
+    let sha;const g=await fetch(url+`?ref=${cfg.branch||'main'}`,{headers:hd});if(g.ok)sha=(await g.json()).sha;
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(P,null,2))));
+    const r=await fetch(url,{method:'PUT',headers:{...hd,'Content-Type':'application/json'},body:JSON.stringify({message:'Схема: '+P.name,content,sha,branch:cfg.branch||'main'})});
+    if(!r.ok){const t=await r.text();throw new Error(r.status+': '+t);}
     toast('Збережено на GitHub ✓');
-  }catch(err){toast('GitHub помилка: '+(err.message||'спробуй знову'));}
+  }catch(err){toast('GitHub: '+(err.message||'помилка'));}
 }
-document.getElementById('fileInput').addEventListener('change',e=>{
+document.getElementById('fi').addEventListener('change',e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    try{
-      const d=JSON.parse(r.result);
-      if(!Array.isArray(d.nodes)||!Array.isArray(d.wires)){toast('Файл не схема');return;}
-      d.id=d.id||uid();proj=d;
-      document.getElementById('projName').value=proj.name||'Без назви';
-      hist=[];selId=null;selKind=null;inspector.classList.remove('on');
-      renderAll();saveDeferred();toast('Схему відкрито');
-    }catch(e){toast('Помилка читання файлу');}
-  };r.readAsText(f);
+  const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.nodes)||!Array.isArray(d.wires)){toast('Не схема');return;}d.id=d.id||uid();P=d;document.getElementById('pname').value=P.name||'';H=[];sel=null;closeIns();renderAll();saveDef();toast('Схему відкрито');}catch(e){toast('Помилка читання');}};r.readAsText(f);
 });
 
-// ═══════════════════════════════════════════════════════════
-// HELP
-// ═══════════════════════════════════════════════════════════
-function openHelp(){openModal(`<h2>Як користуватись</h2>
-  <div class="help-text">
-    <b>Розмістити прилад</b> — тапни значок зліва, потім торкнись полотна.<br><br>
-    <b>Перемістити</b> — тримай пальцем і тягни.<br><br>
-    <b>Розмір</b> — тапни прилад (з'являться ⇔ ⇕), тягни за стрілки.<br><br>
-    <b>Поворот</b> — тапни прилад, тягни жовту ↻ над ним (фіксує кожні 15°).<br><br>
-    <b>Кабель</b> — натисни «Кабель» внизу, обери кількість жил, торкнись першого приладу, потім другого.<br><br>
-    <b>Розвести жили</b> — тапни провід, тягни синій або помаранчевий кружечок до іншого приладу.<br><br>
-    <b>Пан</b> — два пальці: тягни; зум: зводь/розводь пальці.<br><br>
-    <b>Зберігається автоматично</b>. Кнопка PDF → схема для клієнта.
-  </div>
-  <button class="btn primary" style="width:100%" onclick="document.getElementById('modal-layer').classList.remove('on')">Зрозуміло</button>`);}
+// ─────────────────────────────────────────────────────────────
+// SAVE / LOAD
+// ─────────────────────────────────────────────────────────────
+function saveDef(){document.getElementById('sdot').classList.add('busy');clearTimeout(saveT);saveT=setTimeout(svNow,900);}
+async function svNow(){
+  P.name=document.getElementById('pname').value||'Без назви';P.updatedAt=Date.now();
+  await ss(pk(P.id),JSON.stringify(P));
+  let idx=await ldIdx();idx=idx.filter(p=>p.id!==P.id);idx.unshift({id:P.id,name:P.name,updatedAt:P.updatedAt});
+  await svIdx(idx);await ss(K.last,P.id);
+  document.getElementById('sdot').classList.remove('busy');
+}
+async function ldProj(id){const r=await sg(pk(id));if(!r)return;try{P=JSON.parse(r);P.nodes=P.nodes||[];P.wires=P.wires||[];document.getElementById('pname').value=P.name||'';H=[];sel=null;closeIns();renderAll();await ss(K.last,P.id);}catch(e){toast('Помилка завантаження');}}
+async function newProj(){P=blank('Нова схема '+new Date().toLocaleDateString('uk-UA'));document.getElementById('pname').value=P.name;H=[];sel=null;closeIns();renderAll();await svNow();}
+document.getElementById('pname').addEventListener('change',saveDef);
 
-// ═══════════════════════════════════════════════════════════
-// PDF EXPORT
-// ═══════════════════════════════════════════════════════════
-async function exportPdf(){
-  if(!proj.nodes.length){toast('Спочатку додай прилади');return;}
-  toast('Готую PDF…');
-  // Compute bounding box
-  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-  proj.nodes.forEach(n=>{
-    const{w,h}=nodeDims(n);
-    const pad=h/2+50;
-    minX=Math.min(minX,n.x-w/2-pad);minY=Math.min(minY,n.y-h/2-pad);
-    maxX=Math.max(maxX,n.x+w/2+pad);maxY=Math.max(maxY,n.y+h/2+pad);
+// ─────────────────────────────────────────────────────────────
+// PDF
+// ─────────────────────────────────────────────────────────────
+async function exportPDF(){
+  if(!P.nodes.length){toast('Додай хоча б один прилад');return;}toast('Готую PDF…');
+  let mx=Infinity,my=Infinity,Mx=-Infinity,My=-Infinity;
+  P.nodes.forEach(n=>{const{w,h}=ndim(n);const p=60;mx=Math.min(mx,n.x-w/2-p);my=Math.min(my,n.y-h/2-p);Mx=Math.max(Mx,n.x+w/2+p);My=Math.max(My,n.y+h/2+p);});
+  const bw=Mx-mx,bh=My-my+60;
+  const svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('viewBox',`${mx} ${my} ${bw} ${bh}`);svg.setAttribute('width',bw);svg.setAttribute('height',bh);svg.setAttribute('xmlns',NS);
+  const bg=document.createElementNS(NS,'rect');bg.setAttribute('x',mx-9999);bg.setAttribute('y',my-9999);bg.setAttribute('width',99999);bg.setAttribute('height',99999);bg.setAttribute('fill','#fff');svg.appendChild(bg);
+  // wires
+  P.wires.forEach(w=>{const g=wgeom(w);if(!g)return;const{p1,p2}=g;const d=w.bend?`M${p1.x},${p1.y}L${w.bend.x},${w.bend.y}L${p2.x},${p2.y}`:`M${p1.x},${p1.y}L${p2.x},${p2.y}`;
+    const a={'fill':'none','stroke-linecap':'round'};
+    const s1=document.createElementNS(NS,'path');Object.entries({...a,d,stroke:'#bbb','stroke-width':5}).forEach(([k,v])=>s1.setAttribute(k,v));svg.appendChild(s1);
+    const s2=document.createElementNS(NS,'path');Object.entries({...a,d,stroke:w.color,'stroke-width':3}).forEach(([k,v])=>s2.setAttribute(k,v));svg.appendChild(s2);
+    if(w.label){const mid=w.bend||{x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2};const lw=Math.max(20,w.label.length*6+10);const rb=document.createElementNS(NS,'rect');rb.setAttribute('x',mid.x-lw/2);rb.setAttribute('y',mid.y-8);rb.setAttribute('width',lw);rb.setAttribute('height',15);rb.setAttribute('rx',3);rb.setAttribute('fill','#fff');rb.setAttribute('stroke','#ddd');rb.setAttribute('stroke-width',1);svg.appendChild(rb);const t=document.createElementNS(NS,'text');t.setAttribute('x',mid.x);t.setAttribute('y',mid.y+2);t.setAttribute('text-anchor','middle');t.setAttribute('font-size',10);t.setAttribute('font-family','DM Sans,sans-serif');t.setAttribute('font-weight',700);t.setAttribute('fill','#222');t.textContent=w.label;svg.appendChild(t);}
   });
-  const bw=maxX-minX, bh=maxY-minY+60;
-  // Render to offscreen SVG
-  const svgNS='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(svgNS,'svg');
-  svg.setAttribute('viewBox',`${minX} ${minY} ${bw} ${bh}`);
-  svg.setAttribute('width',bw); svg.setAttribute('height',bh);
-  svg.setAttribute('xmlns',svgNS);
-  // White bg
-  const bgr=document.createElementNS(svgNS,'rect');
-  bgr.setAttribute('x',minX-999);bgr.setAttribute('y',minY-999);
-  bgr.setAttribute('width',99999);bgr.setAttribute('height',99999);bgr.setAttribute('fill','#fff');
-  svg.appendChild(bgr);
-  // Wires
-  const wg=document.createElementNS(svgNS,'g');
-  proj.wires.forEach(w=>{
-    const geo=computeWireGeom(w);if(!geo)return;
-    const{p1,p2}=geo;
-    const d=w.bend?`M${p1.x},${p1.y}L${w.bend.x},${w.bend.y}L${p2.x},${p2.y}`:`M${p1.x},${p1.y}L${p2.x},${p2.y}`;
-    const mk=(stroke,sw,op)=>{const e=document.createElementNS(svgNS,'path');e.setAttribute('d',d);e.setAttribute('fill','none');e.setAttribute('stroke',stroke);e.setAttribute('stroke-width',sw);e.setAttribute('stroke-linecap','round');if(op)e.setAttribute('opacity',op);return e;};
-    wg.appendChild(mk('#ccc',5.5,.3));
-    wg.appendChild(mk(w.color,3.2));
-    if(w.label){
-      const mid=w.bend||{x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2};
-      const lw=Math.max(18,w.label.length*6+10);
-      const rb=document.createElementNS(svgNS,'rect');
-      rb.setAttribute('x',mid.x-lw/2);rb.setAttribute('y',mid.y-9);
-      rb.setAttribute('width',lw);rb.setAttribute('height',16);rb.setAttribute('rx',4);
-      rb.setAttribute('fill','#fff');rb.setAttribute('stroke','#ddd');rb.setAttribute('stroke-width',1);
-      wg.appendChild(rb);
-      const lt=document.createElementNS(svgNS,'text');
-      lt.setAttribute('x',mid.x);lt.setAttribute('y',mid.y+3);
-      lt.setAttribute('text-anchor','middle');lt.setAttribute('font-size',10.5);
-      lt.setAttribute('font-family','DM Sans,sans-serif');lt.setAttribute('font-weight',700);
-      lt.setAttribute('fill','#222');lt.textContent=w.label;
-      wg.appendChild(lt);
-    }
-  });
-  svg.appendChild(wg);
-  // Nodes
-  const ng=document.createElementNS(svgNS,'g');
-  proj.nodes.forEach(n=>{
-    const e=EQUIP[n.type];const{w,h}=nodeDims(n);
-    const g=document.createElementNS(svgNS,'g');
-    g.setAttribute('transform',`translate(${n.x},${n.y}) rotate(${n.rotation||0})`);
-    if(n.type==='note'){
-      const r=document.createElementNS(svgNS,'rect');
-      r.setAttribute('x',-w/2);r.setAttribute('y',-14);r.setAttribute('width',w);r.setAttribute('height',28);r.setAttribute('rx',5);r.setAttribute('fill','#f5f5f5');r.setAttribute('stroke','#ccc');
-      g.appendChild(r);
-      const t=document.createElementNS(svgNS,'text');
-      t.setAttribute('x',0);t.setAttribute('y',4);t.setAttribute('text-anchor','middle');
-      t.setAttribute('font-size',12);t.setAttribute('font-family','DM Sans,sans-serif');t.setAttribute('fill','#333');
-      t.textContent=n.label||'Текст';g.appendChild(t);
-    } else {
-      // Shape
-      const fill=e.accent,stroke='#555';
-      let shapeEl;
-      switch(e.shape){
-        case'circle':shapeEl=document.createElementNS(svgNS,'circle');shapeEl.setAttribute('r',w/2);break;
-        case'hex':shapeEl=document.createElementNS(svgNS,'polygon');shapeEl.setAttribute('points',hexPts(w/2,h/2));break;
-        case'diamond':shapeEl=document.createElementNS(svgNS,'polygon');shapeEl.setAttribute('points',`0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0`);break;
-        case'triangle':shapeEl=document.createElementNS(svgNS,'polygon');shapeEl.setAttribute('points',`0,${-h/2} ${w/2},${h/2} ${-w/2},${h/2}`);break;
-        default:shapeEl=document.createElementNS(svgNS,'rect');shapeEl.setAttribute('x',-w/2);shapeEl.setAttribute('y',-h/2);shapeEl.setAttribute('width',w);shapeEl.setAttribute('height',h);shapeEl.setAttribute('rx',6);
+  // nodes
+  P.nodes.forEach(n=>{
+    const e=EQ[n.type],{w,h}=ndim(n);
+    const g=document.createElementNS(NS,'g');g.setAttribute('transform',`translate(${n.x},${n.y}) rotate(${n.rotation||0})`);
+    if(n.type==='note'){const r=document.createElementNS(NS,'rect');r.setAttribute('x',-w/2);r.setAttribute('y',-14);r.setAttribute('width',w);r.setAttribute('height',28);r.setAttribute('rx',5);r.setAttribute('fill','#f5f5f5');r.setAttribute('stroke','#ccc');g.appendChild(r);const t=document.createElementNS(NS,'text');t.setAttribute('x',0);t.setAttribute('y',4);t.setAttribute('text-anchor','middle');t.setAttribute('font-size',12);t.setAttribute('font-family','DM Sans,sans-serif');t.setAttribute('fill','#333');t.textContent=n.label||'Текст';g.appendChild(t);}
+    else{
+      let sh;
+      switch(e.sh){
+        case'circle':sh=document.createElementNS(NS,'circle');sh.setAttribute('r',w/2);break;
+        case'hex':sh=document.createElementNS(NS,'polygon');sh.setAttribute('points',hxPts(w/2,h/2));break;
+        case'diamond':sh=document.createElementNS(NS,'polygon');sh.setAttribute('points',`0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0`);break;
+        case'tri':sh=document.createElementNS(NS,'polygon');sh.setAttribute('points',`0,${-h/2} ${w/2},${h/2} ${-w/2},${h/2}`);break;
+        default:sh=document.createElementNS(NS,'rect');sh.setAttribute('x',-w/2);sh.setAttribute('y',-h/2);sh.setAttribute('width',w);sh.setAttribute('height',h);sh.setAttribute('rx',6);
       }
-      shapeEl.setAttribute('fill',fill);shapeEl.setAttribute('stroke',stroke);shapeEl.setAttribute('stroke-width',1.5);
-      g.appendChild(shapeEl);
-      const t=document.createElementNS(svgNS,'text');
-      t.setAttribute('x',0);t.setAttribute('y',n.type==='board'?-h/2+17:0);
-      t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');
-      t.setAttribute('font-size',Math.min(13,w/3.5));t.setAttribute('font-family','DM Sans,sans-serif');t.setAttribute('font-weight',700);
-      t.setAttribute('fill',n.type==='board'?'#eee':'#111');
-      t.textContent=trunc(n.label||e.abbr,14);g.appendChild(t);
-      // board terminals
-      if(n.type==='board'&&n.terminals){
-        n.terminals.forEach((lbl,i)=>{
-          const cnt=n.terminals.length||1;
-          const lx=-w/2+(w/(cnt+1))*(i+1);
-          const by=h/2;
-          const rb=document.createElementNS(svgNS,'rect');
-          rb.setAttribute('x',lx-9);rb.setAttribute('y',by-7);rb.setAttribute('width',18);rb.setAttribute('height',14);rb.setAttribute('rx',2);rb.setAttribute('fill','#fff');rb.setAttribute('stroke',fill);rb.setAttribute('stroke-width',1.2);
-          g.appendChild(rb);
-          const tb=document.createElementNS(svgNS,'text');
-          tb.setAttribute('x',lx);tb.setAttribute('y',by+1);tb.setAttribute('text-anchor','middle');tb.setAttribute('dominant-baseline','middle');tb.setAttribute('font-size',8);tb.setAttribute('font-family','DM Sans,sans-serif');tb.setAttribute('font-weight',700);tb.setAttribute('fill','#222');tb.textContent=lbl||'·';
-          g.appendChild(tb);
-        });
-      }
+      sh.setAttribute('fill',e.ac);sh.setAttribute('stroke','#555');sh.setAttribute('stroke-width',1.5);g.appendChild(sh);
+      const t=document.createElementNS(NS,'text');t.setAttribute('x',0);t.setAttribute('y',n.type==='board'?-h/2+18:0);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');t.setAttribute('font-size',Math.min(13,w/4));t.setAttribute('font-family','DM Sans,sans-serif');t.setAttribute('font-weight',700);t.setAttribute('fill',n.type==='board'?'#eee':'#111');t.textContent=trunc(n.label||e.ab,14);g.appendChild(t);
+      if(n.type==='board'&&n.terminals){n.terminals.forEach((lb,i)=>{const c2=n.terminals.length||1,lx=-w/2+(w/(c2+1))*(i+1),by=h/2;const rb=document.createElementNS(NS,'rect');rb.setAttribute('x',lx-9);rb.setAttribute('y',by-7);rb.setAttribute('width',18);rb.setAttribute('height',14);rb.setAttribute('rx',2);rb.setAttribute('fill','#fff');rb.setAttribute('stroke',e.ac);rb.setAttribute('stroke-width',1.2);g.appendChild(rb);const tb=document.createElementNS(NS,'text');tb.setAttribute('x',lx);tb.setAttribute('y',by+1);tb.setAttribute('text-anchor','middle');tb.setAttribute('dominant-baseline','middle');tb.setAttribute('font-size',8);tb.setAttribute('font-family','DM Sans,sans-serif');tb.setAttribute('font-weight',700);tb.setAttribute('fill','#222');tb.textContent=lb||'·';g.appendChild(tb);});}
     }
-    ng.appendChild(g);
+    svg.appendChild(g);
   });
-  svg.appendChild(ng);
-  // Title
-  const titleG=document.createElementNS(svgNS,'g');
-  const t1=document.createElementNS(svgNS,'text');
-  t1.setAttribute('x',minX+10);t1.setAttribute('y',maxY+28);
-  t1.setAttribute('font-size',18);t1.setAttribute('font-family','DM Sans,sans-serif');t1.setAttribute('font-weight',700);t1.setAttribute('fill','#111');
-  t1.textContent=proj.name||'Схема';
-  const t2=document.createElementNS(svgNS,'text');
-  t2.setAttribute('x',minX+10);t2.setAttribute('y',maxY+46);
-  t2.setAttribute('font-size',11);t2.setAttribute('font-family','DM Sans,sans-serif');t2.setAttribute('fill','#666');
-  t2.textContent='Frost Hawk HVAC · '+new Date().toLocaleDateString('uk-UA');
-  titleG.appendChild(t1);titleG.appendChild(t2);svg.appendChild(titleG);
-  // Rasterize
+  // title
+  const t1=document.createElementNS(NS,'text');t1.setAttribute('x',mx+10);t1.setAttribute('y',My+28);t1.setAttribute('font-size',17);t1.setAttribute('font-family','DM Sans,sans-serif');t1.setAttribute('font-weight',700);t1.setAttribute('fill','#111');t1.textContent=P.name||'Схема';svg.appendChild(t1);
+  const t2=document.createElementNS(NS,'text');t2.setAttribute('x',mx+10);t2.setAttribute('y',My+45);t2.setAttribute('font-size',10);t2.setAttribute('font-family','DM Sans,sans-serif');t2.setAttribute('fill','#666');t2.textContent='Frost Hawk HVAC · '+new Date().toLocaleDateString('uk-UA');svg.appendChild(t2);
   const xml=new XMLSerializer().serializeToString(svg);
   const img=new Image();
   await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(xml)));});
-  const scale=2;
-  const cv=document.createElement('canvas');
-  cv.width=bw*scale;cv.height=bh*scale;
-  const ctx=cv.getContext('2d');
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.drawImage(img,0,0,cv.width,cv.height);
-  const dataUrl=cv.toDataURL('image/png',1);
+  const sc=2,cv2=document.createElement('canvas');cv2.width=bw*sc;cv2.height=bh*sc;
+  const ctx=cv2.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,cv2.width,cv2.height);ctx.drawImage(img,0,0,cv2.width,cv2.height);
+  const du=cv2.toDataURL('image/png',1);
   const{jsPDF}=window.jspdf;
-  const orientation=bw>bh?'landscape':'portrait';
-  const doc=new jsPDF({orientation,unit:'pt',format:'a4'});
-  const pw=doc.internal.pageSize.getWidth(),ph=doc.internal.pageSize.getHeight();
-  const m=28,aw=pw-m*2,ah=ph-m*2;
-  const r=Math.min(aw/bw,ah/bh);
-  const iw=bw*r,ih=bh*r;
-  doc.addImage(dataUrl,'PNG',(pw-iw)/2,m,iw,ih);
-  // Wire legend
-  const seen=new Map();
-  proj.wires.forEach(w=>{if(w.label)seen.set(w.color+'|'+w.label,w);});
-  if(seen.size){
-    let ly=m+ih+18;
-    if(ly>ph-30){doc.addPage();ly=m;}
-    doc.setFontSize(9);doc.setTextColor(80,90,100);
-    doc.text('Легенда:',m,ly);ly+=14;
-    [...seen.values()].forEach((w,i)=>{
-      const x=m+(i%3)*180;const y=ly+Math.floor(i/3)*14;
-      doc.setFillColor(w.color);doc.circle(x+4,y-3,4,'F');
-      doc.setTextColor(40,50,60);doc.text(w.label,x+14,y);
-    });
-  }
-  doc.save(slug(proj.name)+'.pdf');
-  toast('PDF готовий ✓');
+  const doc=new jsPDF({orientation:bw>bh?'landscape':'portrait',unit:'pt',format:'a4'});
+  const pw=doc.internal.pageSize.getWidth(),ph=doc.internal.pageSize.getHeight(),m=28;
+  const rr=Math.min((pw-m*2)/bw,(ph-m*2)/bh),iw=bw*rr,ih=bh*rr;
+  doc.addImage(du,'PNG',(pw-iw)/2,m,iw,ih);
+  const seen=new Map();P.wires.forEach(w=>{if(w.label)seen.set(w.color+'|'+w.label,w);});
+  if(seen.size){let ly=m+ih+18;doc.setFontSize(9);doc.setTextColor(80,90,100);doc.text('Легенда:',m,ly);ly+=13;[...seen.values()].forEach((w,i)=>{const x=m+(i%3)*180,y=ly+Math.floor(i/3)*13;doc.setFillColor(w.color);doc.circle(x+4,y-3,4,'F');doc.setTextColor(40,50,60);doc.text(w.label,x+14,y);});}
+  doc.save(slug(P.name)+'.pdf');toast('PDF готовий ✓');
 }
 
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // TOAST
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 let toastT;
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('on');
-  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2000);
-}
+function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2200);}
 
-// ═══════════════════════════════════════════════════════════
-// KEYBOARD (desktop)
-// ═══════════════════════════════════════════════════════════
-window.addEventListener('keydown',e=>{
-  if(e.key==='Escape')cancelMode();
-  if((e.key==='Delete'||e.key==='Backspace')&&selId&&document.activeElement.tagName!=='INPUT'){
-    e.preventDefault();
-    pushHist();
-    if(selKind==='node')deleteNode(selId);
-    else{proj.wires=proj.wires.filter(w=>w.id!==selId);clearSel();renderAll();saveDeferred();}
+// ─────────────────────────────────────────────────────────────
+// FIX: wire endpoint drag — we need to save wire ref in op
+// Override the wire hit drag to properly track
+// ─────────────────────────────────────────────────────────────
+// (already handled: op.w is set in hitH → passed through op)
+// Fix onUp for wire endpoint release:
+const _origOnUp=onUp;
+cvs.removeEventListener('pointerup',onUp);
+cvs.addEventListener('pointerup',function(e){
+  ptrs.delete(e.pointerId);
+  if(ptrs.size<2&&op?.t==='pinch'){op=null;return;}
+  if(!op){return;}
+  const ot=op.t,ow=op.w;
+  if(ot==='wf'||ot==='wt'){
+    op=null;
+    if(ow){
+      const end=ot==='wf'?'from':'to',s=c2s(e.clientX,e.clientY);
+      const hit=nearN(s.x,s.y,null);
+      if(hit){ow[end+'Id']=hit.n.id;delete ow[end+'Point'];ow[end+'Term']=hit.term??null;}
+      ow.bend=null;
+    }
+    renderAll();saveDef();return;
   }
-  if(e.key==='z'&&(e.ctrlKey||e.metaKey)){e.preventDefault();undo();}
+  const prevOp=op;op=null;
+  if(ot==='wb'||ot==='ro'||ot==='rr'||ot==='rl'||ot==='rb'||ot==='rt'){saveDef();renderAll();return;}
+  if(ot==='nd'&&prevOp?.mv){saveDef();}
 });
 
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // INIT
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 async function init(){
-  await loadCustomTypes();
-  buildPalette();
-  fitView();
-  const lastId=await Store.get(LAST_KEY);
-  if(lastId){
-    const raw=await Store.get(projKey(lastId));
-    if(raw){try{proj=JSON.parse(raw);proj.nodes=proj.nodes||[];proj.wires=proj.wires||[];}catch(e){proj=blankProj();}}
-    else proj=blankProj();
-  } else proj=blankProj();
-  document.getElementById('projName').value=proj.name;
+  await ldCtypes();buildPal();fitView();
+  const lastId=await sg(K.last);
+  if(lastId){const r=await sg(pk(lastId));if(r){try{P=JSON.parse(r);P.nodes=P.nodes||[];P.wires=P.wires||[];}catch(e){P=blank();}}}
+  if(!P)P=blank();
+  document.getElementById('pname').value=P.name;
   renderAll();
-  setVB();updateZoomLabel();
 }
 init();
 })();
